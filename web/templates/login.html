@@ -1,11 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forum</title>
-</head>
-<body>
-    
-</body>
-</html>
+    {{ if .IsLoginPage }}
+       <h1>Log In</h1> 
+       <form action="/login" method="POST">
+            <label for="login">Username or Email:</label>
+            <input type="text" id="login" name="login" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit">Login</button>
+            <p>Don't have an account ? <a href="/log_register.html?register=true">Register here</a></p>
+       </form>
+    {{ end }}
