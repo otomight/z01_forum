@@ -1,12 +1,17 @@
 package main
 
 import (
+	"Forum/database"
 	"Forum/server"
 	"log"
 	"net/http"
 )
 
 func main() {
+	//DB initialization
+	if err := database.InitDB(); err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
 	mux := server.InitializeServer()
 
 	log.Println("Starting server on : 8081")

@@ -10,10 +10,10 @@ func InitializeServer() http.Handler {
 	mux := http.NewServeMux()
 
 	//Routes
-	mux.HandleFunc("/posts", handlers.GetPost)
+	mux.HandleFunc("/", handlers.RenderHomePage)
 
 	//Protect route to create new Post with authentication
-	mux.Handle("psots/create", middleware.LoggingMiddleware(http.HandlerFunc(handlers.CreatePost)))
+	mux.Handle("posts/create", middleware.AuthMiddleware(http.HandlerFunc(handlers.CreatePost)))
 
 	//Wrap mux with logging middleware
 	wrappedMux := middleware.LoggingMiddleware(mux)

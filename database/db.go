@@ -3,11 +3,13 @@ package database
 import (
 	"database/sql"
 	"log"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var DB *sql.DB
 
-func InitDB() (*sql.DB, error) {
+func InitDB() error {
 	//Open DB connection
 	var err error
 	DB, err = sql.Open("sqlite3", "./forum.db")
@@ -16,17 +18,17 @@ func InitDB() (*sql.DB, error) {
 	}
 
 	//Enable foreign key for SQLite
-	_, err = DB.Exec("PRAGMA foreign_key = ON")
-	if err != nil {
-		return nil, err
+	if _, err := DB.Exec("PRAGMA foreign_keys = ON"); err != nil {
+		return err
 	}
 
 	//Execute create_table schema script
 	if _, err := DB.Exec(schema); err != nil {
-		log.Fatal("Error executing schema:", err)
+		return err
 	}
+
 	log.Println("Database initialized successfully")
-	return DB, nil
+	return nil
 }
 
 const schema = `
@@ -39,7 +41,7 @@ CREATE TABLE IF NOT EXISTS Sessions (
     updateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deletionDate TIMESTAMP,
     isDeleted BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY(user_id) REFERENCES clients(user_id)
+    FOREIGN KEY(UserID) REFERENCES clients(UserID)
 );
 
 -- posts table schema
@@ -53,7 +55,7 @@ CREATE TABLE IF NOT EXISTS Posts (
     updateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     DeletionDate TIMESTAMP,
     isDeleted BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY(author_id) REFERENCES clients(user_id)
+    FOREIGN KEY(AuthorID) REFERENCES clients(UserID) ON DELETE CASCADE
 );
 
 -- clients table schema
