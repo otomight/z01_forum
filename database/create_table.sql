@@ -1,41 +1,39 @@
-CREATE TABLE IF NOT EXISTS Session (
+CREATE TABLE IF NOT EXISTS Sessions (
     SessionID TEXT PRIMARY KEY,
     userID INTEGER,
-    expiration DATETIME,
-    creationDate DATETIME,
-    updateDate DATETIME,
-    isValid BOOLEAN
+    expiration TIMESTAMP,
+    creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deletionDate TIMESTAMP,
+    isDeleted BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY(user_id) REFERENCES clients(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS Post (
-    postID INTEGER PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Posts (
+    postID INTEGER PRIMARY KEY AUTOINCREMENT,
     authorID INTEGER,
     Title TEXT,
     category TEXT,
     content TEXT,
-    creationDate DATETIME,
-    updateDate DATETIME,
-    DeletionDate DATETIME,
-    isDeleted BOOLEAN,
-    globalCount INTEGER,
-    redCount INTEGER,
-    greenCount INTEGER,
-    whiteCount INTEGER,
-    sameCount INTEGER
+    creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    DeletionDate TIMESTAMP,
+    isDeleted BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY(author_id) REFERENCES clients(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS Client (
-    userID INTEGER PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS Clients (
+    userID INTEGER PRIMARY KEY AUTOINCREMENT,
     lastName TEXT,
     firstName TEXT,
-    userName TEXT,
-    email TEXT,
+    userName TEXT UNIQUE,
+    email TEXT UNIQUE,
     password TEXT,
     avatar TEXT,
     birthDate DATE,
-    creationDate DATETIME,
-    updateDate DATETIME,
-    deletionDate DATETIME
+    creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deletionDate TIMESTAMP 
 );
 
 CREATE TABLE IF NOT EXISTS emailVerification (
