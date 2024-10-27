@@ -67,7 +67,7 @@ func CreateSession(session *Session) error {
 	return err
 }
 
-func GetSession(sessionID string) (*Session, error) {
+func GetSessionByID(sessionID string) (*Session, error) {
 	row := DB.QueryRow(`
 		SELECT session_id, user_id, expiration, creation_date, update_date, deletion_date, is_deleted
 		FROM Sessions WHERE session_id = ?
@@ -76,4 +76,24 @@ func GetSession(sessionID string) (*Session, error) {
 	err := row.Scan(&session.SessionID, &session.UserID, &session.Expiration, &session.CreationDate,
 		&session.UpdateDate, &session.DeletionDate, &session.IsDeleted)
 	return &session, err
+}
+
+// Post CRUD operations
+func CreatePost(post *Post) error {
+	_, err := DB.Exec(`
+		INSERT INTO Posts (author_id, title, category, content)
+		VALUES (?, ?, ?, ?)
+	`, post.AuthorID, post.Title, post.Category, post.Content)
+	return err
+}
+
+func GetPostByID(postID int) (*Post, error) {
+	row := DB.QueryRow(`
+		SELECT post_id, author_id, title, category, content, creation_date, update_date, deletion_date, is_deleted
+		FROM Posts WHERE post_id = ?
+	`, postID)
+	var post Post
+	err := row.Scan(&post.PostID, &post.AuthorID, &post.Title, &post.Category, &post.Content,
+		&post.CreationDate, &post.UpdateDate, &post.DeletionDate, &post.IsDeleted)
+	return &post, err
 }
