@@ -17,6 +17,13 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Retreieve UserID from context
+	userID, ok := r.Context().Value(UserIDKey).(int)
+	if !ok {
+		http.Error(w, "User ID not found in context", http.StatusInternalServerError)
+		return
+	}
+
 	//Decode request body intot a Post struct
 	var post database.Post
 	if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
@@ -31,6 +38,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//set creationDate + default values
+	post.AuthorID = userID
 	post.CreationDate = time.Now()
 	post.UpdateDate = post.CreationDate
 	post.IsDeleted = false
