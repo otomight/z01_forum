@@ -23,11 +23,13 @@ func GetClientByID(userID int) (*Client, error) {
 }
 
 // Retrieve client from database by their Email
-func GetClientByEmail(email string) (*Client, error) {
+func GetClientByUsernameOrEmail(email string) (*Client, error) {
 	var client Client
 
 	//Query to find user by Email
-	query := "SELECT user_id, last_name, first_name, email, password, avatar, birthdate, creation_date, update_date, deletion_date FROM Clients WHERE email = ?"
+	query := `SELECT user_id, last_name, first_name, email, password, avatar, birthdate, creation_date, update_date, deletion_date 
+	FROM Clients 
+	WHERE user_name = ? OR email = ?`
 
 	//Execute query
 	row := DB.QueryRow(query, email)
