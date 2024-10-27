@@ -27,6 +27,9 @@ func InitDB() error {
 		return err
 	}
 
+	InsertSampleClient()
+	InsertSamplePost()
+
 	log.Println("Database initialized successfully")
 	return nil
 }
@@ -34,42 +37,42 @@ func InitDB() error {
 const schema = `
 -- sessions table schema
 CREATE TABLE IF NOT EXISTS Sessions (
-    SessionID TEXT PRIMARY KEY,
-    userID INTEGER,
+    session_id TEXT PRIMARY KEY,
+    user_id INTEGER,
     expiration TIMESTAMP,
-    creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deletionDate TIMESTAMP,
-    isDeleted BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY(UserID) REFERENCES clients(UserID)
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deletion_date TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY(user_id) REFERENCES clients(user_id)
 );
 
 -- posts table schema
 CREATE TABLE IF NOT EXISTS Posts (
-    postID INTEGER PRIMARY KEY AUTOINCREMENT,
-    authorID INTEGER,
-    Title TEXT,
+    post_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    author_id INTEGER,
+    title TEXT,
     category TEXT,
     content TEXT,
-    creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    DeletionDate TIMESTAMP,
-    isDeleted BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY(AuthorID) REFERENCES clients(UserID) ON DELETE CASCADE
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deletion_date TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY(author_id) REFERENCES clients(user_id) ON DELETE CASCADE
 );
 
 -- clients table schema
 CREATE TABLE IF NOT EXISTS Clients (
-    userID INTEGER PRIMARY KEY AUTOINCREMENT,
-    lastName TEXT,
-    firstName TEXT,
-    userName TEXT UNIQUE,
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    last_name TEXT,
+    first_name TEXT,
+    user_name TEXT UNIQUE,
     email TEXT UNIQUE,
     password TEXT,
     avatar TEXT,
-    birthDate DATE,
-    creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deletionDate TIMESTAMP 
+    birth_date DATE,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deletion_date TIMESTAMP 
 );
 `

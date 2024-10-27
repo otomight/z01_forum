@@ -1,6 +1,9 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+)
 
 // Client CRUD operations
 func CreateClient(client *Client) error {
@@ -58,4 +61,18 @@ func GetClientByUsernameOrEmail(email string) (*Client, error) {
 	}
 
 	return &client, nil
+}
+
+// Create client for testing
+func InsertSampleClient() {
+	query := `
+		INSERT INTO Clients (last_name, first_name, user_name, email, password, avatar, birth_date)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`
+	_, err := DB.Exec(query, "Doe", "John", "johndoe", "johndoe@example.com", "hashed_password", "avatar.png", "1990-01-01")
+	if err != nil {
+		log.Printf("Failed to insert sample client: %v", err)
+	} else {
+		log.Println("Sample client inserted successfully.")
+	}
 }

@@ -12,6 +12,8 @@ func main() {
 	if err := database.InitDB(); err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
+
+	//Initialize server
 	mux := server.InitializeServer()
 
 	log.Println("Starting server on : 8081")

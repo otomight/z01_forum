@@ -8,11 +8,11 @@ import (
 var tmpl *template.Template
 
 func init() {
-	tmpl = template.Must(template.ParseGlob("template/*.html"))
+	tmpl = template.Must(template.ParseGlob("./web/templates/*.html"))
 }
 
 func LogRegisterHandler(w http.ResponseWriter, r *http.Request) {
-	isRegisterPage := r.URL.Query().Get("register") == "true"
+	isRegisterPage := r.URL.Path == "/register"
 
 	data := struct {
 		Title          string

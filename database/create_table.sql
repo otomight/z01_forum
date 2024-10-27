@@ -1,50 +1,50 @@
 CREATE TABLE IF NOT EXISTS Sessions (
-    SessionID TEXT PRIMARY KEY,
-    userID INTEGER,
+    session_id TEXT PRIMARY KEY,
+    user_id INTEGER,
     expiration TIMESTAMP,
-    creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deletionDate TIMESTAMP,
-    isDeleted BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY(UserID) REFERENCES clients(UserID)
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deletion_date TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY(user_id) REFERENCES clients(user_id)
 );
 
 CREATE TABLE IF NOT EXISTS Posts (
-    postID INTEGER PRIMARY KEY AUTOINCREMENT,
-    authorID INTEGER,
-    Title TEXT,
+    post_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    author_id INTEGER,
+    title TEXT,
     category TEXT,
     content TEXT,
-    creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    DeletionDate TIMESTAMP,
-    isDeleted BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY(AuthorID) REFERENCES clients(UserID) ON DELETE CASCADE
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deletion_date TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY(author_id) REFERENCES clients(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Clients (
-    userID INTEGER PRIMARY KEY AUTOINCREMENT,
-    lastName TEXT,
-    firstName TEXT,
-    userName TEXT UNIQUE,
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    last_name TEXT,
+    first_name TEXT,
+    user_name TEXT UNIQUE,
     email TEXT UNIQUE,
     password TEXT,
     avatar TEXT,
-    birthDate DATE,
-    creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deletionDate TIMESTAMP 
+    birth_date DATE,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deletion_date TIMESTAMP 
 );
 
 CREATE TABLE IF NOT EXISTS emailVerification (
-    verificationID INTEGER PRIMARY KEY,
-    userID INTEGER,
+    verification_id INTEGER PRIMARY KEY,
+    user_id INTEGER,
     email TEXT,
     token TEXT,
     validated BOOLEAN,
-    userID_1 INTEGER NOT NULL,
-    UNIQUE(userID_1),
-    FOREIGN KEY(userID_1) REFERENCES Client(userID)
+    user_id_1 INTEGER NOT NULL,
+    UNIQUE(user_id_1),
+    FOREIGN KEY(user_id_1) REFERENCES Client(userID)
 );
 
 CREATE TABLE IF NOT EXISTS Rating (

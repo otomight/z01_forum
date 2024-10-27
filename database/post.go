@@ -1,6 +1,8 @@
 package database
 
-import "log"
+import (
+	"log"
+)
 
 // Post CRUD operations
 func CreatePost(post *Post) error {
@@ -30,20 +32,51 @@ func GetAllPosts() ([]Post, error) {
 		WHERE is_deleted = 0 -- Only select non deleted posts
 	`
 
-	row, err := DB.Query(query)
+	rows, err := DB.Query(query)
 	if err != nil {
 		log.Printf("Error fetching posts: %v", err)
 		return nil, err
 	}
-	defer row.Close()
+	defer rows.Close()
 
 	var posts []Post
+	// Iterate through rows and append to posts slice
+	for rows.Next() {
+		var post Post
+		if err := rows.Scan(&post.PostID, &post.AuthorID, &post.Title, &post.Category, &post.Content, &post.CreationDate, &post.UpdateDate, &post.DeletionDate, &post.IsDeleted); err != nil {
+			log.Printf("Error scanning post: %v", err)
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
 
 	//Check iteration errors
-	if err := row.Err(); err != nil {
+	if err := rows.Err(); err != nil {
 		log.Printf("Error during row iteration: %v", err)
 		return nil, err
 	}
 
 	return posts, nil
+}
+
+// inserting post for testing
+func InsertSamplePost() {
+	// Check if any posts already exist
+	var count int
+	err := DB.QueryRow("SELECT COUNT(*) FROM Posts").Scan(&count)
+	if err != nil {
+		log.Printf("Failed to count posts: %v", err)
+		return
+	}
+
+	// If no posts exist, insert the sample post
+	if count == 0 {
+		_, err := DB.Exec(`
+            INSERT INTO Posts (author_id, title, category, content, creation_date, update_date, is_deleted)
+            VALUES (1, 'Sample Post', 'General', 'This is a sample post content.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
+        `)
+		if err != nil {
+			log.Printf("Failed to insert sample post: %v", err)
+		}
+	}
 }

@@ -29,13 +29,13 @@ type Session struct {
 }
 
 type Post struct {
-	PostID       int       `json:"post_id"`
-	AuthorID     int       `json:"author_id"`
-	Title        string    `json:"title"`
-	Category     string    `json:"category"`
-	Content      string    `json:"content"`
-	CreationDate time.Time `json:"creation_date"`
-	UpdateDate   time.Time `json:"update_date"`
-	DeletionDate time.Time `json:"deletion_date"`
-	IsDeleted    bool      `json:"is_deleted"`
+	PostID       int        `json:"post_id"`
+	AuthorID     int        `json:"author_id"`
+	Title        string     `json:"title"`
+	Category     string     `json:"category"`
+	Content      string     `json:"content"`
+	CreationDate time.Time  `json:"creation_date"`
+	UpdateDate   time.Time  `json:"update_date"`
+	DeletionDate *time.Time `json:"deletion_date"`
+	IsDeleted    bool       `json:"is_deleted"`
 }

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"Forum/database"
-	"html/template"
 	"net/http"
 )
 
@@ -14,18 +13,20 @@ func RenderHomePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl := template.Must(template.ParseFiles("web/templates/home_page.html"))
-
 	//Create data struct to hold posts
 	data := struct {
-		Posts []database.Post
+		Title      string
+		Posts      []database.Post
+		IsLoggedIn bool
+		UserRole   string
 	}{
-		Posts: posts,
+		Title:      "Home",
+		Posts:      posts,
+		IsLoggedIn: false,
+		UserRole:   "",
 	}
 
-	//Render template + pass in posts
-	err = tmpl.Execute(w, data)
-	if err != nil {
-		http.Error(w, "Failed to render page", http.StatusInternalServerError)
+	if err := tmpl.ExecuteTemplate(w, "home_page.html", data); err != nil {
+		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 	}
 }
