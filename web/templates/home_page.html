@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="/static/style/main.css">
+</head>
+<body>
+
+    <header>
+        <h1>Welcome to The Forum</h1>
+        <nav>
+            <ul>
+                <li>
+                    <a href="/register">Register</a>
+                </li>
+                <li>
+                    <a href="/login">Loging</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {{block "content" .}} {{end}}
+
+        <h2>Posts</h2>
+        <div id="posts">
+            {{range.Posts}}
+                <div class="post">
+                    <h3>{{.Title}}</h3>
+                    <p>By User ID: {{.AuthorID}}</p>
+                    <p>{{.Content}}</p>
+                    <p><em>Posted on: {{.CreationDate}}</em></p>
+                </div>
+            {{else}}
+            <p>No posts availaible.</p>
+            {{end}}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Forum. All rights reserved.</p>
+    </footer>
+</body>
+</html>
