@@ -83,19 +83,36 @@ Moderation is essential for a Forum to control the displayed content so that it 
 
 The content must be appropriate : respectful, relevant; not obscene, illegal or insulting.
 
-To check the conformity of the Forum content we'll need a moderation system with several levels :
+To check the conformity of the Forum content we'll need a moderation system with several levels.
+
+##### Guest
 
 - Guests : unregistered users that can only read the Posts and Comments, they also can search for a Post topic using the search bar or by Category.
 
-- 
+##### Basic User 
 
-##### Administrator
+- Users : Able to create, comment, like or dislike posts:
+
+    - They 'll also be able to dislike or modify/delete their own Posts/Comments.
+
+    - They should be able to request to be promoted to moderator to the admin.
 
 ##### Moderator
 
-##### Basic user
+- Moderators : they have the same options than the basic users but with some special features :
 
-##### Guest
+    - Report or delete users/Posts or comments to admin.
+    - Report/Ban users.
+    - Request a user moderator promotion to the admin.
+
+##### Administrator
+
+- Admin : Above the moderator, he manages the technical details required for running the Forum :
+
+    - Promote/demote user to moderator or back to basic user.
+    - Receive reports from moderators.
+    - Delete Posts/Comments/users 
+    - Manage categories (add/delete them).
 
 #### Security
 
