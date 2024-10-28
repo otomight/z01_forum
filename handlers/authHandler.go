@@ -15,6 +15,8 @@ func init() {
 	tmpl = template.Must(template.ParseGlob("./web/templates/*.html"))
 }
 
+//// Registration \\\\
+
 func RegisterHAndler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		userName := r.FormValue("username")
@@ -92,6 +94,8 @@ func renderRegistrationPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//// Login \\\\
+
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		username := r.FormValue("username")
@@ -127,8 +131,17 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			SameSite: http.SameSiteLaxMode,
 		})
 
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
+		//Redirect to the home page corresponding to the role
+		if user.UserRole == "administrator" {
+			http.Redirect(w, r, "logged_administrator_home_page.html", http.StatusSeeOther)
+			return
+		} else if user.UserRole == "moderator" {
+			http.Redirect(w, r, "logged_moderator_home_page.html", http.StatusSeeOther)
+			return
+		} else {
+			http.Redirect(w, r, "logged_user_home_page.html", http.StatusSeeOther)
+			return
+		}
 	}
 
 	// Show login.html template
