@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"log"
 )
 
@@ -57,6 +58,31 @@ func GetAllPosts() ([]Post, error) {
 	}
 
 	return posts, nil
+}
+
+// Delete post
+func DeletePost(postID int) error {
+	query := `
+		UPDATE posts
+		SET is_deleted true, deletion_date = CURRENT_TIMESTAMP
+		WHERE post_id
+	`
+	result, err := DB.Exec(query, postID)
+	if err != nil {
+		log.Printf("Error deleting post %d: %v", postID, err)
+		return fmt.Errorf("failed to delete post: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to retreieve affected row: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no post found with ID %d", postID)
+	}
+
+	return nil
 }
 
 // inserting post for testing

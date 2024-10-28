@@ -39,6 +39,7 @@ const schema = `
 CREATE TABLE IF NOT EXISTS Sessions (
     session_id TEXT PRIMARY KEY,
     user_id INTEGER,
+    user_role TEXT,
     expiration TIMESTAMP,
     creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

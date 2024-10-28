@@ -2,5 +2,8 @@ package handlers
 
 type contextKey string
 
-// UserIDKey
-const UserIDKey contextKey = "userID"
+// Constants
+const (
+	UserIDKey   contextKey = "userID"
+	UserRoleKey contextKey = "userRole"
+)

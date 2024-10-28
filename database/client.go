@@ -28,16 +28,22 @@ func GetClientByID(userID int) (*Client, error) {
 }
 
 // Save new user to database
-func SaveUser(userName, email, password, firstName, lastName, userRole string) error {
-	query := `INSERT INTO Clients (user_name, email, password, first_name, last_name, user_role)
-	VALUES (?, ?, ?, ?, ?, ?)`
+func SaveUser(userName, email, password, firstName, lastName, userRole string) (int, error) {
+	result, err := DB.Exec(`
+	INSERT INTO Clients (user_name, email, password, first_name, last_name, user_role)
+	VALUES (?, ?, ?, ?, ?, ?)
+	`, userName, email, password, firstName, lastName, userRole)
 
-	_, err := DB.Exec(query, userName, email, password, firstName, lastName, userRole)
 	if err != nil {
-		log.Printf("Failed to insert user: %v", err)
-		return err
+		return 0, err
 	}
-	return nil
+
+	userID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(userID), nil
 }
 
 // Retrieve client from database by their Email
