@@ -1,5 +1,115 @@
 # Forum 
 
+## Specifications 
+
+### Project main goals
+
+#### Communication between users 
+
+In order for users to communicate between each other, they'll have to be able to create Posts and Comments which'll only be allowed to registered users.
+
+I think displaying latest Posts first when accessing the home page is the more coherent course of actionas well as accessing the latest comments for each post first.
+
+##### Posts
+
+- Create Posts : Registered user should be able to write and publish a Post. 
+
+- Filters : Registered users can filter the displayer post by
+
+    - Categories (all users).
+    - Own created Posts.
+    - Liked Posts.
+    - (Favorite Posts).
+
+- Likes : Liking or disliking Posts is only available to registered users.
+
+    - I'd prefer the user not to be able to like/dislik his own Posts.
+
+- History : the user should be able to access the history of 
+
+    - His published Posts.
+    - His liked/disliked Posts.
+
+- (Modify/Delete his own Posts).
+
+##### Comments
+
+- Comment existing Posts is for registered users only.
+
+- Like/dislike comments.
+
+    - Same here, I'd prefer the user not to be able to like/dislike his own comment.
+
+- (Modify/Delete his own comments).
+
+- History : user should be able to see all his published comments.
+
+#### Authentication
+
+Clients must be able to register as new users on the Forum by inputting their credentials as well as log in.
+
+The use of cookies is essential to allow each user to have only one opened session :
+- Each session must contain an expiration date.
+
+##### Register
+
+- User registration :
+
+    - Username.
+    - Email.
+    - Password.
+    - (FirstName).
+    - (LastName).
+    - (BirthDate).
+
+The web application must be able to check if the Email address is present in the database and if all credentials are correct.
+
+Users should be able to register using at least Facebook, Github and Google.
+
+##### Log in
+
+- User Login :
+
+    - Username/Email.
+    - Password.
+
+When logging, the Forum must be able to check if the entered password is the same as the one provided in the database.
+
+Users should also be able to Log in using at least Facebook, Github and Goolge.
+
+#### Moderation
+
+Moderation is essential for a Forum to control the displayed content so that it respects the Term and Condition of Use (TCUs).
+
+The content must be appropriate : respectful, relevant; not obscene, illegal or insulting.
+
+To check the conformity of the Forum content we'll need a moderation system with several levels :
+
+- Guests : unregistered users that can only read the Posts and Comments, they also can search for a Post topic using the search bar or by Category.
+
+- 
+
+##### Administrator
+
+##### Moderator
+
+##### Basic user
+
+##### Guest
+
+#### Security
+
+##### HTTPS protocol
+
+##### Rate Limiting
+
+##### Password encryption
+
+##### Database encryption
+
+##### Unique client session cookies
+
+
 ## Epics/user stories/Back log : global features of the project 
 
 ![Epics/user stories](image.png)
