@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS Clients (
     password TEXT,
     avatar TEXT,
     birth_date DATE,
+    user_role TEXT DEFAULT 'user',
     creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deletion_date TIMESTAMP 

@@ -33,7 +33,7 @@
                         <a href="/login">Login</a>
                     </li>
                     <li>
-                        <a href="/login?register=true">Register</a>
+                        <a href="/register">Register</a>
                     </li>
                 {{end}}
             </ul>
@@ -45,17 +45,25 @@
 
         <h2>Posts</h2>
         <div id="posts">
-            {{if .Posts}} <!-- Check if there are posts -->
-                {{range .Posts}} <!-- Iterate over posts -->
+            {{if .Posts}}
+                {{range .Posts}} 
                     <div class="post">
                         <h3>{{.Title}}</h3>
                         <p>By User ID: {{.AuthorID}}</p>
                         <p>{{.Content}}</p>
                         <p><em>Posted on: {{.CreationDate}}</em></p>
+
+                        <!-- Additional controls for moderators and administrators -->
+                        {{if or (eq $.UserRole "administrator") (eq $.UserRole "moderator")}}
+                            <div class="post-controls">
+                                <a href="/posts/edit/{{.PostID}}">Edit</a>
+                                <a href="/posts/delete/{{.PostID}}" onclick="return confirm('Are you sure?')">Delete</a>
+                            </div>
+                        {{end}}
                     </div>
                 {{end}}
             {{else}}
-                <p>No posts available.</p> <!-- Message when there are no posts -->
+                <p>No posts available.</p> 
             {{end}}
         </div>
     </main>

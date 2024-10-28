@@ -13,14 +13,16 @@ type Client struct {
 	Password     string    `json:"password"`
 	Avatar       string    `json:"avatar"`
 	BirthDate    time.Time `json:"birth_date"`
+	UserRole     string    `json:"user_role"`
 	CreationDate time.Time `json:"creation_date"`
 	UpdateDate   time.Time `json:"udate_date"`
 	DeletionDate time.Time `json:"deleteion_date"`
 }
 
-type Session struct {
+type UserSession struct {
 	SessionID    string    `json:"session_id"`
 	UserID       int       `json:"user_id"`
+	UserRole     string    `json:"user_role"`
 	Expiration   time.Time `json:"expiration"`
 	CreationDate time.Time `json:"creation_date"`
 	UpdateDate   time.Time `json:"update_date"`

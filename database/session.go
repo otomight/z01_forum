@@ -9,7 +9,7 @@ import (
 )
 
 // Session CRUD operations
-func CreateSession(session *Session) error {
+func CreateSession(session *UserSession) error {
 	if session.SessionID == "" || session.UserID == 0 {
 		return fmt.Errorf("invalid session data: session_id & user_id can't be empty")
 	}
@@ -25,12 +25,12 @@ func CreateSession(session *Session) error {
 	return nil
 }
 
-func GetSessionByID(sessionID string) (*Session, error) {
+func GetSessionByID(sessionID string) (*UserSession, error) {
 	row := DB.QueryRow(`
 		SELECT session_id, user_id, expiration, creation_date, update_date, deletion_date, is_deleted
 		FROM Sessions WHERE session_id = ?
 	`, sessionID)
-	var session Session
+	var session UserSession
 	err := row.Scan(&session.SessionID, &session.UserID, &session.Expiration, &session.CreationDate,
 		&session.UpdateDate, &session.DeletionDate, &session.IsDeleted)
 	return &session, err
@@ -41,7 +41,7 @@ func CreateUserSession(userID int) (string, error) {
 	sessionID := GenerateSessionID()
 	expiration := time.Now().Add(24 * time.Hour)
 
-	session := &Session{
+	session := &UserSession{
 		SessionID:  sessionID,
 		UserID:     userID,
 		Expiration: expiration,
