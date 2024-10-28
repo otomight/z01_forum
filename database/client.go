@@ -65,14 +65,26 @@ func GetClientByUsernameOrEmail(email string) (*Client, error) {
 
 // Create client for testing
 func InsertSampleClient() {
-	query := `
-		INSERT INTO Clients (last_name, first_name, user_name, email, password, avatar, birth_date)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
-	`
-	_, err := DB.Exec(query, "Doe", "John", "johndoe", "johndoe@example.com", "hashed_password", "avatar.png", "1990-01-01")
+	// Check if the sample client already exists
+	var exists bool
+	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM Clients WHERE email = ?)", "sample@example.com").Scan(&exists)
 	if err != nil {
-		log.Printf("Failed to insert sample client: %v", err)
+		log.Printf("Error checking if sample client exists: %v", err)
+		return
+	}
+
+	// Only insert if it does not exist
+	if !exists {
+		_, err = DB.Exec(`
+            INSERT INTO Clients (last_name, first_name, user_name, email, password)
+            VALUES ('Doe', 'John', 'johndoe', 'sample@example.com', 'securepassword')
+        `)
+		if err != nil {
+			log.Printf("Failed to insert sample client: %v", err)
+		} else {
+			log.Println("Sample client inserted successfully.")
+		}
 	} else {
-		log.Println("Sample client inserted successfully.")
+		log.Println("Sample client already exists, skipping insertion.")
 	}
 }
