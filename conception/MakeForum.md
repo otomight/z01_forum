@@ -93,7 +93,7 @@ To check the conformity of the Forum content we'll need a moderation system with
 
 - Users : Able to create, comment, like or dislike posts:
 
-    - They 'll also be able to dislike or modify/delete their own Posts/Comments.
+    - They 'll also be able to modify/delete their own Posts/Comments.
 
     - They should be able to request to be promoted to moderator to the admin.
 
