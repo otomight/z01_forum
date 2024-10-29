@@ -8,7 +8,7 @@
 
 In order for users to communicate between each other, they'll have to be able to create Posts and Comments which'll only be allowed to registered users.
 
-I think displaying latest Posts first when accessing the home page is the more coherent course of actionas well as accessing the latest comments for each post first.
+I think displaying latest Posts first when accessing the home page is the more coherent course of action as well as accessing the latest comments for each post first.
 
 ##### Posts
 
@@ -79,7 +79,7 @@ Users should also be able to Log in using at least Facebook, Github and Goolge.
 
 #### Moderation
 
-Moderation is essential for a Forum to control the displayed content so that it respects the Term and Condition of Use (TCUs).
+Moderation is essential for a Forum to control the displayed content so that it respects the Terms and Conditions of Use (TCUs).
 
 The content must be appropriate : respectful, relevant; not obscene, illegal or insulting.
 
@@ -114,18 +114,39 @@ To check the conformity of the Forum content we'll need a moderation system with
     - Delete Posts/Comments/users 
     - Manage categories (add/delete them).
 
-#### Security
+### Security
 
-##### HTTPS protocol
+Having a secure web application is not an option. So we need to encrypt the connection, the client's password and even the database.
 
-##### Rate Limiting
+#### HTTPS protocol
 
-##### Password encryption
+- Encrypted connection : SSL certificate
 
-##### Database encryption
+    - Created or using CA's (Certificate Authoritites).
 
-##### Unique client session cookies
+- Cipher suite : TLS (Transport Layer Security)
 
+    - Key exchange (encryp/decrypt messages).
+    - Bulk encryption.
+    - MAC (Message Authentication Code).
+
+#### Rate Limiting
+
+- Control of the rate of requests sent or received, to prevent :
+
+    - DoS attacks (Denial-of-Service) : cyber-attack rendering a machine/network ressource unavailable to its users by disrupting services of a host connected to a network.
+    - Web scraping : data extraction from websites by copying the database.
+
+#### Unique client session cookies
+
+- Session state is stored on the server & should present an unique identifier so the client has no direct access to it.
+
+    - Impossible for attackers to read/tamper with session states.
+
+### Compatibility
+
+- Must work on the main web browers (chrome, safari, Firefox, Edge).
+- If we have enough time, doing a mobile app would be great.
 
 ## Epics/user stories/Back log : global features of the project 
 
