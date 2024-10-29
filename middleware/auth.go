@@ -17,39 +17,6 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// Check user's authentification
-func AuthMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//Extract token from authorization header
-		token := r.Header.Get("Authorization")
-		if token == "" {
-			http.Error(w, "Unauthorized: missing token", http.StatusUnauthorized)
-			return
-		}
-
-		//Validate session in database
-		session, err := database.GetSessionByID(token)
-		if err != nil {
-			log.Printf("Error fetching session: %v", err)
-			http.Error(w, "Unauthorized: invalid session", http.StatusUnauthorized)
-			return
-		}
-
-		//Check session's expiration
-		if session.IsDeleted || session.Expiration.Before(r.Context().Value("time").(time.Time)) {
-			http.Error(w, "Unauthorized: session expired", http.StatusUnauthorized)
-			return
-		}
-
-		//Attach userID to context
-		ctx := context.WithValue(r.Context(), handlers.UserIDKey, session.UserID)
-		r = r.WithContext(ctx)
-
-		//Proceed to next handler
-		next.ServeHTTP(w, r)
-	})
-}
-
 // Check session + set user role
 func SessionMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

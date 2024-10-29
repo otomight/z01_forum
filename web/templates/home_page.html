@@ -1,75 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ .Title }}</title>
-    <link rel="stylesheet" href="/static/style/main.css">
-</head>
-<body>
+{{define "content"}}
+    <h2>Latest Posts</h2>
 
-    <header>
-        <h1>Welcome to The Forum</h1>
-        <nav>
-            <ul>
-                {{if .IsLoggedIn}}
-                    <li>
-                        <a href="/posts/create">Create Post</a>
-                    </li>
-                    <li>
-                        <a href="/logout">Logout</a>
-                    </li>
-                    {{if eq .UserRole "administrator"}}
-                        <li>
-                            <a href="/admin">Admin Dashboard</a>
-                        </li>
-                    {{else if eq .UserRole "moderator"}}
-                        <li>
-                            <a href="/moderator">Moderator Dashboard</a>
-                        </li>
+    <div id="posts">
+        {{if .Posts}}
+
+            {{range .Posts}}
+                <div class="post">
+                    <h3>{{.Title}}</h3>
+                    <p>By : {{.UserName}}</p>
+                    <p>{{.Content}}</p>
+                    <p><em>Posted on: {{.CreationDate}}</em></p>
+
+                    <!-- Additionnal features form user/admin/moderator-->
+                     {{if eq .AuthorID $.UserID}}
+                        <div class="post-controls">
+                            <a href="/post/edit/{{.ID}}">Edit</a>
+                        </div>
+                     {{end}}
+
+                     {{if or (eq $.UserRole "administrator") (eq $.UserRole "moderator")}}
+                        <div class="post-controls">
+                            <a href="/post/delete/{{.ID}}" onclick="return confirm('delete post?')">Delete</a>
+                        </div>
                     {{end}}
-                {{else}}
-                    <li>
-                        <a href="/login">Login</a>
-                    </li>
-                    <li>
-                        <a href="/register">Register</a>
-                    </li>
-                {{end}}
-            </ul>
-        </nav>
-    </header>
 
-    <main>
-        {{block "content" .}} {{end}} <!-- Placeholder for dynamic content -->
-
-        <h2>Posts</h2>
-        <div id="posts">
-            {{if .Posts}}
-                {{range .Posts}} 
-                    <div class="post">
-                        <h3>{{.Title}}</h3>
-                        <p>By User ID: {{.AuthorID}}</p>
-                        <p>{{.Content}}</p>
-                        <p><em>Posted on: {{.CreationDate}}</em></p>
-
-                        <!-- Additional controls for moderators and administrators -->
-                        {{if or (eq $.UserRole "administrator") (eq $.UserRole "moderator")}}
-                            <div class="post-controls">
-                                <a href="/posts/edit/{{.PostID}}">Edit</a>
-                                <a href="/posts/delete/{{.PostID}}" onclick="return confirm('Are you sure?')">Delete</a>
-                            </div>
-                        {{end}}
-                    </div>
-                {{end}}
-            {{else}}
-                <p>No posts available.</p> 
+                    {{if eq $.UserRole "moderator"}}
+                        <div class="post-controls">
+                            <a href="/post/report/{{.ID}}">Report</a>
+                        </div>
+                    {{end}}
+                </div>
             {{end}}
-        </div>
-    </main>
 
-    <footer>
-        <p>&copy; 2024 Forum. All rights reserved.</p>
-    </footer>
-</body>
-</html>
+        {{else}}
+            <P>No Posts available</P>
+        {{end}}
+    </div>
+{{end}}

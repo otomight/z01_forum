@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"text/template"
 	"time"
 )
 
-func CreatePost(w http.ResponseWriter, r *http.Request) {
+func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	//Set response header to JSON
 	w.Header().Set("Content-Type", "application/json")
 
@@ -111,5 +112,60 @@ func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/moderator", http.StatusSeeOther)
 	} else {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+}
+
+func EditPostHandler(w http.ResponseWriter, r *http.Request) {
+	userID, idOk := r.Context().Value(UserIDKey).(int)
+	userRole, _ := r.Context().Value(UserRoleKey).(string)
+
+	//Check authentication
+	if !idOk {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	//Retrieve postID from URL parameters
+	postIDstr := r.URL.Query().Get("postID")
+	postID, err := strconv.Atoi(postIDstr)
+	if err != nil || postID == 0 {
+		http.Error(w, "Invalid postID", http.StatusBadRequest)
+		return
+	}
+
+	//Fetch post to identify its author
+	post, err := database.GetPostByID(postID)
+	if err != nil {
+		http.Error(w, "Post not found", http.StatusNotFound)
+		return
+	}
+
+	//Only Authors can edit their posts
+	if post.AuthorID != userID {
+		http.Error(w, "Unauthorized to edit this post", http.StatusForbidden)
+		return
+	}
+
+	//Render the edit for with the post data
+	tmpl, err := template.ParseFiles("web/templates/edit_post.html")
+	if err != nil {
+		http.Error(w, "Failed to load template", http.StatusInternalServerError)
+		return
+	}
+
+	data := struct {
+		Title      string
+		Post       *database.Post
+		IsLoggedIn bool
+		UserRole   string
+	}{
+		Title:      "Edit Post",
+		Post:       post,
+		IsLoggedIn: true,
+		UserRole:   userRole,
+	}
+
+	if err := tmpl.ExecuteTemplate(w, "base_layout.html", data); err != nil {
+		http.Error(w, "Unable to render template", http.StatusInternalServerError)
 	}
 }

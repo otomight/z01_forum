@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Title }}</title>
+    <link rel="stylesheet" href="/static/style/main.css">
+</head>
+<body>
+
+    <header>
+        <h1>Welcome to The Forum</h1>
+        <nav>
+            <ul>
+                {{if .IsLoggedIn}}
+                    <li>
+                        <a href="/posts/create">Create Post</a>
+                    </li>
+                    <li>
+                        <a href="/logout">Logout</a>
+                    </li>
+                    {{if eq .UserRole "administrator"}}
+                        <li>
+                            <a href="/admin">Admin Home Page</a>
+                        </li>
+                    {{else if eq .UserRole "moderator"}}
+                        <li>
+                            <a href="/moderator">Moderator Home Page</a>
+                        </li>
+                    {{end}}
+                {{else}}
+                    <li>
+                        <a href="/login">Login</a>
+                    </li>
+                    <li>
+                        <a href="/register">Register</a>
+                    </li>
+                {{end}}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {{block "content" .}} {{end}} <!-- Placeholder for dynamic content -->
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Forum. All rights reserved.</p>
+    </footer>
+</body>
+</html>

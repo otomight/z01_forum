@@ -17,7 +17,7 @@ func init() {
 
 //// Registration \\\\
 
-func RegisterHAndler(w http.ResponseWriter, r *http.Request) {
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		userName := r.FormValue("username")
 		email := r.FormValue("email")
@@ -81,15 +81,8 @@ func renderRegistrationPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("web/templates/register.html")
-	if err != nil {
-		http.Error(w, "Unable to load template", http.StatusInternalServerError)
-		return
-	}
-
-	err = tmpl.Execute(w, nil)
-	if err != nil {
-		http.Error(w, "Unable to render template", http.StatusInternalServerError)
+	if err := tmpl.ExecuteTemplate(w, "register.html", nil); err != nil {
+		http.Error(w, "Unable to render template: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -131,17 +124,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			SameSite: http.SameSiteLaxMode,
 		})
 
-		//Redirect to the home page corresponding to the role
-		if user.UserRole == "administrator" {
-			http.Redirect(w, r, "logged_administrator_home_page.html", http.StatusSeeOther)
-			return
-		} else if user.UserRole == "moderator" {
-			http.Redirect(w, r, "logged_moderator_home_page.html", http.StatusSeeOther)
-			return
-		} else {
-			http.Redirect(w, r, "logged_user_home_page.html", http.StatusSeeOther)
-			return
-		}
+		RenderBaseHomePage(w, r)
+		return
 	}
 
 	// Show login.html template
@@ -155,16 +139,8 @@ func renderLogingPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Parse template
-	tmpl, err := template.ParseFiles("web/templates/login.html")
-	if err != nil {
-		http.Error(w, "Unable to load template", http.StatusInternalServerError)
-		return
-	}
-
-	//Execute template
-	err = tmpl.Execute(w, nil)
-	if err != nil {
-		http.Error(w, "Unable to render template", http.StatusInternalServerError)
+	// Use the global tmpl variable to execute the login template
+	if err := tmpl.ExecuteTemplate(w, "login.html", nil); err != nil {
+		http.Error(w, "Unable to render template: "+err.Error(), http.StatusInternalServerError)
 	}
 }
