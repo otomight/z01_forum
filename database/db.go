@@ -35,11 +35,28 @@ func InitDB() error {
 }
 
 const schema = `
+-- clients table schema
+CREATE TABLE IF NOT EXISTS Clients (
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    last_name TEXT,
+    first_name TEXT,
+    user_name TEXT UNIQUE,
+    email TEXT UNIQUE,
+    password TEXT,
+    avatar TEXT,
+    birth_date DATE,
+    user_role TEXT DEFAULT 'user',
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deletion_date TIMESTAMP 
+);
+
 -- sessions table schema
 CREATE TABLE IF NOT EXISTS Sessions (
     session_id TEXT PRIMARY KEY,
     user_id INTEGER,
     user_role TEXT,
+    is_logged_in BOOLEAN DEFAULT FALSE,
     expiration TIMESTAMP,
     creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -60,21 +77,5 @@ CREATE TABLE IF NOT EXISTS Posts (
     deletion_date TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
     FOREIGN KEY(author_id) REFERENCES clients(user_id) ON DELETE CASCADE
-);
-
--- clients table schema
-CREATE TABLE IF NOT EXISTS Clients (
-    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    last_name TEXT,
-    first_name TEXT,
-    user_name TEXT UNIQUE,
-    email TEXT UNIQUE,
-    password TEXT,
-    avatar TEXT,
-    birth_date DATE,
-    user_role TEXT DEFAULT 'user',
-    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deletion_date TIMESTAMP 
 );
 `

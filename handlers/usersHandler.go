@@ -3,6 +3,7 @@ package handlers
 import (
 	"Forum/database"
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -20,7 +21,7 @@ func UserHomePageHandler(w http.ResponseWriter, r *http.Request) {
 
 func ModeratorHomePageHandler(w http.ResponseWriter, r *http.Request) {
 	userRole, roleOk := r.Context().Value(UserRoleKey).(string)
-	userID, idOk := r.Context().Value(UserRoleKey).(int)
+	userID, idOk := r.Context().Value(UserIDKey).(int)
 
 	if !roleOk || !idOk || userRole != "moderator" {
 		http.Error(w, "Acces denied", http.StatusForbidden)
@@ -32,14 +33,14 @@ func ModeratorHomePageHandler(w http.ResponseWriter, r *http.Request) {
 
 func AdministratorHomePageHandler(w http.ResponseWriter, r *http.Request) {
 	userRole, roleOk := r.Context().Value(UserRoleKey).(string)
-	userID, idOk := r.Context().Value(UserRoleKey).(int)
+	userID, idOk := r.Context().Value(UserIDKey).(int)
 
 	if !roleOk || !idOk || userRole != "administrator" {
 		http.Error(w, "Acces denied", http.StatusForbidden)
 		return
 	}
 
-	renderTemplate(w, "home_page.html", userRole, userID)
+	renderTemplate(w, "base_layout.html", userRole, userID)
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, userRole string, userID int) {
@@ -65,13 +66,22 @@ func renderTemplate(w http.ResponseWriter, tmpl string, userRole string, userID 
 		UserID:     userID,
 	}
 
-	// Parse the base layout and the specific template together
+	// Define paths to base and specific templates
 	tmplPath := "web/templates/" + tmpl
 	baseTmplPath := "web/templates/base_layout.html"
-	templates := template.Must(template.ParseFiles(baseTmplPath, tmplPath))
 
-	// Render the base layout with the dynamic data
-	if err := templates.ExecuteTemplate(w, "base_layout", data); err != nil {
+	// Parse templates with base layout
+	templates, err := template.ParseFiles(baseTmplPath, tmplPath)
+	if err != nil {
 		http.Error(w, "Unable to load template", http.StatusInternalServerError)
+		log.Printf("Template parsing error: %v", err)
+		return
+	}
+
+	// Render template
+	err = templates.ExecuteTemplate(w, "base_layout", data)
+	if err != nil {
+		http.Error(w, "Failed to render template", http.StatusInternalServerError)
+		log.Printf("Template execution error on 'base_layout': %v", err)
 	}
 }

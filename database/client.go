@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
@@ -29,18 +30,19 @@ func GetClientByID(userID int) (*Client, error) {
 
 // Save new user to database
 func SaveUser(userName, email, password, firstName, lastName, userRole string) (int, error) {
-	result, err := DB.Exec(`
+	query := `
 	INSERT INTO Clients (user_name, email, password, first_name, last_name, user_role)
 	VALUES (?, ?, ?, ?, ?, ?)
-	`, userName, email, password, firstName, lastName, userRole)
+	`
 
+	result, err := DB.Exec(query, userName, email, password, firstName, lastName, userRole)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed to insert user: %w", err)
 	}
 
 	userID, err := result.LastInsertId()
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed to retrieve last insert ID: %w", err)
 	}
 
 	return int(userID), nil
@@ -110,14 +112,14 @@ func ValidateUserCredentials(username, password string) (Client, error) {
 	//Scan results into user struct
 	err := row.Scan(&user.UserID, &user.FirstName, &user.LastName, &user.UserName, &user.Email, &user.Password, &user.UserRole)
 	if err == sql.ErrNoRows {
-		return user, nil
+		return user, fmt.Errorf("user not found")
 	} else if err != nil {
 		return user, err
 	}
 
 	//Compare hashed/provided password
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return user, nil
+		return user, fmt.Errorf("invalid password")
 	}
 	return user, nil
 }
@@ -134,10 +136,19 @@ func InsertSampleClient() {
 
 	// Only insert if it does not exist
 	if !exists {
+		// Hash the password
+		password := "securepassword"
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			log.Printf("Error hashing password: %v", err)
+			return
+		}
+
+		// Insert the client with the hashed password
 		_, err = DB.Exec(`
             INSERT INTO Clients (last_name, first_name, user_name, email, password, user_role)
-            VALUES ('Doe', 'John', 'johndoe', 'sample@example.com', 'securepassword', 'administrator')
-        `)
+            VALUES ('Doe', 'John', 'johndoe', 'sample@example.com', ?, 'administrator')
+        `, hashedPassword)
 		if err != nil {
 			log.Printf("Failed to insert sample client: %v", err)
 		} else {
