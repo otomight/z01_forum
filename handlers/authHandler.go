@@ -10,12 +10,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var tmpl *template.Template
-
-func init() {
-	tmpl = template.Must(template.ParseGlob("./web/templates/*.html"))
-}
-
 //// Registration \\\\
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +46,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//Log user automatically after registration
-		sessionID, err := database.CreateUserSession(userID, "user")
+		sessionID, err := database.CreateUserSession(userID, userRole)
 		if err != nil {
 			log.Printf("Error creating session: %v", err)
 			http.Error(w, "Failed to create sesion", http.StatusInternalServerError)
@@ -70,16 +64,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			SameSite: http.SameSiteLaxMode,
 		})
 
-		// Redirect to base_layout.html if user is not an admin or moderator
-		if userRole != "administrator" && userRole != "moderator" {
-			http.Redirect(w, r, "/base_layout", http.StatusSeeOther)
-		} else {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-		}
+		// Redirect to /home after registration
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 		return
 	}
-
-	// Render the register.html template
 	renderRegistrationPage(w, r)
 }
 
@@ -89,10 +77,12 @@ func renderRegistrationPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := tmpl.ExecuteTemplate(w, "register.html", nil); err != nil {
-		http.Error(w, "Unable to render template: "+err.Error(), http.StatusInternalServerError)
+	tmpl, err := template.ParseFiles("web/templates/register.html")
+	if err != nil {
+		http.Error(w, "Unable to render template:"+err.Error(), http.StatusInternalServerError)
 		return
 	}
+	tmpl.Execute(w, nil)
 }
 
 //// Login \\\\
@@ -132,22 +122,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			SameSite: http.SameSiteLaxMode,
 		})
 
-		// Redirect based on user role
-		switch user.UserRole {
-		case "administrator":
-			// Redirect to admin homepage
-			http.Redirect(w, r, "/admin", http.StatusSeeOther)
-		case "moderator":
-			// Redirect to moderator homepage
-			http.Redirect(w, r, "/moderator", http.StatusSeeOther)
-		default:
-			// Redirect to base layout for regular users
-			http.Redirect(w, r, "/base_layout", http.StatusSeeOther)
-		}
+		// Redirect to /home
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 		return
 	}
 
-	// Show login.html template
+	// redirect to login page
 	renderLogingPage(w, r)
 }
 
@@ -158,8 +138,44 @@ func renderLogingPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use the global tmpl variable to execute the login template
-	if err := tmpl.ExecuteTemplate(w, "login.html", nil); err != nil {
-		http.Error(w, "Unable to render template: "+err.Error(), http.StatusInternalServerError)
+	// Render Login template
+	tmpl, err := template.ParseFiles("web/templates/login.html")
+	if err != nil {
+		http.Error(w, "Unable to render template:"+err.Error(), http.StatusInternalServerError)
+		return
 	}
+	tmpl.Execute(w, nil)
+}
+
+func LogOutHandler(w http.ResponseWriter, r *http.Request) {
+	// Retrieve session ID from cookie
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			http.Error(w, "No session found", http.StatusUnauthorized)
+			return
+		}
+		http.Error(w, "Error retrieving session", http.StatusInternalServerError)
+		return
+	}
+
+	err = database.DeleteSession(cookie.Value)
+	if err != nil {
+		http.Error(w, "Failed to log out", http.StatusInternalServerError)
+		return
+	}
+
+	// Optionally, clear the session cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_id",
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Now().Add(-1 * time.Hour), // Set an expiration in the past
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+	})
+
+	// Redirect to unlogged home page after logout
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

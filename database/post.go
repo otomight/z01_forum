@@ -8,8 +8,8 @@ import (
 // Post CRUD operations
 func CreatePost(post *Post) error {
 	_, err := DB.Exec(`
-		INSERT INTO Posts (author_id, title, category, content)
-		VALUES (?, ?, ?, ?)
+		INSERT INTO Posts (author_id, title, category, content, creation_date, update_date, is_deleted)
+		VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
 	`, post.AuthorID, post.Title, post.Category, post.Content)
 	return err
 }
@@ -22,15 +22,20 @@ func GetPostByID(postID int) (*Post, error) {
 	var post Post
 	err := row.Scan(&post.PostID, &post.AuthorID, &post.Title, &post.Category, &post.Content,
 		&post.CreationDate, &post.UpdateDate, &post.DeletionDate, &post.IsDeleted)
+	if err != nil {
+		log.Printf("Error retrieving post by ID %d: %v", postID, err)
+		return nil, err
+	}
 	return &post, err
 }
 
 // Retrieve all the posts from database
 func GetAllPosts() ([]Post, error) {
 	query := `
-		SELECT post_id, author_id, title, category, content, creation_date, update_date, deletion_date, is_deleted
+		SELECT Posts.post_id, Posts.author_id, Clients.user_name, Posts.title, Posts.category, Posts.content, Posts.creation_date, Posts.update_date, Posts.deletion_date, Posts.is_deleted
 		FROM Posts 
-		WHERE is_deleted = 0 -- Only select non deleted posts
+		JOIN Clients ON Posts.author_id = Clients.user_id
+		WHERE Posts.is_deleted = 0 -- Only select non deleted posts
 	`
 
 	rows, err := DB.Query(query)
@@ -44,7 +49,7 @@ func GetAllPosts() ([]Post, error) {
 	// Iterate through rows and append to posts slice
 	for rows.Next() {
 		var post Post
-		if err := rows.Scan(&post.PostID, &post.AuthorID, &post.Title, &post.Category, &post.Content, &post.CreationDate, &post.UpdateDate, &post.DeletionDate, &post.IsDeleted); err != nil {
+		if err := rows.Scan(&post.PostID, &post.AuthorID, &post.UserName, &post.Title, &post.Category, &post.Content, &post.CreationDate, &post.UpdateDate, &post.DeletionDate, &post.IsDeleted); err != nil {
 			log.Printf("Error scanning post: %v", err)
 			return nil, err
 		}
@@ -64,8 +69,8 @@ func GetAllPosts() ([]Post, error) {
 func DeletePost(postID int) error {
 	query := `
 		UPDATE posts
-		SET is_deleted true, deletion_date = CURRENT_TIMESTAMP
-		WHERE post_id
+		SET is_deleted = 1, deletion_date = CURRENT_TIMESTAMP
+		WHERE post_id = ?
 	`
 	result, err := DB.Exec(query, postID)
 	if err != nil {

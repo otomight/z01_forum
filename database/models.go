@@ -34,6 +34,7 @@ type UserSession struct {
 type Post struct {
 	PostID       int        `json:"post_id"`
 	AuthorID     int        `json:"author_id"`
+	UserName     string     `json:"user_name"`
 	Title        string     `json:"title"`
 	Category     string     `json:"category"`
 	Content      string     `json:"content"`

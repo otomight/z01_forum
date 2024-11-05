@@ -2,25 +2,34 @@ package handlers
 
 import (
 	"Forum/database"
-	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 )
 
-// Unauthenticated users home page
-func RenderHomePage(w http.ResponseWriter, r *http.Request) {
+var tmpl *template.Template
+
+// Initialize template package + parse all HTML templates
+func init() {
+	tmpl = template.Must(template.ParseGlob("./web/templates/*.html"))
+}
+
+func HomePageHandler(w http.ResponseWriter, r *http.Request) {
+	//Retrieve user infos from context
+	userID, idOk := r.Context().Value(UserIDKey).(int)
+	userRole, roleOk := r.Context().Value(UserRoleKey).(string)
+	userName, nameOk := r.Context().Value(UserNameKey).(string)
+
+	isLoggedIn := idOk && roleOk && nameOk && userID != 0
+
 	posts, err := database.GetAllPosts()
 	if err != nil {
+		log.Printf("Failed to retrieve post: %v", err)
 		http.Error(w, "Failed to retrieve posts", http.StatusInternalServerError)
 		return
 	}
 
-	//get userID and role from context
-	userID, _ := r.Context().Value(UserIDKey).(int)
-	userRole, _ := r.Context().Value(UserRoleKey).(string)
-	userName, _ := r.Context().Value(UserNameKey).(string)
-
-	//Create data struct to hold posts
+	//Prepare data for template rendering
 	data := struct {
 		Title      string
 		Posts      []database.Post
@@ -29,41 +38,18 @@ func RenderHomePage(w http.ResponseWriter, r *http.Request) {
 		UserName   string
 		UserRole   string
 	}{
-		Title:      fmt.Sprintf("Welcome, %s", userName),
+		Title:      "Welcome to the Forum",
 		Posts:      posts,
-		IsLoggedIn: userID != 0,
+		IsLoggedIn: isLoggedIn,
 		UserID:     userID,
 		UserName:   userName,
 		UserRole:   userRole,
 	}
 
-	// Load all templates in the specified directory
-	tmpl, err := template.ParseGlob("web/templates/*.html")
-	if err != nil {
-		http.Error(w, "Failed to load templates: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Execute the base layout template with dynamic data
-	if err := tmpl.ExecuteTemplate(w, "base_layout.html", data); err != nil {
+	// Execute the home_page template with dynamic data
+	if err := tmpl.ExecuteTemplate(w, "home_page.html", data); err != nil {
+		log.Printf("Template execution error in 'home_page': %v", err)
 		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)
 		return
-	}
-}
-
-// Registered Users Home Page depending on their roles
-func RenderBaseHomePage(w http.ResponseWriter, r *http.Request) {
-	userRole, _ := r.Context().Value(UserRoleKey).(string)
-
-	//Choose template depending on role
-	switch userRole {
-	case "administrator":
-		http.Redirect(w, r, "/admin", http.StatusSeeOther)
-	case "moderator":
-		http.Redirect(w, r, "/moderator", http.StatusSeeOther)
-	case "user":
-		http.Redirect(w, r, "/user", http.StatusSeeOther)
-	default:
-		RenderHomePage(w, r)
 	}
 }

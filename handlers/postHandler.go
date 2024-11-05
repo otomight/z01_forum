@@ -165,7 +165,7 @@ func EditPostHandler(w http.ResponseWriter, r *http.Request) {
 		UserRole:   userRole,
 	}
 
-	if err := tmpl.ExecuteTemplate(w, "base_layout.html", data); err != nil {
+	if err := tmpl.ExecuteTemplate(w, "home_page.html", data); err != nil {
 		http.Error(w, "Unable to render template", http.StatusInternalServerError)
 	}
 }

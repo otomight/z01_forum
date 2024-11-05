@@ -67,3 +67,16 @@ func GenerateSessionID() string {
 	id, _ := uuid.NewV4()
 	return id.String()
 }
+
+func DeleteSession(sessionID string) error {
+	_, err := DB.Exec(`
+		DELETE FROM Sessions
+		WHERE session_id = ?
+	`, sessionID)
+
+	if err != nil {
+		log.Printf("Error deleting session: %v", err)
+		return fmt.Errorf("failed to delete session: %w", err)
+	}
+	return nil
+}
