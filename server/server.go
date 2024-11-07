@@ -15,8 +15,11 @@ func InitializeServer() http.Handler {
 	mux.HandleFunc("/register", handlers.RegisterHandler)
 	mux.HandleFunc("/logout", handlers.LogOutHandler)
 
+	// Rendering psot creation form
+	mux.Handle("/posts/create", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CreatePostFormHandler)))
+
 	//Protect route with session middelware
-	mux.Handle("posts/create", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CreatePostHandler)))
+	mux.Handle("/api/posts/create", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CreatePostHandler)))
 	mux.Handle("/posts/delete", middleware.SessionMiddleWare(http.HandlerFunc(handlers.DeletePostHandler)))
 	mux.Handle("/posts/edit", middleware.SessionMiddleWare(http.HandlerFunc(handlers.EditPostHandler)))
 

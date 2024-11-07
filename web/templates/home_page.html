@@ -15,11 +15,11 @@
                 {{if .IsLoggedIn}}
                         <p>Welcome, {{.UserName}}</p>
 
-                    {{if eq $.UserRole "administrator"}}
+                    {{if eq .UserRole "administrator"}}
                         <li><a href="/admin">Admin Home Page</a></li>
                     {{end}}
 
-                    {{if eq $.UserRole "moderator"}}
+                    {{if eq .UserRole "moderator"}}
                         <li><a href="/moderator">Moderator Home Page</a></li>
                     {{end}}
 

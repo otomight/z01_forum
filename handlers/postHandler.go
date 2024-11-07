@@ -56,6 +56,20 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(post)
 }
 
+func CreatePostFormHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	tmpl, err := template.ParseFiles("web/templates/create_post.html")
+	if err != nil {
+		http.Error(w, "Unable to render template:"+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	tmpl.Execute(w, nil)
+}
+
 func GetPost(w http.ResponseWriter, r *http.Request) {
 	posts, err := database.GetAllPosts()
 	if err != nil {

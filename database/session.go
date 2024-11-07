@@ -1,6 +1,8 @@
 package database
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -37,10 +39,21 @@ func GetSessionByID(sessionID string) (*UserSession, error) {
 	var session UserSession
 	err := row.Scan(&session.SessionID, &session.UserID, &session.Expiration, &session.CreationDate,
 		&session.UpdateDate, &session.DeletionDate, &session.IsDeleted, &session.UserRole)
-	if err != nil {
-		return nil, err
+
+	// Handle specific error if no rows are returned
+	if err == sql.ErrNoRows {
+		return nil, errors.New("session not found: no matching session in database")
 	}
-	return &session, err
+	if err != nil {
+		return nil, err // Return any other unexpected errors
+	}
+
+	// Additional checks to see if the session is expired or marked as deleted
+	if session.IsDeleted || session.Expiration.Before(time.Now()) {
+		return nil, errors.New("session invalid: expired or marked as deleted")
+	}
+
+	return &session, nil
 }
 
 // Create user session and return session ID

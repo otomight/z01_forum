@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"Forum/database"
+	"context"
 	"html/template"
 	"log"
 	"net/http"
@@ -92,6 +93,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
+		log.Printf("Attempting to log in user: %s", username)
+
 		//Validate User credentials
 		user, err := database.ValidateUserCredentials(username, password)
 		if err != nil {
@@ -103,6 +106,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
+
+		log.Printf("User successfully logged in with role: %s", user.UserRole)
 
 		//Create new session for logged user
 		sessionID, err := database.CreateUserSession(user.UserID, user.UserRole)
@@ -121,6 +126,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Secure:   true,
 			SameSite: http.SameSiteLaxMode,
 		})
+
+		// Store user info in context (including UserName)
+		ctx := context.WithValue(r.Context(), UserIDKey, user.UserID)
+		ctx = context.WithValue(ctx, UserRoleKey, user.UserRole)
+		ctx = context.WithValue(ctx, UserNameKey, user.UserName) // Store the username here
+
+		// Create a new request with the updated context
+		r = r.WithContext(ctx)
 
 		// Redirect to /home
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
