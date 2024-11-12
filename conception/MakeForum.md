@@ -4,6 +4,8 @@
 
 ### Project main goals
 
+In this project we have to create a Forum web-application.
+
 #### Communication between users 
 
 In order for users to communicate between each other, they'll have to be able to create Posts and Comments which'll only be allowed to registered users.
