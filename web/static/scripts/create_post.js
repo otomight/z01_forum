@@ -3,6 +3,7 @@ document.getElementById("createPostForm").addEventListener("submit", function(ev
     
     const title = document.getElementById("title").value.trim();
     const content = document.getElementById("content").value.trim();
+    const category = document.getElementById("category").value.trim();
     const tags = document.getElementById("tags").value.trim();
     const errorMessage = document.getElementById("error-message");
     const successMessage = document.getElementById("success-message");
@@ -17,16 +18,17 @@ document.getElementById("createPostForm").addEventListener("submit", function(ev
         return;
     }
 
-    // Optionally format tags
-    const formattedTags = tags.split(",").map(tag => tag.trim()).filter(tag => tag).join(", ");
+    //Create URLSearchParams to encode form data 
+    const formData = new URLSearchParams();
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("category", category);
+    formData.append("tags", tags);
     
-    // Simulating a server submission with Fetch API (this would actually be to your backend in a real app)
-    fetch("/posts/create", {
+    // submit Formdata to server 
+    fetch("/api/posts/create", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ title, content, tags: formattedTags })
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
@@ -43,9 +45,4 @@ document.getElementById("createPostForm").addEventListener("submit", function(ev
     });
 });
 
-// Optional: Format tags as the user types
-document.getElementById("tags").addEventListener("input", function(event) {
-    const input = event.target;
-    const formattedTags = input.value.split(",").map(tag => tag.trim()).filter(tag => tag).join(", ");
-    input.value = formattedTags;
-});
+

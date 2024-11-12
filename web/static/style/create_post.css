@@ -1,0 +1,146 @@
+:root {
+    --primary-color: #3498db;
+    --error-color: #e74c3c;
+    --success-color: #2ecc71;
+    --border-radius: 4px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f6fa;
+}
+
+header {
+    background-color: white;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+nav a:hover {
+    color: #2980b9;
+}
+
+main {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+textarea {
+    min-height: 200px;
+    resize: vertical;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+.error-message {
+    color: var(--error-color);
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border-radius: var(--border-radius);
+    background-color: rgba(231, 76, 60, 0.1);
+    display: none;
+}
+
+.success-message {
+    color: var(--success-color);
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border-radius: var(--border-radius);
+    background-color: rgba(46, 204, 113, 0.1);
+    display: none;
+}
+
+footer {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    background-color: white;
+    margin-top: 3rem;
+}
+
+/* Loading indicator */
+.loading {
+    display: none;
+    margin-left: 1rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    header {
+        padding: 0.5rem;
+    }
+
+    main {
+        margin: 1rem auto;
+    }
+
+    input, textarea, button {
+        padding: 0.5rem;
+    }
+}

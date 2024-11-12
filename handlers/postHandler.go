@@ -26,34 +26,42 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Decode request body intot a Post struct
-	var post database.Post
-	if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
-		http.Error(w, "Invalid request playload", http.StatusBadRequest)
-		return
-	}
+	//Extract form values
+	title := r.FormValue("title")
+	content := r.FormValue("content")
+	category := r.FormValue("category")
+	tags := r.FormValue("tags")
 
 	//Post validation options
-	if post.Title == "" || post.Content == "" {
+	if title == "" || content == "" {
 		http.Error(w, "Title and Content are require", http.StatusBadRequest)
 		return
 	}
 
-	//set creationDate + default values
-	post.AuthorID = userID
-	post.CreationDate = time.Now()
-	post.UpdateDate = post.CreationDate
-	post.IsDeleted = false
+	//Create new post object
+	post := &database.Post{
+		AuthorID:     userID,
+		Title:        title,
+		Content:      content,
+		Category:     category,
+		Tags:         tags,
+		CreationDate: time.Now(),
+		UpdateDate:   time.Now(),
+		IsDeleted:    false,
+	}
 
 	//call function to save the post in database
-	if err := database.CreatePost(&post); err != nil {
+	if err := database.CreatePost(post); err != nil {
 		http.Error(w, "Failed to create post", http.StatusInternalServerError)
 		return
 	}
 
 	//Respond with created post
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(post)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"psot":    post,
+	})
 }
 
 func CreatePostFormHandler(w http.ResponseWriter, r *http.Request) {

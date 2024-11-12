@@ -37,6 +37,7 @@ type Post struct {
 	UserName     string     `json:"user_name"`
 	Title        string     `json:"title"`
 	Category     string     `json:"category"`
+	Tags         string     `json:"tags"`
 	Content      string     `json:"content"`
 	CreationDate time.Time  `json:"creation_date"`
 	UpdateDate   time.Time  `json:"update_date"`
