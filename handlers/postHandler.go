@@ -11,23 +11,37 @@ import (
 	"text/template"
 )
 
+type DisplayPostData struct {
+	Post	*database.Post
+}
+
+// need better organization
 func DisplayPostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		return
 	}
-	postId := strings.TrimPrefix(r.URL.Path, "/posts/view/")
-	if postId == "" || strings.Contains(postId, "/") {
+	postIdStr := strings.TrimPrefix(r.URL.Path, "/posts/view/")
+	if postIdStr == "" || strings.Contains(postIdStr, "/") {
 		http.NotFound(w, r)
 		return
 	}
-	// get data from db
+	postId, err := strconv.Atoi(postIdStr)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	post, err := database.GetPostByID(postId)
+	if err != nil {
+		http.NotFound(w, r)
+	}
+	data := DisplayPostData{Post: post}
 	tmpl, err := template.ParseFiles("web/templates/post_page.html")
 	if err != nil {
 		http.Error(w, "Unable to render template:" + err.Error(),
 									http.StatusInternalServerError)
 		return
 	}
-	tmpl.Execute(w, nil)
+	tmpl.Execute(w, data)
 }
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
