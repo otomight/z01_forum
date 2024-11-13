@@ -2,80 +2,63 @@ package handlers
 
 import (
 	"Forum/database"
+	"Forum/post"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"text/template"
-	"time"
 )
 
-func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	//Set response header to JSON
-	w.Header().Set("Content-Type", "application/json")
-
-	//Check request method in POST
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+func DisplayPostHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
 		return
 	}
-
-	//Retreieve UserID from context
-	userID, ok := r.Context().Value(UserIDKey).(int)
-	if !ok {
-		http.Error(w, "User ID not found in context", http.StatusInternalServerError)
+	postId := strings.TrimPrefix(r.URL.Path, "/posts/view/")
+	if postId == "" || strings.Contains(postId, "/") {
+		http.NotFound(w, r)
 		return
 	}
-
-	//Extract form values
-	title := r.FormValue("title")
-	content := r.FormValue("content")
-	category := r.FormValue("category")
-	tags := r.FormValue("tags")
-
-	//Post validation options
-	if title == "" || content == "" {
-		http.Error(w, "Title and Content are require", http.StatusBadRequest)
-		return
-	}
-
-	//Create new post object
-	post := &database.Post{
-		AuthorID:     userID,
-		Title:        title,
-		Content:      content,
-		Category:     category,
-		Tags:         tags,
-		CreationDate: time.Now(),
-		UpdateDate:   time.Now(),
-		IsDeleted:    false,
-	}
-
-	//call function to save the post in database
-	if err := database.CreatePost(post); err != nil {
-		http.Error(w, "Failed to create post", http.StatusInternalServerError)
-		return
-	}
-
-	//Respond with created post
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"success": true,
-		"psot":    post,
-	})
-}
-
-func CreatePostFormHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	tmpl, err := template.ParseFiles("web/templates/create_post.html")
+	// get data from db
+	tmpl, err := template.ParseFiles("web/templates/post_page.html")
 	if err != nil {
-		http.Error(w, "Unable to render template:"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Unable to render template:" + err.Error(),
+									http.StatusInternalServerError)
 		return
 	}
 	tmpl.Execute(w, nil)
+}
+
+func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		tmpl, err := template.ParseFiles("web/templates/create_post.html")
+		if err != nil {
+			http.Error(w, "Unable to render template:" + err.Error(), http.StatusInternalServerError)
+			return
+		}
+		tmpl.Execute(w, nil)
+	} else if r.Method == "POST" {
+		userId, ok := r.Context().Value(UserIDKey).(int)
+		if !ok {
+			http.Error(w, "User ID not found in context", http.StatusInternalServerError)
+			return
+		}
+		title := r.FormValue("title")
+		content := r.FormValue("content")
+		category := r.FormValue("category")
+		tags := r.FormValue("tags")
+		if title == "" || content == "" {
+			http.Error(w, "Title and Content are require", http.StatusBadRequest)
+			return
+		}
+		id, err := post.CreatePost(userId, title, content, category, tags)
+		if err != nil {
+			http.Error(w, "Failed to create post", http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, r, fmt.Sprintf("/posts/view/%d", id), http.StatusSeeOther)
+	}
 }
 
 func GetPost(w http.ResponseWriter, r *http.Request) {

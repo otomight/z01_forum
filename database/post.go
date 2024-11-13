@@ -6,12 +6,19 @@ import (
 )
 
 // Post CRUD operations
-func CreatePost(post *Post) error {
-	_, err := DB.Exec(`
+func NewPost(post *Post) (int64, error) {
+	result, err := DB.Exec(`
 		INSERT INTO Posts (author_id, title, category, content, creation_date, update_date, is_deleted)
 		VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
 	`, post.AuthorID, post.Title, post.Category, post.Content)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	postId, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return postId, err
 }
 
 func GetPostByID(postID int) (*Post, error) {
@@ -33,7 +40,7 @@ func GetPostByID(postID int) (*Post, error) {
 func GetAllPosts() ([]Post, error) {
 	query := `
 		SELECT Posts.post_id, Posts.author_id, Clients.user_name, Posts.title, Posts.category, Posts.content, Posts.creation_date, Posts.update_date, Posts.deletion_date, Posts.is_deleted
-		FROM Posts 
+		FROM Posts
 		JOIN Clients ON Posts.author_id = Clients.user_id
 		WHERE Posts.is_deleted = 0 -- Only select non deleted posts
 	`
