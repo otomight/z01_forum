@@ -21,7 +21,7 @@ func DisplayPostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		return
 	}
-	postIdStr := strings.TrimPrefix(r.URL.Path, "/posts/view/")
+	postIdStr := strings.TrimPrefix(r.URL.Path, "/post/view/")
 	if postIdStr == "" || strings.Contains(postIdStr, "/") {
 		http.NotFound(w, r)
 		return
@@ -61,7 +61,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to create post", http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, fmt.Sprintf("/posts/view/%d", id), http.StatusSeeOther)
+		http.Redirect(w, r, fmt.Sprintf("/post/view/%d", id), http.StatusSeeOther)
 	}
 }
 

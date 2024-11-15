@@ -1,22 +1,13 @@
 package routes
 
 import (
-	"fmt"
 	"forum/internal/server/handlers"
 	"forum/internal/server/middleware"
-	"forum/internal/server/templates"
 	"net/http"
 )
 
 func SetupRoutes() http.Handler {
-	var err	error
-
 	mux := http.NewServeMux()
-	err = templates.LoadTemplates()
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
 	//Routes
 	mux.Handle("/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.HomePageHandler)))
 	mux.HandleFunc("/login", handlers.LoginHandler)
