@@ -5,63 +5,93 @@ import (
 	"fmt"
 	"forum/internal/config"
 	"forum/internal/database"
+	"forum/internal/server/models"
 	"forum/internal/server/services"
 	"forum/internal/server/templates"
+	"forum/internal/utils"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
-type DisplayPostData struct {
-	Post	*database.Post
-}
+func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
+	var postIdStr	string
+	var postId		int
+	var post		*database.Post
+	var data		models.ViewPostData
+	var err			error
 
-// need better organization
-func DisplayPostHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
+	if r.Method != http.MethodGet {
+		http.Error(w, "", http.StatusMethodNotAllowed)
 		return
 	}
-	postIdStr := strings.TrimPrefix(r.URL.Path, "/post/view/")
+	postIdStr = strings.TrimPrefix(r.URL.Path, "/post/view/")
 	if postIdStr == "" || strings.Contains(postIdStr, "/") {
 		http.NotFound(w, r)
 		return
 	}
-	postId, err := strconv.Atoi(postIdStr)
+	postId, err = strconv.Atoi(postIdStr)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
-	post, err := database.GetPostByID(postId)
+	post, err = database.GetPostByID(postId)
 	if err != nil {
 		http.NotFound(w, r)
+		return
 	}
-	data := DisplayPostData{Post: post}
+	data = models.ViewPostData{Post: post}
 	templates.RenderTemplate(w, config.ViewPostTmpl, data)
 }
 
+func createPostFromForm(w http.ResponseWriter,
+						r *http.Request, userId int) (int64, error) {
+	var err		error
+	var form	models.CreationPostForm
+	var postId	int64
+
+	if err = utils.ParseForm(r, &form); err != nil {
+		http.Error(w, "Unable to parse form:" + err.Error(),
+						http.StatusBadRequest)
+		return 0, err
+	}
+	if form.Title == "" || form.Content == "" {
+		http.Error(w, "Title and Content are required",
+						http.StatusBadRequest)
+		return 0, err
+	}
+	if postId, err = services.CreatePost(userId, form); err != nil {
+		http.Error(w, "Failed to create post",
+						http.StatusInternalServerError)
+		return 0, err
+	}
+	return postId, nil
+}
+
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
+	var userId			int
+	var ok				bool
+	var err				error
+	var postId			int64
+	var redirectLink	string
+
+	if r.Method == http.MethodGet {
+		// render the post creation page
 		templates.RenderTemplate(w, config.CreatePostTmpl, nil)
-	} else if r.Method == "POST" {
-		userId, ok := r.Context().Value(config.UserIDKey).(int)
+	} else if r.Method == http.MethodPost {
+		// handle the form send on post creation
+		userId, ok = r.Context().Value(config.UserIDKey).(int)
 		if !ok {
-			http.Error(w, "User ID not found in context", http.StatusInternalServerError)
+			http.Error(w, "User ID not found in context",
+							http.StatusInternalServerError)
 			return
 		}
-		title := r.FormValue("title")
-		content := r.FormValue("content")
-		category := r.FormValue("category")
-		tags := r.FormValue("tags")
-		if title == "" || content == "" {
-			http.Error(w, "Title and Content are require", http.StatusBadRequest)
-			return
-		}
-		id, err := services.CreatePost(userId, title, content, category, tags)
+		postId, err = createPostFromForm(w, r, userId)
 		if err != nil {
-			http.Error(w, "Failed to create post", http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, fmt.Sprintf("/post/view/%d", id), http.StatusSeeOther)
+		redirectLink = fmt.Sprintf("/post/view/%d", postId)
+		http.Redirect(w, r, redirectLink, http.StatusSeeOther)
 	}
 }
 

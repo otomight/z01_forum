@@ -16,7 +16,7 @@ func SetupRoutes() http.Handler {
 
 	// Rendering post creation form
 	mux.Handle("/post/create", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CreatePostHandler)))
-	mux.Handle("/post/view/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.DisplayPostHandler)))
+	mux.Handle("/post/view/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.ViewPostHandler)))
 
 	//Protect route with session middelware
 	mux.Handle("/post/delete", middleware.SessionMiddleWare(http.HandlerFunc(handlers.DeletePostHandler)))

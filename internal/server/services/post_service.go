@@ -2,17 +2,17 @@ package services
 
 import (
 	db "forum/internal/database"
+	"forum/internal/server/models"
 	"time"
 )
 
-func CreatePost(userId int, title string, content string,
-							category string, tags string) (int64, error) {
+func CreatePost(userId int, form models.CreationPostForm) (int64, error) {
 	post := &db.Post{
 		AuthorID:     userId,
-		Title:        title,
-		Content:      content,
-		Category:     category,
-		Tags:         tags,
+		Title:        form.Title,
+		Content:      form.Content,
+		Category:     form.Category,
+		Tags:         form.Tags,
 		CreationDate: time.Now(),
 		UpdateDate:   time.Now(),
 		IsDeleted:    false,
