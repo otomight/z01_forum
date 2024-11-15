@@ -1,14 +1,15 @@
 package handlers
 
 import (
-	"Forum/database"
-	"Forum/post"
 	"encoding/json"
 	"fmt"
+	"forum/internal/config"
+	"forum/internal/database"
+	"forum/internal/server/services"
+	"forum/internal/server/templates"
 	"net/http"
 	"strconv"
 	"strings"
-	"text/template"
 )
 
 type DisplayPostData struct {
@@ -35,25 +36,14 @@ func DisplayPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 	}
 	data := DisplayPostData{Post: post}
-	tmpl, err := template.ParseFiles("web/templates/post_page.html")
-	if err != nil {
-		http.Error(w, "Unable to render template:" + err.Error(),
-									http.StatusInternalServerError)
-		return
-	}
-	tmpl.Execute(w, data)
+	templates.RenderTemplate(w, config.ViewPostTmpl, data)
 }
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		tmpl, err := template.ParseFiles("web/templates/create_post.html")
-		if err != nil {
-			http.Error(w, "Unable to render template:" + err.Error(), http.StatusInternalServerError)
-			return
-		}
-		tmpl.Execute(w, nil)
+		templates.RenderTemplate(w, config.CreatePostTmpl, nil)
 	} else if r.Method == "POST" {
-		userId, ok := r.Context().Value(UserIDKey).(int)
+		userId, ok := r.Context().Value(config.UserIDKey).(int)
 		if !ok {
 			http.Error(w, "User ID not found in context", http.StatusInternalServerError)
 			return
@@ -66,7 +56,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Title and Content are require", http.StatusBadRequest)
 			return
 		}
-		id, err := post.CreatePost(userId, title, content, category, tags)
+		id, err := services.CreatePost(userId, title, content, category, tags)
 		if err != nil {
 			http.Error(w, "Failed to create post", http.StatusInternalServerError)
 			return
@@ -87,8 +77,8 @@ func GetPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
-	userRole, roleOk := r.Context().Value(UserRoleKey).(string)
-	userID, idOk := r.Context().Value(UserIDKey).(int)
+	userRole, roleOk := r.Context().Value(config.UserRoleKey).(string)
+	userID, idOk := r.Context().Value(config.UserIDKey).(int)
 
 	//Check authentication
 	if !roleOk || !idOk {
@@ -134,9 +124,10 @@ func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// NOT FINISHED
 func EditPostHandler(w http.ResponseWriter, r *http.Request) {
-	userID, idOk := r.Context().Value(UserIDKey).(int)
-	userRole, _ := r.Context().Value(UserRoleKey).(string)
+	userID, idOk := r.Context().Value(config.UserIDKey).(int)
+	userRole, _ := r.Context().Value(config.UserRoleKey).(string)
 
 	//Check authentication
 	if !idOk {
@@ -164,14 +155,6 @@ func EditPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unauthorized to edit this post", http.StatusForbidden)
 		return
 	}
-
-	//Render the edit for with the post data
-	tmpl, err := template.ParseFiles("web/templates/edit_post.html")
-	if err != nil {
-		http.Error(w, "Failed to load template", http.StatusInternalServerError)
-		return
-	}
-
 	data := struct {
 		Title      string
 		Post       *database.Post
@@ -183,8 +166,5 @@ func EditPostHandler(w http.ResponseWriter, r *http.Request) {
 		IsLoggedIn: true,
 		UserRole:   userRole,
 	}
-
-	if err := tmpl.ExecuteTemplate(w, "home_page.html", data); err != nil {
-		http.Error(w, "Unable to render template", http.StatusInternalServerError)
-	}
+	templates.RenderTemplate(w, config.EditPostTmpl, data)
 }

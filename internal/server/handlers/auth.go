@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"Forum/database"
 	"context"
-	"html/template"
+	"forum/internal/config"
+	"forum/internal/database"
+	"forum/internal/server/templates"
 	"log"
 	"net/http"
 	"time"
@@ -69,21 +70,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 		return
 	}
-	renderRegistrationPage(w, r)
-}
-
-func renderRegistrationPage(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	tmpl, err := template.ParseFiles("web/templates/register.html")
-	if err != nil {
-		http.Error(w, "Unable to render template:"+err.Error(), http.StatusInternalServerError)
-		return
-	}
-	tmpl.Execute(w, nil)
+	templates.RenderTemplate(w, config.RegisterTmpl, nil)
 }
 
 //// Login \\\\
@@ -128,9 +115,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		// Store user info in context (including UserName)
-		ctx := context.WithValue(r.Context(), UserIDKey, user.UserID)
-		ctx = context.WithValue(ctx, UserRoleKey, user.UserRole)
-		ctx = context.WithValue(ctx, UserNameKey, user.UserName) // Store the username here
+		ctx := context.WithValue(r.Context(), config.UserIDKey, user.UserID)
+		ctx = context.WithValue(ctx, config.UserRoleKey, user.UserRole)
+		ctx = context.WithValue(ctx, config.UserNameKey, user.UserName) // Store the username here
 
 		// Create a new request with the updated context
 		r = r.WithContext(ctx)
@@ -141,23 +128,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// redirect to login page
-	renderLogingPage(w, r)
-}
-
-func renderLogingPage(w http.ResponseWriter, r *http.Request) {
-	//Get requests only
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// Render Login template
-	tmpl, err := template.ParseFiles("web/templates/login.html")
-	if err != nil {
-		http.Error(w, "Unable to render template:"+err.Error(), http.StatusInternalServerError)
-		return
-	}
-	tmpl.Execute(w, nil)
+	templates.RenderTemplate(w, config.LoginTmpl, nil)
 }
 
 func LogOutHandler(w http.ResponseWriter, r *http.Request) {

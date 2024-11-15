@@ -1,8 +1,8 @@
 package main
 
 import (
-	"Forum/database"
-	"Forum/server"
+	"forum/internal/database"
+	"forum/internal/server/routes"
 	"log"
 	"net/http"
 )
@@ -14,7 +14,7 @@ func main() {
 	}
 
 	//Initialize server
-	mux := server.InitializeServer()
+	mux := routes.SetupRoutes()
 
 	log.Println("Starting server on : 8081")
 	if err := http.ListenAndServe(":8081", mux); err != nil {

@@ -1,19 +1,13 @@
 package handlers
 
 import (
-	"Forum/database"
-	"html/template"
+	"forum/internal/config"
+	"forum/internal/database"
+	"forum/internal/server/templates"
 	"log"
 	"net/http"
 	"time"
 )
-
-var tmpl *template.Template
-
-// Initialize template package + parse all HTML templates
-func init() {
-	tmpl = template.Must(template.ParseGlob("./web/templates/*.html"))
-}
 
 func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	// Retrieve session ID from the cookie
@@ -74,11 +68,5 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		UserName:   userName,
 		UserRole:   userRole,
 	}
-
-	// Execute the home_page template with dynamic data
-	if err := tmpl.ExecuteTemplate(w, "home_page.html", data); err != nil {
-		log.Printf("Template execution error in 'home_page': %v", err)
-		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
+	templates.RenderTemplate(w, config.HomeTmpl, data)
 }

@@ -1,10 +1,10 @@
-package handlers
+package middleware
 
 import (
-	"Forum/database"
 	"bytes"
 	"encoding/base64"
 	"encoding/gob"
+	"forum/internal/database"
 	"net/http"
 	"time"
 )

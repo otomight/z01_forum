@@ -1,8 +1,7 @@
-package post
+package services
 
 import (
-	"Forum/database"
-	db "Forum/database"
+	db "forum/internal/database"
 	"time"
 )
 
@@ -18,7 +17,7 @@ func CreatePost(userId int, title string, content string,
 		UpdateDate:   time.Now(),
 		IsDeleted:    false,
 	}
-	id, err := database.NewPost(post)
+	id, err := db.NewPost(post)
 	if err != nil {
 		return 0, err
 	}
