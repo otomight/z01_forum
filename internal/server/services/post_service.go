@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func CreatePost(userId int, form models.CreationPostForm) (int64, error) {
+func CreatePost(userId int, form models.CreatePostForm) (int64, error) {
 	post := &db.Post{
 		AuthorID:     userId,
 		Title:        form.Title,

@@ -3,6 +3,7 @@ package handlers
 import (
 	"forum/internal/config"
 	"forum/internal/database"
+	"forum/internal/server/models"
 	"forum/internal/server/templates"
 	"log"
 	"net/http"
@@ -53,14 +54,7 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Prepare data for template rendering
-	data := struct {
-		Title      string
-		Posts      []database.Post
-		IsLoggedIn bool
-		UserID     int
-		UserName   string
-		UserRole   string
-	}{
+	data := models.HomePageData{
 		Title:      "Welcome to the Forum",
 		Posts:      posts,
 		IsLoggedIn: isLoggedIn,

@@ -18,7 +18,7 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 	var postIdStr	string
 	var postId		int
 	var post		*database.Post
-	var data		models.ViewPostData
+	var data		models.ViewPostPageData
 	var err			error
 
 	if r.Method != http.MethodGet {
@@ -40,14 +40,14 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	data = models.ViewPostData{Post: post}
+	data = models.ViewPostPageData{Post: post}
 	templates.RenderTemplate(w, config.ViewPostTmpl, data)
 }
 
 func createPostFromForm(w http.ResponseWriter,
 						r *http.Request, userId int) (int64, error) {
 	var err		error
-	var form	models.CreationPostForm
+	var form	models.CreatePostForm
 	var postId	int64
 
 	if err = utils.ParseForm(r, &form); err != nil {

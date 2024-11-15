@@ -4,7 +4,9 @@ import (
 	"context"
 	"forum/internal/config"
 	"forum/internal/database"
+	"forum/internal/server/models"
 	"forum/internal/server/templates"
+	"forum/internal/utils"
 	"log"
 	"net/http"
 	"time"
@@ -15,120 +17,130 @@ import (
 //// Registration \\\\
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		userName := r.FormValue("user_name")
-		email := r.FormValue("email")
-		password := r.FormValue("password")
-		firstName := r.FormValue("first_name")
-		lastName := r.FormValue("last_name")
+	var form	models.RegisterForm
 
-		//Validate input
-		if userName == "" || email == "" || password == "" || firstName == "" || lastName == "" {
-			http.Error(w, "All fields are required", http.StatusBadRequest)
-			return
-		}
-
-		// Hash password before saving it
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		if err != nil {
-			log.Printf("Password hashing error: %v", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-
-		// Default user role
-		userRole := "user"
-
-		//Save user to database
-		userID, err := database.SaveUser(userName, email, string(hashedPassword), firstName, lastName, userRole)
-		if err != nil {
-			log.Printf("Error saving user to database: %v", err)
-			http.Error(w, "Unable to register user", http.StatusInternalServerError)
-			return
-		}
-
-		//Log user automatically after registration
-		sessionID, err := database.CreateUserSession(userID, userRole)
-		if err != nil {
-			log.Printf("Error creating session: %v", err)
-			http.Error(w, "Failed to create sesion", http.StatusInternalServerError)
-			return
-		}
-
-		//Set sessionID in cookie
-		http.SetCookie(w, &http.Cookie{
-			Name:     "session_id",
-			Value:    sessionID,
-			Path:     "/",
-			Expires:  time.Now().Add(24 * time.Hour),
-			HttpOnly: true,
-			Secure:   true,
-			SameSite: http.SameSiteLaxMode,
-		})
-
-		// Redirect to /home after registration
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	if r.Method != http.MethodPost {
+		templates.RenderTemplate(w, config.RegisterTmpl, nil)
 		return
 	}
-	templates.RenderTemplate(w, config.RegisterTmpl, nil)
+	// store form
+	if err := utils.ParseForm(r, &form); err != nil {
+		http.Error(w, "Unable to parse form:" + err.Error(),
+						http.StatusBadRequest)
+		return
+	}
+
+	//Validate input
+	if form.UserName == "" || form.Email == "" || form.Password == "" ||
+							form.FirstName == "" || form.LastName == "" {
+		http.Error(w, "All fields are required", http.StatusBadRequest)
+		return
+	}
+
+	// Hash password before saving it
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(form.Password),
+															bcrypt.DefaultCost)
+	if err != nil {
+		log.Printf("Password hashing error: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	// Default user role
+	userRole := "user"
+
+	//Save user to database
+	userID, err := database.SaveUser(form.UserName, form.Email,
+									string(hashedPassword), form.FirstName,
+									form.LastName, userRole)
+	if err != nil {
+		log.Printf("Error saving user to database: %v", err)
+		http.Error(w, "Unable to register user", http.StatusInternalServerError)
+		return
+	}
+
+	//Log user automatically after registration
+	sessionID, err := database.CreateUserSession(userID, userRole)
+	if err != nil {
+		log.Printf("Error creating session: %v", err)
+		http.Error(w, "Failed to create sesion", http.StatusInternalServerError)
+		return
+	}
+
+	//Set sessionID in cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_id",
+		Value:    sessionID,
+		Path:     "/",
+		Expires:  time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+	})
+
+	// Redirect to /home after registration
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
 //// Login \\\\
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		username := r.FormValue("username")
-		password := r.FormValue("password")
+	var form	models.LoginForm
+	if r.Method != http.MethodPost {
+		// redirect to login page
+		templates.RenderTemplate(w, config.LoginTmpl, nil)
+		return
+	}
+	// store form
+	if err := utils.ParseForm(r, &form); err != nil {
+		http.Error(w, "Unable to parse form:" + err.Error(),
+						http.StatusBadRequest)
+		return
+	}
+	log.Printf("Attempting to log in user: %s", form.Username)
 
-		log.Printf("Attempting to log in user: %s", username)
-
-		//Validate User credentials
-		user, err := database.ValidateUserCredentials(username, password)
-		if err != nil {
-			if err.Error() == "user not found" || err.Error() == "invalid password" {
-				http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-				return
-			} else {
-				http.Error(w, "Internal server error", http.StatusInternalServerError)
-				return
-			}
-		}
-
-		log.Printf("User successfully logged in with role: %s", user.UserRole)
-
-		//Create new session for logged user
-		sessionID, err := database.CreateUserSession(user.UserID, user.UserRole)
-		if err != nil {
-			http.Error(w, "Failed to create session", http.StatusInternalServerError)
+	//Validate User credentials
+	user, err := database.ValidateUserCredentials(form.Username, form.Password)
+	if err != nil {
+		if err.Error() == "user not found" || err.Error() == "invalid password" {
+			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+			return
+		} else {
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
+	}
 
-		//Set sessionID in cookie
-		http.SetCookie(w, &http.Cookie{
-			Name:     "session_id",
-			Value:    sessionID,
-			Path:     "/",
-			Expires:  time.Now().Add(24 * time.Hour),
-			HttpOnly: true,
-			Secure:   true,
-			SameSite: http.SameSiteLaxMode,
-		})
+	log.Printf("User successfully logged in with role: %s", user.UserRole)
 
-		// Store user info in context (including UserName)
-		ctx := context.WithValue(r.Context(), config.UserIDKey, user.UserID)
-		ctx = context.WithValue(ctx, config.UserRoleKey, user.UserRole)
-		ctx = context.WithValue(ctx, config.UserNameKey, user.UserName) // Store the username here
-
-		// Create a new request with the updated context
-		r = r.WithContext(ctx)
-
-		// Redirect to /home
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	//Create new session for logged user
+	sessionID, err := database.CreateUserSession(user.UserID, user.UserRole)
+	if err != nil {
+		http.Error(w, "Failed to create session", http.StatusInternalServerError)
 		return
 	}
 
-	// redirect to login page
-	templates.RenderTemplate(w, config.LoginTmpl, nil)
+	//Set sessionID in cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_id",
+		Value:    sessionID,
+		Path:     "/",
+		Expires:  time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+	})
+
+	// Store user info in context (including UserName)
+	ctx := context.WithValue(r.Context(), config.UserIDKey, user.UserID)
+	ctx = context.WithValue(ctx, config.UserRoleKey, user.UserRole)
+	ctx = context.WithValue(ctx, config.UserNameKey, user.UserName) // Store the username here
+
+	// Create a new request with the updated context
+	r = r.WithContext(ctx)
+
+	// Redirect to /home
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
 func LogOutHandler(w http.ResponseWriter, r *http.Request) {
