@@ -24,7 +24,6 @@
 								<a href="/post/comment/{{.PostID}}">Comment</a>
 							</div>
 						{{ end }}
-
 						<!-- Additionnal features form user/admin/moderator-->
 						{{ if eq .AuthorID $.Session.UserID }}
 							<div class="post-controls">
@@ -43,18 +42,39 @@
 								<a href="/post/report/{{.PostID}}">Report</a>
 							</div>
 						{{ end }}
-					</div>
-				{{ end }}
 
-			{{ else }}
-				<P>No Posts available</P>
-			{{ end }}
+						<!-- Comments -->
+						<div class="comments">
+							{{if .Comments}}
+								<h4>Comments</h4>
+								{{range .Comments}}
+									<div class="comment">
+										<p><strong>{{.Username}}</strong>: {{.Content}}</p>
+										<p><em>Posted on: {{.CreationDate}}</em></p>
+									</div>
+								{{end}}
+							{{else}}
+								<p>No comments yet.</p>
+							{{end}}
+
+							{{if or (eq $.UserRole "user") (eq $.UserRole "moderator") (eq $.UserRole "administrator")}}
+								<form action="/post/comment/{{.PostID}}" method="POST" class="comment-form">
+									<textarea name="content" placeholder="Write your comment here..." required></textarea>
+									<input type="hidden" name="postID" value="{{.PostID}}">
+									<button type="submit">Comment</button>
+								</form>
+							{{end}}
+						</div>
+					</div>
+				{{end}}
+			{{else}}
+				<p>No Posts available</p>
+			{{end}}
 		</div>
 	</main>
 
 	<footer>
 		<p>&copy; 2024 Forum. All rights reserved.</p>
 	</footer>
-
 </body>
 </html>

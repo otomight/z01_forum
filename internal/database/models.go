@@ -43,4 +43,14 @@ type Post struct {
 	UpdateDate   time.Time  `json:"update_date"`
 	DeletionDate *time.Time `json:"deletion_date"`
 	IsDeleted    bool       `json:"is_deleted"`
+	Comments     []Comment
+}
+
+type Comment struct {
+	CommentID    int       `json:"comment_id"`
+	PostID       int       `json:"post_id"`
+	UserID       int       `json:"user_id"`
+	UserName     string    `json:"user_name"`
+	Content      string    `json:"content"`
+	CreationDate time.Time `json:"creation_date"`
 }

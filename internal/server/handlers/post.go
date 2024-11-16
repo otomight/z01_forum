@@ -61,18 +61,18 @@ func createPostFromForm(w http.ResponseWriter,
 		return 0, err
 	}
 	if err = utils.ParseForm(r, &form); err != nil {
-		http.Error(w, "Unable to parse form:" + err.Error(),
-						http.StatusBadRequest)
+		http.Error(w, "Unable to parse form:"+err.Error(),
+			http.StatusBadRequest)
 		return 0, err
 	}
 	if form.Title == "" || form.Content == "" {
 		http.Error(w, "Title and Content are required",
-						http.StatusBadRequest)
+			http.StatusBadRequest)
 		return 0, err
 	}
 	if postId, err = services.CreatePost(userId, form); err != nil {
 		http.Error(w, "Failed to create post",
-						http.StatusInternalServerError)
+			http.StatusInternalServerError)
 		return 0, err
 	}
 	return postId, nil
@@ -153,15 +153,6 @@ func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Error(w, "Unauthorized to delete this post", http.StatusInternalServerError)
 		return
-	}
-
-	//Redirect to appropriate page after deletion
-	if userRole == "administrator" {
-		http.Redirect(w, r, "/admin", http.StatusSeeOther)
-	} else if userRole == "moderator" {
-		http.Redirect(w, r, "/moderator", http.StatusSeeOther)
-	} else {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
 

@@ -62,7 +62,8 @@ CREATE TABLE IF NOT EXISTS Sessions (
     update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deletion_date TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY(user_id) REFERENCES clients(user_id)
+    FOREIGN KEY(user_id) REFERENCES clients(user_id),
+    FOREIGN kEY (user_name) REFERENCES Client(user_name)
 );
 
 -- posts table schema
@@ -78,5 +79,16 @@ CREATE TABLE IF NOT EXISTS Posts (
     deletion_date TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
     FOREIGN KEY(author_id) REFERENCES clients(user_id) ON DELETE CASCADE
+);
+
+-- comments table schema
+CREATE TABLE IF NOT EXISTS Comments (
+    comment_id INT AUTO_INCREMENT PRIMARY KEY, 
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    content TEXT,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES Posts(post_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES Clients(user_id) ON DELETE CASCADE
 );
 `
