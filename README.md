@@ -22,6 +22,8 @@ The project's directory structure is organized as follows:
 		- **`middleware/`**: Contains middleware functions that modify the
 			request-response cycle, such as session management or logging.
 
+		- **`models/`**: Contains structures related to the server.
+
 		- **`routes/`**: Contains every route endpoints of the application.
 
 		- **`services/`**: Contains functionality related to the handlers
