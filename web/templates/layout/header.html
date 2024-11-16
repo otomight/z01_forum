@@ -1,8 +1,7 @@
 {{ define "header" }}
 	<header>
 		<a href="/">Home</a>
-		{{ if .IsLoggedIn }}
-			<h1>{{ .UserName }}</h1>
+		{{ if .Session.IsLoggedIn }}
 			<a href="/logout">Logout</a>
 		{{ else }}
 			<a href="/login">Login</a>

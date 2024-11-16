@@ -19,6 +19,7 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 	var postId		int
 	var post		*database.Post
 	var data		models.ViewPostPageData
+	var session		*database.UserSession
 	var err			error
 
 	if r.Method != http.MethodGet {
@@ -40,16 +41,25 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	data = models.ViewPostPageData{Post: post}
+	session, _ = services.GetSession(r)
+	data = models.ViewPostPageData{Post: post, Session: session}
 	templates.RenderTemplate(w, config.ViewPostTmpl, data)
 }
 
 func createPostFromForm(w http.ResponseWriter,
-						r *http.Request, userId int) (int64, error) {
-	var err		error
+							r *http.Request) (int64, error) {
+	var ok		bool
+	var userId	int
 	var form	models.CreatePostForm
 	var postId	int64
+	var err		error
 
+	userId, ok = r.Context().Value(config.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "User ID not found in context",
+						http.StatusInternalServerError)
+		return 0, err
+	}
 	if err = utils.ParseForm(r, &form); err != nil {
 		http.Error(w, "Unable to parse form:" + err.Error(),
 						http.StatusBadRequest)
@@ -69,25 +79,26 @@ func createPostFromForm(w http.ResponseWriter,
 }
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	var userId			int
-	var ok				bool
-	var err				error
 	var postId			int64
 	var redirectLink	string
+	var session			*database.UserSession
+	var data			models.CreatePostPageData
+	var err				error
 
 	if r.Method == http.MethodGet {
 		// render the post creation page
-		templates.RenderTemplate(w, config.CreatePostTmpl, nil)
-	} else if r.Method == http.MethodPost {
-		// handle the form send on post creation
-		userId, ok = r.Context().Value(config.UserIDKey).(int)
-		if !ok {
-			http.Error(w, "User ID not found in context",
-							http.StatusInternalServerError)
+		session, err = services.GetSession(r)
+		if err != nil {
+			http.Error(w, "User not logged", http.StatusUnauthorized)
 			return
 		}
-		postId, err = createPostFromForm(w, r, userId)
-		if err != nil {
+		data = models.CreatePostPageData{
+			Session: session,
+		}
+		templates.RenderTemplate(w, config.CreatePostTmpl, data)
+	} else if r.Method == http.MethodPost {
+		// handle the form send on post creation
+		if postId, err = createPostFromForm(w, r); err != nil {
 			return
 		}
 		redirectLink = fmt.Sprintf("/post/view/%d", postId)

@@ -3,7 +3,6 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{ .Title }}</title>
 	<link rel="stylesheet" href="/static/style/main.css">
 </head>
 <body>
@@ -12,44 +11,44 @@
 		<a href="/post/create">Create post</a>
 		<h2>Latest Posts</h2>
 		<div id="posts">
-			{{if .Posts}}
-				{{range .Posts}}
+			{{ if .Posts }}
+				{{ range .Posts }}
 					<div class="post">
 						<h3>{{.Title}}</h3>
-						<p>By : {{.UserName}}</p>
-						<p>{{.Content}}</p>
-						<p><em>Posted on : {{.CreationDate}}</em></p>
+						<p>By : {{ .UserName }}</p>
+						<p>{{ .Content }}</p>
+						<p><em>Posted on : {{ .CreationDate }}</em></p>
 
-						{{if or (eq $.UserRole "user") (eq $.UserRole "moderator") (eq $.UserRole "administrator")}}
+						{{ if or (eq $.UserRole "user") (eq $.UserRole "moderator") (eq $.UserRole "administrator" )}}
 							<div class="post-controls">
 								<a href="/post/comment/{{.PostID}}">Comment</a>
 							</div>
-						{{end}}
+						{{ end }}
 
 						<!-- Additionnal features form user/admin/moderator-->
-						{{if eq .AuthorID $.UserID}}
+						{{ if eq .AuthorID $.UserID }}
 							<div class="post-controls">
 								<a href="/post/edit/{{.PostID}}">Edit</a>
 							</div>
-						{{end}}
+						{{ end }}
 
-						{{if or (eq $.UserRole "administrator") (eq $.UserRole "moderator")}}
+						{{ if or (eq $.UserRole "administrator") (eq $.UserRole "moderator") }}
 							<div class="post-controls">
 								<a href="/post/delete/{{.PostID}}" onclick="return confirm('delete post?')">Delete</a>
 							</div>
-						{{end}}
+						{{ end }}
 
-						{{if eq $.UserRole "moderator"}}
+						{{ if eq $.UserRole "moderator" }}
 							<div class="post-controls">
 								<a href="/post/report/{{.PostID}}">Report</a>
 							</div>
-						{{end}}
+						{{ end }}
 					</div>
-				{{end}}
+				{{ end }}
 
-			{{else}}
+			{{ else }}
 				<P>No Posts available</P>
-			{{end}}
+			{{ end }}
 		</div>
 	</main>
 

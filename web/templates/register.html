@@ -3,13 +3,11 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{ .Title }}</title>
 	<link rel="stylesheet" href="/static/style/main.css">
 </head>
 <body>
 	{{ template "header" . }}
 	<main>
-		<h1>{{ .Title }}</h1>
 		<form action="/register" method="post">
 			<label for="first_name">First Name</label>
 			<input type="text" id="first_name" name="first_name" placeholder="First Name" required>
