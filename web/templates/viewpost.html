@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 	<body>
-		<h1>Page of post {{ .Post.PostID }} </h1>
+		<h1> {{.Post.Title}} </h1>
+		<p> {{.Post.Content}} </p>
+		<p> {{.Post.Category }} </p>
+		<p> {{.Post.Tags}} </p>
+		<p>Posted on : {{.Post.CreationDate}}</p>
 	</body>
 </html>

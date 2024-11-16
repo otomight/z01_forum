@@ -8,9 +8,9 @@ import (
 // Post CRUD operations
 func NewPost(post *Post) (int64, error) {
 	result, err := DB.Exec(`
-		INSERT INTO Posts (author_id, title, category, content, creation_date, update_date, is_deleted)
-		VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
-	`, post.AuthorID, post.Title, post.Category, post.Content)
+		INSERT INTO Posts (author_id, title, category, content, tags, creation_date, update_date, is_deleted)
+		VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
+	`, post.AuthorID, post.Title, post.Category, post.Content, post.Tags)
 	if err != nil {
 		return 0, err
 	}
@@ -23,11 +23,11 @@ func NewPost(post *Post) (int64, error) {
 
 func GetPostByID(postID int) (*Post, error) {
 	row := DB.QueryRow(`
-		SELECT post_id, author_id, title, category, content, creation_date, update_date, deletion_date, is_deleted
+		SELECT post_id, author_id, title, category, tags, content, creation_date, update_date, deletion_date, is_deleted
 		FROM Posts WHERE post_id = ?
 	`, postID)
 	var post Post
-	err := row.Scan(&post.PostID, &post.AuthorID, &post.Title, &post.Category, &post.Content,
+	err := row.Scan(&post.PostID, &post.AuthorID, &post.Title, &post.Category, &post.Tags, &post.Content,
 		&post.CreationDate, &post.UpdateDate, &post.DeletionDate, &post.IsDeleted)
 	if err != nil {
 		log.Printf("Error retrieving post by ID %d: %v", postID, err)
@@ -39,7 +39,7 @@ func GetPostByID(postID int) (*Post, error) {
 // Retrieve all the posts from database
 func GetAllPosts() ([]Post, error) {
 	query := `
-		SELECT Posts.post_id, Posts.author_id, Clients.user_name, Posts.title, Posts.category, Posts.content, Posts.creation_date, Posts.update_date, Posts.deletion_date, Posts.is_deleted
+		SELECT Posts.post_id, Posts.author_id, Clients.user_name, Posts.title, Posts.category, Posts.Tags, Posts.content, Posts.creation_date, Posts.update_date, Posts.deletion_date, Posts.is_deleted
 		FROM Posts
 		JOIN Clients ON Posts.author_id = Clients.user_id
 		WHERE Posts.is_deleted = 0 -- Only select non deleted posts
@@ -56,7 +56,7 @@ func GetAllPosts() ([]Post, error) {
 	// Iterate through rows and append to posts slice
 	for rows.Next() {
 		var post Post
-		if err := rows.Scan(&post.PostID, &post.AuthorID, &post.UserName, &post.Title, &post.Category, &post.Content, &post.CreationDate, &post.UpdateDate, &post.DeletionDate, &post.IsDeleted); err != nil {
+		if err := rows.Scan(&post.PostID, &post.AuthorID, &post.UserName, &post.Title, &post.Category, &post.Tags, &post.Content, &post.CreationDate, &post.UpdateDate, &post.DeletionDate, &post.IsDeleted); err != nil {
 			log.Printf("Error scanning post: %v", err)
 			return nil, err
 		}
@@ -110,8 +110,8 @@ func InsertSamplePost() {
 	// If no posts exist, insert the sample post
 	if count == 0 {
 		_, err := DB.Exec(`
-            INSERT INTO Posts (author_id, title, category, content, creation_date, update_date, is_deleted)
-            VALUES (1, 'Sample Post', 'General', 'This is a sample post content.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
+            INSERT INTO Posts (author_id, title, category, tags, content, creation_date, update_date, is_deleted)
+            VALUES (1, 'Sample Post', 'General', 'other', 'This is a sample post content.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
         `)
 		if err != nil {
 			log.Printf("Failed to insert sample post: %v", err)
