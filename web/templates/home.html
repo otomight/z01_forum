@@ -46,6 +46,12 @@
                     <p>{{.Content}}</p>
                     <p><em>Posted on : {{.CreationDate}}</em></p>
 
+                    {{if or (eq $.UserRole "user") (eq $.UserRole "moderator") (eq $.UserRole "administrator")}}
+                        <div class="post-controls">
+                            <a href="/post/comment/{{.PostID}}">Comment</a>
+                        </div>
+                    {{end}}
+
                     <!-- Additionnal features form user/admin/moderator-->
                      {{if eq .AuthorID $.UserID}}
                         <div class="post-controls">
