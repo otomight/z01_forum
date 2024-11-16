@@ -19,26 +19,26 @@
 						<p>{{ .Content }}</p>
 						<p><em>Posted on : {{ .CreationDate }}</em></p>
 
-						{{ if or (eq $.UserRole "user") (eq $.UserRole "moderator") (eq $.UserRole "administrator" )}}
+						{{ if or (eq $.Session.UserRole "user") (eq $.Session.UserRole "moderator") (eq $.Session.UserRole "administrator" )}}
 							<div class="post-controls">
 								<a href="/post/comment/{{.PostID}}">Comment</a>
 							</div>
 						{{ end }}
 
 						<!-- Additionnal features form user/admin/moderator-->
-						{{ if eq .AuthorID $.UserID }}
+						{{ if eq .AuthorID $.Session.UserID }}
 							<div class="post-controls">
 								<a href="/post/edit/{{.PostID}}">Edit</a>
 							</div>
 						{{ end }}
 
-						{{ if or (eq $.UserRole "administrator") (eq $.UserRole "moderator") }}
+						{{ if or (eq $.Session.UserRole "administrator") (eq $.Session.UserRole "moderator") }}
 							<div class="post-controls">
 								<a href="/post/delete/{{.PostID}}" onclick="return confirm('delete post?')">Delete</a>
 							</div>
 						{{ end }}
 
-						{{ if eq $.UserRole "moderator" }}
+						{{ if eq $.Session.UserRole "moderator" }}
 							<div class="post-controls">
 								<a href="/post/report/{{.PostID}}">Report</a>
 							</div>
