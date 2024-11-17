@@ -44,7 +44,7 @@ type Post struct {
 	UpdateDate   time.Time  `json:"update_date"`
 	DeletionDate *time.Time `json:"deletion_date"`
 	IsDeleted    bool       `json:"is_deleted"`
-	Comments     []Comment
+	Comments     []Comment  `json:"comments"`
 }
 
 type Comment struct {

@@ -22,18 +22,35 @@ func NewPost(post *Post) (int64, error) {
 }
 
 func GetPostByID(postID int) (*Post, error) {
-	row := DB.QueryRow(`
-		SELECT post_id, author_id, title, category, tags, content, creation_date, update_date, deletion_date, is_deleted
-		FROM Posts WHERE post_id = ?
-	`, postID)
-	var post Post
-	err := row.Scan(&post.PostID, &post.AuthorID, &post.Title, &post.Category, &post.Tags, &post.Content,
-		&post.CreationDate, &post.UpdateDate, &post.DeletionDate, &post.IsDeleted)
+	// Updated query to join Posts and Clients to get the user_name
+	query := `
+	SELECT p.post_id, p.author_id, c.user_name, p.title, p.category, p.tags, p.content, 
+	       p.creation_date, p.update_date, p.deletion_date, p.is_deleted
+	FROM Posts p
+	JOIN Clients c ON p.author_id = c.user_id
+	WHERE p.post_id = ? AND p.is_deleted = FALSE
+	`
+	post := &Post{}
+	err := DB.QueryRow(query, postID).Scan(
+		&post.PostID, &post.AuthorID, &post.UserName, &post.Title, &post.Category,
+		&post.Tags, &post.Content, &post.CreationDate, &post.UpdateDate,
+		&post.DeletionDate, &post.IsDeleted,
+	)
 	if err != nil {
 		log.Printf("Error retrieving post by ID %d: %v", postID, err)
-		return nil, err
+		return nil, fmt.Errorf("could not fetch post: %w", err)
 	}
-	return &post, err
+
+	// Fetch associated comments for the post
+	comments, err := GetCommentsByPostID(postID)
+	if err != nil {
+		return nil, fmt.Errorf("could not fetch comments: %w", err)
+	}
+
+	// Assign the comments to the post
+	post.Comments = comments
+
+	return post, nil
 }
 
 // Retrieve all the posts from database

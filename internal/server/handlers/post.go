@@ -9,6 +9,7 @@ import (
 	"forum/internal/server/services"
 	"forum/internal/server/templates"
 	"forum/internal/utils"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -20,6 +21,7 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 	var post		*database.Post
 	var data		models.ViewPostPageData
 	var session		*database.UserSession
+	var comments	[]database.Comment
 	var err			error
 
 	if r.Method != http.MethodGet {
@@ -41,8 +43,19 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+	//Fetch comments for the post
+	comments, err = database.GetCommentsByPostID(postId)
+	if err != nil {
+		log.Printf("Failed to fetch comments for post %d: %v", postId, err)
+		http.Error(w, "Failed to load comments", http.StatusInternalServerError)
+		return
+	}
 	session, _ = services.GetSession(r)
-	data = models.ViewPostPageData{Post: post, Session: session}
+	data = models.ViewPostPageData{
+		Post: post,
+		Session: session,
+		Comments: comments,
+	}
 	templates.RenderTemplate(w, config.ViewPostTmpl, data)
 }
 

@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS Posts (
 );
 
 CREATE TABLE IF NOT EXISTS Comments (
-    comment_id INT AUTO_INCREMENT PRIMARY KEY, 
+    comment_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     post_id INT NOT NULL,
     user_id INT NOT NULL,
     content TEXT,

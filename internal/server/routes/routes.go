@@ -22,6 +22,9 @@ func SetupRoutes() http.Handler {
 	mux.Handle("/post/delete", middleware.SessionMiddleWare(http.HandlerFunc(handlers.DeletePostHandler)))
 	mux.Handle("/post/edit", middleware.SessionMiddleWare(http.HandlerFunc(handlers.EditPostHandler)))
 
+	//Add comment
+	mux.Handle("/post/comment/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.AddCommentHandler)))
+
 	//Wrap mux with logging middleware
 	wrappedMux := middleware.LoggingMiddleware(mux)
 
