@@ -1,4 +1,4 @@
-package handlers
+package config
 
 type contextKey string
 

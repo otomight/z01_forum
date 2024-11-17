@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"Forum/database"
-	"Forum/handlers"
 	"context"
+	"forum/internal/config"
+	"forum/internal/database"
 	"log"
 	"net/http"
 	"time"
@@ -35,8 +35,8 @@ func SessionMiddleWare(next http.Handler) http.Handler {
 		}
 
 		//Set user info in request context
-		ctx := context.WithValue(r.Context(), handlers.UserIDKey, session.UserID)
-		ctx = context.WithValue(ctx, handlers.UserRoleKey, session.UserRole)
+		ctx := context.WithValue(r.Context(), config.UserIDKey, session.UserID)
+		ctx = context.WithValue(ctx, config.UserRoleKey, session.UserRole)
 
 		//Call next handler with updated context
 		next.ServeHTTP(w, r.WithContext(ctx))

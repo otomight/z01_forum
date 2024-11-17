@@ -1,41 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ .Title }}</title>
-    <link rel="stylesheet" href="/static/style/main.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/style/main.css">
 </head>
 <body>
+	{{ template "header" . }}
+	<main>
+		<form action="/register" method="post">
+			<label for="first_name">First Name</label>
+			<input type="text" id="first_name" name="first_name" placeholder="First Name" required>
 
-    <header>
-        <h1>{{ .Title }}</h1>
-    </header>
+			<label for="last_name">Last Name</label>
+			<input type="text" id="last_name" name="last_name" placeholder="Last Name" required>
 
-    <main>
-        <form action="/register" method="post">
-            <label for="first_name">First Name</label>
-            <input type="text" id="first_name" name="first_name" placeholder="First Name" required>
-            
-            <label for="last_name">Last Name</label>
-            <input type="text" id="last_name" name="last_name" placeholder="Last Name" required>
-            
-            <label for="username">Username</label>
-            <input type="text" id="user_name" name="user_name" placeholder="Username" required>
-            
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Email" required>
-            
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Password" required>
+			<label for="username">Username</label>
+			<input type="text" id="user_name" name="user_name" placeholder="Username" required>
 
-            <button type="submit">Register</button>
-        </form>
-        <p>Already have an account? <a href="/login">Login</a></p>
-    </main>
+			<label for="email">Email</label>
+			<input type="email" id="email" name="email" placeholder="Email" required>
 
-    <footer>
-        <p>&copy; 2024 Forum. All rights reserved.</p>
-    </footer>
+			<label for="password">Password</label>
+			<input type="password" id="password" name="password" placeholder="Password" required>
+
+			<button type="submit">Register</button>
+		</form>
+		<p>Already have an account? <a href="/login">Login</a></p>
+	</main>
+
+	<footer>
+		<p>&copy; 2024 Forum. All rights reserved.</p>
+	</footer>
 </body>
 </html>

@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS Posts (
     author_id INTEGER,
     title TEXT,
     category TEXT,
+    tags TEXT,
     content TEXT,
     creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

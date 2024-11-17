@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forum</title>
     <link rel="stylesheet" href="/static/style/main.css">
 </head>
 <body>
-
-    <header>
-        <h1>Login<h1>
-    </header>
-
+    {{ template "header" . }}
     <main>
+        <h1>Login</h1>
         <form method="post" action="/login" >
             <div>
                 <label for="username">Username or Email</label>
