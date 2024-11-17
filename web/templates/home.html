@@ -8,40 +8,44 @@
 <body>
 	{{ template "header" . }}
 	<main>
-		<a href="/post/create">Create post</a>
+		{{ if .Session.IsLoggedIn }}
+			<a href="/post/create">Create post</a>
+		{{ end }}
 		<h2>Latest Posts</h2>
 		<div id="posts">
-			{{ if .Posts }}
-				{{ range .Posts }}
+			{{if .Posts}}
+				{{range .Posts}}
 					<div class="post">
 						<h3>{{.Title}}</h3>
-						<p>By : {{ .UserName }}</p>
-						<p>{{ .Content }}</p>
-						<p><em>Posted on : {{ .CreationDate }}</em></p>
+						<p>By: {{.UserName}}</p>
+						<p>{{.Content}}</p>
+						<p><em>Posted on: {{.CreationDate}}</em></p>
 
-						{{ if or (eq $.Session.UserRole "user") (eq $.Session.UserRole "moderator") (eq $.Session.UserRole "administrator" )}}
-							<div class="post-controls">
-								<a href="/post/comment/{{.PostID}}">Comment</a>
+						{{if or (eq $.Session.UserRole "user") (eq $.Session.UserRole "moderator") (eq $.Session.UserRole "administrator")}}
+							<div class="post-like">
+								<a href="/post/like">Like</a>
+								<a href="/post/dislike">Dislike</a>
 							</div>
-						{{ end }}
-						<!-- Additionnal features form user/admin/moderator-->
-						{{ if eq .AuthorID $.Session.UserID }}
+						{{end}}
+
+						<!-- Additional features for user/admin/moderator -->
+						{{if eq .AuthorID $.Session.UserID}}
 							<div class="post-controls">
 								<a href="/post/edit/{{.PostID}}">Edit</a>
 							</div>
-						{{ end }}
+						{{end}}
 
-						{{ if or (eq $.Session.UserRole "administrator") (eq $.Session.UserRole "moderator") }}
+						{{if or (eq $.Session.UserRole "administrator") (eq $.Session.UserRole "moderator")}}
 							<div class="post-controls">
 								<a href="/post/delete/{{.PostID}}" onclick="return confirm('delete post?')">Delete</a>
 							</div>
-						{{ end }}
+						{{end}}
 
-						{{ if eq $.Session.UserRole "moderator" }}
+						{{if eq $.Session.UserRole "moderator"}}
 							<div class="post-controls">
 								<a href="/post/report/{{.PostID}}">Report</a>
 							</div>
-						{{ end }}
+						{{end}}
 
 						<!-- Comments -->
 						<div class="comments">
@@ -49,7 +53,7 @@
 								<h4>Comments</h4>
 								{{range .Comments}}
 									<div class="comment">
-										<p><strong>{{ $.Session.Username }}</strong>: {{.Content}}</p>
+										<p><strong>{{.UserName}}</strong>: {{.Content}}</p>
 										<p><em>Posted on: {{.CreationDate}}</em></p>
 									</div>
 								{{end}}
@@ -72,7 +76,6 @@
 			{{end}}
 		</div>
 	</main>
-
 	<footer>
 		<p>&copy; 2024 Forum. All rights reserved.</p>
 	</footer>

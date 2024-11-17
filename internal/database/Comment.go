@@ -20,10 +20,11 @@ func AddComment(postID, userID int, content string) error {
 
 func GetCommentsByPostID(postID int) ([]Comment, error) {
 	query := `
-	SELECT comment_id, post_id, user_id, user_name, content, creation_date
-	FROM Comment
-	WHERE post_id = ? AND is_deleted = FALSE
-	ORDER BY creation_date ASC
+	SELECT c.comment_id, c.post_id, c.user_id, u.user_name, c.content, c.creation_date
+    FROM Comments c
+    INNER JOIN Clients u ON c.user_id = u.user_id
+    WHERE c.post_id = ?
+    ORDER BY c.creation_date ASC;
 	`
 
 	rows, err := DB.Query(query, postID)
@@ -35,7 +36,7 @@ func GetCommentsByPostID(postID int) ([]Comment, error) {
 	var comments []Comment
 	for rows.Next() {
 		var comment Comment
-		if err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.UserID, &comment.Content, &comment.CreationDate, &comment.UserName); err != nil {
+		if err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.UserID, &comment.UserName, &comment.Content, &comment.CreationDate); err != nil {
 			return nil, fmt.Errorf("error scanning comment: %w", err)
 		}
 		comments = append(comments, comment)
