@@ -23,6 +23,7 @@ type UserSession struct {
 	SessionID    string     `json:"session_id"`
 	UserID       int        `json:"user_id"`
 	UserRole     string     `json:"user_role"`
+	UserName     string     `json:"user_name"`
 	IsLoggedIn   bool       `json:"is_logged_in"`
 	Expiration   time.Time  `json:"expiration"`
 	CreationDate time.Time  `json:"creation_date"`

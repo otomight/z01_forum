@@ -17,7 +17,7 @@ import (
 //// Registration \\\\
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var form	models.RegisterForm
+	var form models.RegisterForm
 
 	if r.Method != http.MethodPost {
 		templates.RenderTemplate(w, config.RegisterTmpl, nil)
@@ -25,21 +25,21 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// store form
 	if err := utils.ParseForm(r, &form); err != nil {
-		http.Error(w, "Unable to parse form:" + err.Error(),
-						http.StatusBadRequest)
+		http.Error(w, "Unable to parse form:"+err.Error(),
+			http.StatusBadRequest)
 		return
 	}
 
 	//Validate input
 	if form.UserName == "" || form.Email == "" || form.Password == "" ||
-							form.FirstName == "" || form.LastName == "" {
+		form.FirstName == "" || form.LastName == "" {
 		http.Error(w, "All fields are required", http.StatusBadRequest)
 		return
 	}
 
 	// Hash password before saving it
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(form.Password),
-															bcrypt.DefaultCost)
+		bcrypt.DefaultCost)
 	if err != nil {
 		log.Printf("Password hashing error: %v", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -51,8 +51,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Save user to database
 	userID, err := database.SaveUser(form.UserName, form.Email,
-									string(hashedPassword), form.FirstName,
-									form.LastName, userRole)
+		string(hashedPassword), form.FirstName,
+		form.LastName, userRole)
 	if err != nil {
 		log.Printf("Error saving user to database: %v", err)
 		http.Error(w, "Unable to register user", http.StatusInternalServerError)
@@ -60,7 +60,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Log user automatically after registration
-	sessionID, err := database.CreateUserSession(userID, userRole)
+	sessionID, err := database.CreateUserSession(userID, userRole, form.UserName)
 	if err != nil {
 		log.Printf("Error creating session: %v", err)
 		http.Error(w, "Failed to create sesion", http.StatusInternalServerError)
@@ -85,7 +85,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 //// Login \\\\
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var form	models.LoginForm
+	var form models.LoginForm
 	if r.Method != http.MethodPost {
 		// redirect to login page
 		templates.RenderTemplate(w, config.LoginTmpl, nil)
@@ -93,8 +93,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// store form
 	if err := utils.ParseForm(r, &form); err != nil {
-		http.Error(w, "Unable to parse form:" + err.Error(),
-						http.StatusBadRequest)
+		http.Error(w, "Unable to parse form:"+err.Error(),
+			http.StatusBadRequest)
 		return
 	}
 	log.Printf("Attempting to log in user: %s", form.Username)
@@ -114,7 +114,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("User successfully logged in with role: %s", user.UserRole)
 
 	//Create new session for logged user
-	sessionID, err := database.CreateUserSession(user.UserID, user.UserRole)
+	sessionID, err := database.CreateUserSession(user.UserID, user.UserRole, user.UserName)
 	if err != nil {
 		http.Error(w, "Failed to create session", http.StatusInternalServerError)
 		return

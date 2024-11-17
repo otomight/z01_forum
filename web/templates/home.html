@@ -49,7 +49,7 @@
 								<h4>Comments</h4>
 								{{range .Comments}}
 									<div class="comment">
-										<p><strong>{{.Username}}</strong>: {{.Content}}</p>
+										<p><strong>{{ $.Session.Username }}</strong>: {{.Content}}</p>
 										<p><em>Posted on: {{.CreationDate}}</em></p>
 									</div>
 								{{end}}
@@ -57,7 +57,7 @@
 								<p>No comments yet.</p>
 							{{end}}
 
-							{{if or (eq $.UserRole "user") (eq $.UserRole "moderator") (eq $.UserRole "administrator")}}
+							{{if or (eq $.Session.UserRole "user") (eq $.Session.UserRole "moderator") (eq $.Session.UserRole "administrator")}}
 								<form action="/post/comment/{{.PostID}}" method="POST" class="comment-form">
 									<textarea name="content" placeholder="Write your comment here..." required></textarea>
 									<input type="hidden" name="postID" value="{{.PostID}}">

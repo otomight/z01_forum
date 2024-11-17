@@ -20,9 +20,9 @@ func CreateSession(session *UserSession) error {
 		session.SessionID, session.UserID, session.Expiration, session.UserRole)
 
 	_, err := DB.Exec(`
-		INSERT INTO Sessions (session_id, user_id, expiration, user_role)
-		VALUES (?, ?, ?, ?)
-	`, session.SessionID, session.UserID, session.Expiration, session.UserRole)
+		INSERT INTO Sessions (session_id, user_id, expiration, user_role, user_name)
+		VALUES (?, ?, ?, ?, ?)
+	`, session.SessionID, session.UserID, session.Expiration, session.UserRole, session.UserName)
 
 	if err != nil {
 		log.Printf("Error creating session for user %d: %v", session.UserID, err)
@@ -33,12 +33,12 @@ func CreateSession(session *UserSession) error {
 
 func GetSessionByID(sessionID string) (*UserSession, error) {
 	row := DB.QueryRow(`
-		SELECT session_id, user_id, expiration, creation_date, update_date, deletion_date, is_deleted, user_role
+		SELECT session_id, user_id, expiration, creation_date, update_date, deletion_date, is_deleted, user_role, user_name
 		FROM Sessions WHERE session_id = ?
 	`, sessionID)
 	var session UserSession
 	err := row.Scan(&session.SessionID, &session.UserID, &session.Expiration, &session.CreationDate,
-		&session.UpdateDate, &session.DeletionDate, &session.IsDeleted, &session.UserRole)
+		&session.UpdateDate, &session.DeletionDate, &session.IsDeleted, &session.UserRole, &session.UserName)
 
 	// Handle specific error if no rows are returned
 	if err == sql.ErrNoRows {
@@ -57,7 +57,7 @@ func GetSessionByID(sessionID string) (*UserSession, error) {
 }
 
 // Create user session and return session ID
-func CreateUserSession(userID int, userRole string) (string, error) {
+func CreateUserSession(userID int, userRole, userName string) (string, error) {
 	sessionID := GenerateSessionID()
 	expiration := time.Now().Add(24 * time.Hour)
 
@@ -65,6 +65,7 @@ func CreateUserSession(userID int, userRole string) (string, error) {
 		SessionID:  sessionID,
 		UserID:     userID,
 		UserRole:   userRole,
+		UserName:   userName,
 		Expiration: expiration,
 	}
 

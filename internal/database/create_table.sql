@@ -24,8 +24,7 @@ CREATE TABLE IF NOT EXISTS Sessions (
     update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deletion_date TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY(user_id) REFERENCES Clients(user_id),
-    FOREIGN kEY (user_name) REFERENCES Clients(user_name)
+    FOREIGN KEY(user_id) REFERENCES Clients(user_id)
 );
 
 CREATE TABLE IF NOT EXISTS Posts (

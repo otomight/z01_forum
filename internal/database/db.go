@@ -56,14 +56,14 @@ CREATE TABLE IF NOT EXISTS Sessions (
     session_id TEXT PRIMARY KEY,
     user_id INTEGER,
     user_role TEXT,
+    user_name TEXT,
     is_logged_in BOOLEAN DEFAULT FALSE,
     expiration TIMESTAMP,
     creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deletion_date TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY(user_id) REFERENCES clients(user_id),
-    FOREIGN kEY (user_name) REFERENCES Client(user_name)
+    FOREIGN KEY(user_id) REFERENCES Clients(user_id)
 );
 
 -- posts table schema
