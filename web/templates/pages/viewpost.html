@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+	<body>
+		{{ template "header" . }}
+		<h3>{{ .Post.Title }}</h3>
+		<p>{{ .Post.Content }}</p>
+		<p>By: {{ .Post.UserName }}</p>
+		<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
+		{{ template "post_buttons" (addToStruct .Post "Session" $.Session) }}
+		{{ template "post_comments" (addToStruct .Post "Session" $.Session) }}
+	</body>
+</html>

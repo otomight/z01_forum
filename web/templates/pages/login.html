@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/style/main.css">
+</head>
+<body>
+	{{ template "header" . }}
+	<main>
+		<h1>Login</h1>
+		<form method="post" action="/login" >
+			<div>
+				<label for="username">Username or Email</label>
+				<input type="text" id="username" name="username" required>
+			</div>
+			<div>
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password" required>
+			</div>
+			<button type="submit">Login</button>
+		</form>
+		<p>Don't have an account? <a href="/register">Register</a></p>
+	</main>
+
+	<footer>
+		<p>&copy; 2024 Forum. All rights reserved.</p>
+	</footer>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/style/main.css">
+</head>
+<body>
+	{{ template "header" . }}
+	<main>
+		{{ if .Session.IsLoggedIn }}
+			<a href="/post/create">Create post</a>
+		{{ end }}
+		<h2>Latest Posts</h2>
+		<div id="posts">
+			{{if .Posts}}
+				{{range .Posts}}
+					<div class="post">
+						<a href="/post/view/{{ .PostID }}"><h3>{{ .Title }}</h3></a>
+						<p>By: {{ .UserName }}</p>
+						<p>{{ .Content }}</p>
+						<p><em>Posted on: {{ .CreationDate }}</em></p>
+						{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
+						{{ template "post_comments" (addToStruct . "Session" $.Session) }}
+					</div>
+				{{end}}
+			{{else}}
+				<p>No Posts available</p>
+			{{end}}
+		</div>
+	</main>
+	<footer>
+		<p>&copy; 2024 Forum. All rights reserved.</p>
+	</footer>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{{ define "post_comments" }}
+	<div class="comments">
+		<h4>Comments</h4>
+		{{ if (doesUserHasAnyRole .Session.UserRole "user"
+							"moderator" "administrator") }}
+			<form action="/post/comment/{{.PostID}}"
+				method="POST" class="comment-form">
+				<textarea
+					name="content"
+					placeholder="Write your comment here..."
+					required>
+				</textarea>
+				<input type="hidden" name="postID" value="{{.PostID}}">
+				<button type="submit">Comment</button>
+			</form>
+		{{ end }}
+		{{ range .Comments }}
+			<div class="comment">
+				<p><strong>{{ .UserName }}</strong>: {{ .Content }}</p>
+				<p><em>Posted on: {{ .CreationDate }}</em></p>
+			</div>
+		{{ end }}
+	</div>
+{{ end }}

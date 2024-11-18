@@ -43,6 +43,8 @@ func LoadTemplates() error {
 		// insert here function to use into the templates
 		// functions can be developped and stored into this package
 		// "myTemplateFunc": myFunc,
+		"doesUserHasAnyRole": doesUserHasAnyRole,
+		"addToStruct": addToStruct,
 	}
 	files, err = getHtmlFiles(config.TemplatesDir)
 	if err != nil {

@@ -5,7 +5,6 @@ import "forum/internal/database"
 type ViewPostPageData struct {
 	Session		*database.UserSession
 	Post		*database.Post
-	Comments	[]database.Comment
 }
 
 type CreatePostPageData struct {

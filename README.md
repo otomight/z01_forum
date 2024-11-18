@@ -45,5 +45,10 @@ The project's directory structure is organized as follows:
 
 	- **`templates/`**: Contains every html templates.
 
-		- **`layout/`**: Contains templates that are common
-			to several other templates like an header or a footer.
+		- **`components`**: Other reusable elements.
+
+		- **`layout/`**: Templates for the main layout (header, footer ...)
+
+		- **`pages`**: Templates of the pages. Only those templates are called.
+
+		- **`partials`**: Templates shared between several pages.
