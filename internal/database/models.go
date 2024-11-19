@@ -5,18 +5,20 @@ import (
 )
 
 type Client struct {
-	UserID       int        `json:"user_id"`
-	LastName     string     `json:"last_name"`
-	FirstName    string     `json:"first_name"`
-	UserName     string     `json:"user_name"`
-	Email        string     `json:"email"`
-	Password     string     `json:"password"`
-	Avatar       string     `json:"avatar"`
-	BirthDate    time.Time  `json:"birth_date"`
-	UserRole     string     `json:"user_role"`
-	CreationDate time.Time  `json:"creation_date"`
-	UpdateDate   time.Time  `json:"update_date"`
-	DeletionDate *time.Time `json:"deletion_date"`
+	UserID        int        `json:"user_id"`
+	LastName      string     `json:"last_name"`
+	FirstName     string     `json:"first_name"`
+	UserName      string     `json:"user_name"`
+	Email         string     `json:"email"`
+	OauthProvider string     `json:"oauth_provider"`
+	OauthID       string     `json:"oauth_id"`
+	Password      string     `json:"password"`
+	Avatar        string     `json:"avatar"`
+	BirthDate     time.Time  `json:"birth_date"`
+	UserRole      string     `json:"user_role"`
+	CreationDate  time.Time  `json:"creation_date"`
+	UpdateDate    time.Time  `json:"update_date"`
+	DeletionDate  *time.Time `json:"deletion_date"`
 }
 
 type UserSession struct {

@@ -124,6 +124,55 @@ func ValidateUserCredentials(username, password string) (Client, error) {
 	return user, nil
 }
 
+// Social Login
+func GetOrCreateUserByOAuth(oauthProvider, oauthID, email, name, avatar string) (*Client, error) {
+	var user Client
+	// Check if the user already exists
+	err := DB.QueryRow(`
+		SELECT user_id, last_name, first_name, user_name, email, avatar, user_role, oauth_provider, oauth_id
+		FROM Clients
+		WHERE oauth_provider = ? AND oauth_id = ?
+	`, oauthProvider, oauthID).Scan(
+		&user.UserID, &user.LastName, &user.FirstName, &user.UserName, &user.Email,
+		&user.Avatar, &user.UserRole, &user.OauthProvider, &user.OauthID,
+	)
+
+	// If no rows are found, create a new user
+	if err == sql.ErrNoRows {
+		// Insert new user
+		result, insertErr := DB.Exec(`
+			INSERT INTO Clients (last_name, first_name, user_name, email, avatar, user_role, oauth_provider, oauth_id)
+			VALUES (?, ?, ?, ?, ?, 'user', ?, ?)
+		`, "", name, name, email, avatar, oauthProvider, oauthID)
+		if insertErr != nil {
+			return nil, fmt.Errorf("failed to create user: %w", insertErr)
+		}
+
+		// Get the ID of the newly inserted user
+		userID, err := result.LastInsertId()
+		if err != nil {
+			return nil, fmt.Errorf("failed to retrieve new user ID: %w", err)
+		}
+
+		// Return the newly created user
+		return &Client{
+			UserID:        int(userID),
+			FirstName:     name,
+			UserName:      name,
+			Email:         email,
+			Avatar:        avatar,
+			UserRole:      "user",
+			OauthProvider: oauthProvider,
+			OauthID:       oauthID,
+		}, nil
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch user: %w", err)
+	}
+	return &user, nil
+}
+
 // Create client for testing
 func InsertSampleClient() {
 	// Check if the sample client already exists

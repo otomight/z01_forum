@@ -1,16 +1,18 @@
 CREATE TABLE IF NOT EXISTS Clients (
-	user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	last_name TEXT,
-	first_name TEXT,
-	user_name TEXT UNIQUE,
-	email TEXT UNIQUE,
-	password TEXT,
-	avatar TEXT,
-	birth_date DATE,
-	user_role TEXT DEFAULT 'user',
-	creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	deletion_date TIMESTAMP
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    last_name TEXT,
+    first_name TEXT,
+    user_name TEXT UNIQUE,
+    email TEXT UNIQUE,
+    oauth_provider TEXT,
+    oautH_id TEXT,
+    password TEXT,
+    avatar TEXT,
+    birth_date DATE,
+    user_role TEXT DEFAULT 'user',
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deletion_date TIMESTAMP 
 );
 
 CREATE TABLE IF NOT EXISTS Sessions (

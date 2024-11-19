@@ -33,6 +33,18 @@ func SetupRoutes() http.Handler {
 	mux.Handle("/post/like", middleware.SessionMiddleWare(http.HandlerFunc(handlers.LikePostHandler)))
 	mux.Handle("/post/dislike", middleware.SessionMiddleWare(http.HandlerFunc(handlers.DisLikePostHandler)))
 
+	// Google log
+	mux.Handle("/auth/google/login", middleware.SessionMiddleWare(http.HandlerFunc(handlers.GoogleLoginHandler)))
+	mux.Handle("/Auth/google/callback", middleware.SessionMiddleWare(http.HandlerFunc(handlers.GoogleCallBackHandler)))
+
+	// Github log
+	mux.Handle("/auth/github/login", middleware.SessionMiddleWare(http.HandlerFunc(handlers.GithubLoginHandler)))
+	mux.Handle("/auth/github/callback", middleware.SessionMiddleWare(http.HandlerFunc(handlers.GithubCallBackHandler)))
+
+	// Facebook log
+	mux.Handle("/auth/facebook/login", middleware.SessionMiddleWare(http.HandlerFunc(handlers.FacebookLoginHandler)))
+	mux.Handle("/auth/facebook/callback", middleware.SessionMiddleWare(http.HandlerFunc(handlers.FacebookCallBackHandler)))
+
 	//Wrap mux with logging middleware
 	wrappedMux := middleware.LoggingMiddleware(mux)
 

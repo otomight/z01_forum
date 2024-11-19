@@ -3,9 +3,12 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"forum/internal/config"
+	"forum/internal/database"
 	"io"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func ExtractCode(r *http.Request) (string, error) {
@@ -62,4 +65,56 @@ func FetchUserInfo(userInfoURL, accessToken string) (map[string]interface{}, err
 		return nil, fmt.Errorf("failed to parse user info: %v", err)
 	}
 	return userInfo, nil
+}
+
+func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.ProviderConfig) {
+	code, err := ExtractCode(r)
+	if err != nil {
+		http.Error(w, "Failed to extract code:"+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	accesToken, err := ExchangeCodeForToken(
+		config.TokenURL,
+		config.ClientID,
+		config.ClientSecret,
+		config.RedirectURI,
+		code,
+	)
+	if err != nil {
+		http.Error(w, "Failed to exchange code for toker:"+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	userInfo, err := FetchUserInfo(config.UserInfoURL, accesToken)
+	if err != nil {
+		http.Error(w, "Failed to fetch user info:"+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	user, err := database.GetOrCreateUserByOAuth(
+		config.Name,
+		userInfo["id"].(string),
+		userInfo["email"].(string),
+		userInfo["name"].(string),
+		userInfo["picture"].(string),
+	)
+	if err != nil {
+		http.Error(w, "Failed to create/Retrieve user:"+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	sessionID, err := database.CreateUserSession(user.UserID, user.UserRole, user.UserName)
+	if err != nil {
+		http.Error(w, "Failed to create session:"+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "seesion_id",
+		Value:    sessionID,
+		Expires:  time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+	})
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

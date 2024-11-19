@@ -19,30 +19,15 @@ func GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GoogleCallBackHandler(w http.ResponseWriter, r *http.Request) {
-	code, err := utils.ExtractCode(r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	googleConfig := config.ProviderConfig{
+		Name:         "google",
+		TokenURL:     config.GoogleTokenURL,
+		UserInfoURL:  config.GoogleUserInfoURL,
+		ClientID:     config.GoogleClientID,
+		ClientSecret: config.GoogleClientSecret,
+		RedirectURI:  config.GoogleRedirectURI,
 	}
-
-	accesToken, err := utils.ExchangeCodeForToken(
-		config.GoogleTokenURL,
-		config.GoogleClientID,
-		config.GoogleClientSecret,
-		config.GoogleRedirectURI,
-		code,
-	)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	userInfo, err := utils.FetchUserInfo(config.GoogleUserInfoURL, accesToken)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	fmt.Fprintf(w, "Hello %s, your email is %s", userInfo["name"], userInfo["email"])
+	utils.OAuthCallbackHandler(w, r, googleConfig)
 }
 
 // Github
@@ -57,30 +42,15 @@ func GithubLoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GithubCallBackHandler(w http.ResponseWriter, r *http.Request) {
-	code, err := utils.ExtractCode(r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	githubConfig := config.ProviderConfig{
+		Name:         "github",
+		TokenURL:     config.GithubTokenURL,
+		UserInfoURL:  config.GithubUserInfoURL,
+		ClientID:     config.GithubClientID,
+		ClientSecret: config.GithubClientSecret,
+		RedirectURI:  config.GithubRedirectURI,
 	}
-
-	accesToken, err := utils.ExchangeCodeForToken(
-		config.GithubTokenURL,
-		config.GithubClientID,
-		config.GithubClientSecret,
-		config.GithubRedirectURI,
-		code,
-	)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	userInfo, err := utils.FetchUserInfo(config.GithubUserInfoURL, accesToken)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	fmt.Fprintf(w, "Hello %s your email is %s", userInfo["name"], userInfo["email"])
+	utils.OAuthCallbackHandler(w, r, githubConfig)
 }
 
 // Fb
@@ -95,28 +65,13 @@ func FacebookLoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func FacebookCallBackHandler(w http.ResponseWriter, r *http.Request) {
-	code, err := utils.ExtractCode(r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	facebookConfig := config.ProviderConfig{
+		Name:         "facebook",
+		TokenURL:     config.FacebookTokenURL,
+		UserInfoURL:  config.FacebookUserInfoURL,
+		ClientID:     config.FacebookClientID,
+		ClientSecret: config.FacebookClientSecret,
+		RedirectURI:  config.FacebookRedirectURI,
 	}
-
-	accesToken, err := utils.ExchangeCodeForToken(
-		config.FacebookTokenURL,
-		config.FacebookClientID,
-		config.FacebookClientSecret,
-		config.FacebookRedirectURI,
-		code,
-	)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	userInfo, err := utils.FetchUserInfo(config.FacebookUserInfoURL, accesToken)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	fmt.Fprintf(w, "Hello %v, your email is %s", userInfo["name"], userInfo["email"])
+	utils.OAuthCallbackHandler(w, r, facebookConfig)
 }
