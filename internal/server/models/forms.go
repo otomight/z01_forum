@@ -15,6 +15,10 @@ type RegisterForm struct {
 	LastName	string	`form:"last_name"`
 }
 
+type DeletePostForm struct {
+	PostId	string	`form:"postId"`
+}
+
 type LoginForm struct {
 	Username	string	`form:"username"`
 	Password	string	`form:"password"`

@@ -16,12 +16,11 @@
 
 	{{ if or (eq .AuthorID .Session.UserID)
 			(doesStrMatchAny .Session.UserRole "moderator" "administrator") }}
-		<div class="post-controls">
-			<a href="/post/delete/{{ .PostID }}"
-				onclick="return confirm('delete post?')">
-				Delete
-			</a>
-		</div>
+		<form action="/post/delete" method="POST" class="post-controls"
+			onsubmit="return confirm('Are you sure you want to delete this post ?');">
+			<input type="hidden" name="postId" value="{{ .PostID }}">
+			<button type="submit">Delete</button>
+		</form>
 	{{ end }}
 
 	{{ if (doesStrMatchAny .Session.UserRole "moderator") }}

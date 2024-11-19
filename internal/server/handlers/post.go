@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"forum/internal/config"
 	"forum/internal/database"
@@ -50,19 +49,11 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createPostFromForm(w http.ResponseWriter,
-							r *http.Request) (int64, error) {
-	var ok		bool
-	var userId	int
+			r *http.Request, session *database.UserSession) (int64, error) {
 	var form	models.CreatePostForm
 	var postId	int64
 	var err		error
 
-	userId, ok = r.Context().Value(config.UserIDKey).(int)
-	if !ok {
-		http.Error(w, "User ID not found in context",
-						http.StatusInternalServerError)
-		return 0, err
-	}
 	if err = utils.ParseForm(r, &form); err != nil {
 		http.Error(w, "Unable to parse form:"+err.Error(),
 			http.StatusBadRequest)
@@ -73,7 +64,7 @@ func createPostFromForm(w http.ResponseWriter,
 			http.StatusBadRequest)
 		return 0, err
 	}
-	if postId, err = services.CreatePost(userId, form); err != nil {
+	if postId, err = services.CreatePost(session.UserID, form); err != nil {
 		http.Error(w, "Failed to create post",
 			http.StatusInternalServerError)
 		return 0, err
@@ -88,20 +79,20 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	var data			models.CreatePostPageData
 	var err				error
 
+	session, err = services.GetSession(r)
+	if err != nil {
+		http.Error(w, "User not logged", http.StatusUnauthorized)
+		return
+	}
 	if r.Method == http.MethodGet {
 		// render the post creation page
-		session, err = services.GetSession(r)
-		if err != nil {
-			http.Error(w, "User not logged", http.StatusUnauthorized)
-			return
-		}
 		data = models.CreatePostPageData{
 			Session: session,
 		}
 		templates.RenderTemplate(w, config.CreatePostTmpl, data)
 	} else if r.Method == http.MethodPost {
 		// handle the form send on post creation
-		if postId, err = createPostFromForm(w, r); err != nil {
+		if postId, err = createPostFromForm(w, r, session); err != nil {
 			return
 		}
 		redirectLink = fmt.Sprintf("/post/view/%d", postId)
@@ -109,97 +100,32 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetPost(w http.ResponseWriter, r *http.Request) {
-	posts, err := database.GetAllPosts()
-	if err != nil {
-		http.Error(w, "Failed to fetch posts", http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(posts)
-}
-
 func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
-	userRole, roleOk := r.Context().Value(config.UserRoleKey).(string)
-	userID, idOk := r.Context().Value(config.UserIDKey).(int)
+	var form			models.DeletePostForm
+	var err				error
+	var postId			int
 
-	//Check authentication
-	if !roleOk || !idOk {
-		http.Error(w, "Unauthorizes", http.StatusUnauthorized)
+	if r.Method != http.MethodPost {
+		http.Error(w, "", http.StatusMethodNotAllowed)
 		return
 	}
-
-	//Retrieve postID from URL parameters
-	postIDstr := r.URL.Query().Get("postID")
-	postID, err := strconv.Atoi(postIDstr)
-	if err != nil || postID == 0 {
-		http.Error(w, "Invalid post ID", http.StatusBadRequest)
+	if err = utils.ParseForm(r, &form); err != nil {
+		http.Error(w, "Unable to parse form:"+err.Error(),
+			http.StatusBadRequest)
 		return
 	}
-
-	//Fetch post to identify its author
-	post, err := database.GetPostByID(postID)
+	postId, err = strconv.Atoi(form.PostId)
 	if err != nil {
-		http.Error(w, "Post not found", http.StatusNotFound)
+		http.Error(w, "Failed to delete post", http.StatusInternalServerError)
 		return
 	}
-
-	//Authorization check
-	if userRole == "administrator" || userRole == "moderator" || post.AuthorID == userID {
-		//Delete post if authorized
-		err = database.DeletePost(postID)
-		if err != nil {
-			http.Error(w, "Failed to delete post", http.StatusInternalServerError)
-			return
-		}
-	} else {
-		http.Error(w, "Unauthorized to delete this post", http.StatusInternalServerError)
+	if err = database.DeletePost(postId); err != nil {
+		http.Error(w, "Failed to delete post", http.StatusInternalServerError)
 		return
 	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// NOT FINISHED
 func EditPostHandler(w http.ResponseWriter, r *http.Request) {
-	userID, idOk := r.Context().Value(config.UserIDKey).(int)
-	userRole, _ := r.Context().Value(config.UserRoleKey).(string)
 
-	//Check authentication
-	if !idOk {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	//Retrieve postID from URL parameters
-	postIDstr := r.URL.Query().Get("postID")
-	postID, err := strconv.Atoi(postIDstr)
-	if err != nil || postID == 0 {
-		http.Error(w, "Invalid postID", http.StatusBadRequest)
-		return
-	}
-
-	//Fetch post to identify its author
-	post, err := database.GetPostByID(postID)
-	if err != nil {
-		http.Error(w, "Post not found", http.StatusNotFound)
-		return
-	}
-
-	//Only Authors can edit their posts
-	if post.AuthorID != userID {
-		http.Error(w, "Unauthorized to edit this post", http.StatusForbidden)
-		return
-	}
-	data := struct {
-		Title      string
-		Post       *database.Post
-		IsLoggedIn bool
-		UserRole   string
-	}{
-		Title:      "Edit Post",
-		Post:       post,
-		IsLoggedIn: true,
-		UserRole:   userRole,
-	}
-	templates.RenderTemplate(w, config.EditPostTmpl, data)
 }
