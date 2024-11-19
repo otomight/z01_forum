@@ -1,7 +1,7 @@
 {{ define "post_comments" }}
 	<div class="comments">
 		<h4>Comments</h4>
-		{{ if (doesUserHasAnyRole .Session.UserRole "user"
+		{{ if (doesStrMatchAny .Session.UserRole "user"
 							"moderator" "administrator") }}
 			<form action="/post/comment/{{.PostID}}"
 				method="POST" class="comment-form">

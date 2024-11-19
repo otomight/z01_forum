@@ -1,5 +1,5 @@
 {{ define "post_buttons" }}
-	{{ if (doesUserHasAnyRole .Session.UserRole "user"
+	{{ if (doesStrMatchAny .Session.UserRole "user"
 							"moderator" "administrator") }}
 		<div class="post-like">
 			<a href="/post/like">Like</a>
@@ -14,8 +14,8 @@
 		</div>
 	{{ end }}
 
-	{{ if (doesUserHasAnyRole .Session.UserRole
-							"moderator" "administrator") }}
+	{{ if or (eq .AuthorID .Session.UserID)
+			(doesStrMatchAny .Session.UserRole "moderator" "administrator") }}
 		<div class="post-controls">
 			<a href="/post/delete/{{ .PostID }}"
 				onclick="return confirm('delete post?')">
@@ -24,7 +24,7 @@
 		</div>
 	{{ end }}
 
-	{{ if (doesUserHasAnyRole .Session.UserRole "moderator") }}
+	{{ if (doesStrMatchAny .Session.UserRole "moderator") }}
 		<div class="post-controls">
 			<a href="/post/report/{{ .PostID }}">Report</a>
 		</div>

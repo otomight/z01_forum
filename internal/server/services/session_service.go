@@ -29,7 +29,5 @@ func	GetSession(r *http.Request) (*database.UserSession, error) {
 	}
 	// Session is valid, user is logged in
 	session.IsLoggedIn = true
-	log.Printf("Session found for UserID: %d, UserRole: %s",
-								session.UserID, session.UserRole)
 	return session, nil
 }
