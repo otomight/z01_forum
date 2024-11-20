@@ -8,6 +8,11 @@ import (
 
 func SetupRoutes() http.Handler {
 	mux := http.NewServeMux()
+
+	// serve static files
+	fs := http.FileServer(http.Dir("./web/static"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	//Routes
 	mux.Handle("/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.HomePageHandler)))
 	mux.HandleFunc("/login", handlers.LoginHandler)
@@ -24,6 +29,9 @@ func SetupRoutes() http.Handler {
 
 	//Add comment
 	mux.Handle("/post/comment/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.AddCommentHandler)))
+
+	mux.Handle("/post/like", middleware.SessionMiddleWare(http.HandlerFunc(handlers.LikePostHandler)))
+	mux.Handle("/post/dislike", middleware.SessionMiddleWare(http.HandlerFunc(handlers.DisLikePostHandler)))
 
 	//Wrap mux with logging middleware
 	wrappedMux := middleware.LoggingMiddleware(mux)

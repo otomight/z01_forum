@@ -30,13 +30,11 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	postId, err = strconv.Atoi(postIdStr)
-	if err != nil {
+	if postId, err = strconv.Atoi(postIdStr); err != nil {
 		http.NotFound(w, r)
 		return
 	}
-	post, err = database.GetPostByID(postId)
-	if err != nil {
+	if post, err = database.GetPostByID(postId); err != nil {
 		http.NotFound(w, r)
 		return
 	}
@@ -55,18 +53,18 @@ func createPostFromForm(w http.ResponseWriter,
 	var err		error
 
 	if err = utils.ParseForm(r, &form); err != nil {
-		http.Error(w, "Unable to parse form:"+err.Error(),
-			http.StatusBadRequest)
+		http.Error(w, "Unable to parse form:" + err.Error(),
+					http.StatusBadRequest)
 		return 0, err
 	}
 	if form.Title == "" || form.Content == "" {
 		http.Error(w, "Title and Content are required",
-			http.StatusBadRequest)
+					http.StatusBadRequest)
 		return 0, err
 	}
 	if postId, err = services.CreatePost(session.UserID, form); err != nil {
 		http.Error(w, "Failed to create post",
-			http.StatusInternalServerError)
+					http.StatusInternalServerError)
 		return 0, err
 	}
 	return postId, nil
@@ -114,8 +112,7 @@ func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 			http.StatusBadRequest)
 		return
 	}
-	postId, err = strconv.Atoi(form.PostId)
-	if err != nil {
+	if postId, err = strconv.Atoi(form.PostId); err != nil {
 		http.Error(w, "Failed to delete post", http.StatusInternalServerError)
 		return
 	}

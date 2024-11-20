@@ -55,3 +55,11 @@ type Comment struct {
 	Content      string    `json:"content"`
 	CreationDate time.Time `json:"creation_date"`
 }
+
+type LikeDislike struct {
+	Id			int
+	PostId		int
+	UserId		int
+	Liked		bool
+	UpdateDate	time.Time
+}
