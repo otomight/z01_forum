@@ -20,7 +20,7 @@ const (
 	//Github
 	GithubClientID     = "Iv23lixCMoiAieKSPEuk"
 	GithubClientSecret = "1095fbed2fe4f4790a45bf79986b4543940de3bb"
-	GithubRedirectURI  = "http://localhost:8081"
+	GithubRedirectURI  = "http://localhost:8081/auth/github/callback"
 	GithubAuthURL      = "https://github.com/login/oauth/authorize"
 	GithubTokenURL     = "https://github.com/login/oauth/access_token"
 	GithubUserInfoURL  = "https://api.github.com/user"

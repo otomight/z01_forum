@@ -82,7 +82,7 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 		code,
 	)
 	if err != nil {
-		http.Error(w, "Failed to exchange code for toker:"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to exchange code for token:"+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -111,7 +111,7 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     "seesion_id",
+		Name:     "session_id",
 		Value:    sessionID,
 		Expires:  time.Now().Add(24 * time.Hour),
 		HttpOnly: true,
