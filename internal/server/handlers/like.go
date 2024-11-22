@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"forum/internal/database"
+	"fmt"
 	"forum/internal/server/models"
 	"net/http"
 )
@@ -10,7 +10,6 @@ import (
 func LikeDislikePostHandler(w http.ResponseWriter,
 							r *http.Request, liked bool) {
 	var		received	models.LikeDislikePostRequestAjax
-	var		response	models.LikeDislikePostResponseAjax
 	var		err			error
 	const	likeCount = 1 // temp define for test
 	const	dislikeCount = 1
@@ -25,22 +24,13 @@ func LikeDislikePostHandler(w http.ResponseWriter,
 		return
 	}
 	// write data in db
-	err = database.AddLikeDislike(received.PostId, received.UserId, liked)
-	if err  != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	// send response with new likes and dislikes count
-	response = models.LikeDislikePostResponseAjax{
-		LikeCount: likeCount,
-		DislikeCount: dislikeCount,
-	}
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, "Error encoding response JSON",
-						http.StatusInternalServerError)
-	}
+	fmt.Printf("postId=%d userId=%d liked=%v\n",
+					received.PostId, received.UserId, liked)
+	// err = database.AddLikeDislike(received.PostId, received.UserId, liked)
+	// if err  != nil {
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
 }
 
 func LikePostHandler(w http.ResponseWriter, r *http.Request) {

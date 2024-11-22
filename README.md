@@ -1,3 +1,16 @@
+## Dependencies
+
+- nodejs and npm
+```sh
+sudo apt install nodejs npm
+```
+
+- typescript
+```sh
+# install typescripts locally in the project
+npm install typescript@5.0 --save-dev
+```
+
 ## Project Structure
 
 The project's directory structure is organized as follows:

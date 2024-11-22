@@ -26,7 +26,7 @@ func GetLikeDislike(postId int, userId int) ([]LikeDislike, error) {
 	var rows			*sql.Rows
 	var err				error
 	var likesDislikes	[]LikeDislike
-	var ldl		LikeDislike
+	var ldl				LikeDislike
 
 	query = `
 	SELECT id, post_id, user_id, update_date
