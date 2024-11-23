@@ -37,8 +37,6 @@ The project's directory structure is organized as follows:
 
 		- **`models/`**: Contains structures related to the server.
 
-		- **`routes/`**: Contains every route endpoints of the application.
-
 		- **`services/`**: Contains functionality related to the handlers
 			or specific to the business logic.
 

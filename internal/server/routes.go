@@ -1,7 +1,8 @@
-package routes
+package server
 
 import (
 	"forum/internal/server/handlers"
+	"forum/internal/server/handlers/posthandlers"
 	"forum/internal/server/middleware"
 	"net/http"
 )
@@ -20,12 +21,12 @@ func SetupRoutes() http.Handler {
 	mux.HandleFunc("/logout", handlers.LogOutHandler)
 
 	// Rendering post creation form
-	mux.Handle("/post/create", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CreatePostHandler)))
-	mux.Handle("/post/view/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.ViewPostHandler)))
+	mux.Handle("/post/create", middleware.SessionMiddleWare(http.HandlerFunc(posthandlers.CreatePostHandler)))
+	mux.Handle("/post/view/", middleware.SessionMiddleWare(http.HandlerFunc(posthandlers.ViewPostHandler)))
 
 	//Protect route with session middelware
-	mux.Handle("/post/delete", middleware.SessionMiddleWare(http.HandlerFunc(handlers.DeletePostHandler)))
-	mux.Handle("/post/edit", middleware.SessionMiddleWare(http.HandlerFunc(handlers.EditPostHandler)))
+	mux.Handle("/post/delete", middleware.SessionMiddleWare(http.HandlerFunc(posthandlers.DeletePostHandler)))
+	mux.Handle("/post/edit", middleware.SessionMiddleWare(http.HandlerFunc(posthandlers.EditPostHandler)))
 
 	//Add comment
 	mux.Handle("/post/comment/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.AddCommentHandler)))

@@ -2,7 +2,7 @@ package main
 
 import (
 	"forum/internal/database"
-	"forum/internal/server/routes"
+	"forum/internal/server"
 	"forum/internal/server/templates"
 	"log"
 	"net/http"
@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to load templates: %v", err)
 	}
-	mux := routes.SetupRoutes()
+	mux := server.SetupRoutes()
 
 	log.Println("Starting server on : 8081")
 	if err := http.ListenAndServe(":8081", mux); err != nil {
