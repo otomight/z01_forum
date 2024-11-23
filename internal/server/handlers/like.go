@@ -31,6 +31,7 @@ func LikeDislikePostHandler(w http.ResponseWriter,
 	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
 	// 	return
 	// }
+	w.WriteHeader(http.StatusOK)
 }
 
 func LikePostHandler(w http.ResponseWriter, r *http.Request) {

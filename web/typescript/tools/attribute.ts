@@ -1,11 +1,10 @@
 export function extractAttributes<T>(element: HTMLElement,
 							attributeMap: Record<keyof T, string>): T | null {
-	let	key:			keyof T;
-	let	attributeName:	string;
-	let	value:			string | null;
-	let	result: 		Partial<T>;
+	const	result: 		Partial<T> = {};
+	let		key:			keyof T;
+	let		attributeName:	string;
+	let		value:			string | null;
 
-	result = {};
 	for (key in attributeMap) {
 		attributeName = attributeMap[key];
 		value = element.getAttribute(attributeName);

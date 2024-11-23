@@ -17,13 +17,14 @@ const	LIKE_DISLIKE_POST_ATTRIBUTE_MAP: LikeDislikePostAttributeMap = {
 }
 
 function sendLikeDislikeRequest(button: HTMLElement, action: string): number {
-	let		data:		LikeDislikePostAttributeMap | null;
+	const	data:		LikeDislikePostAttributeMap | null = (
+		extractAttributes<LikeDislikePostAttributeMap>(
+			button,
+			LIKE_DISLIKE_POST_ATTRIBUTE_MAP
+		)
+	);
 	let		request:	LikeDislikePostRequestAjax | null;
 
-	data = extractAttributes<LikeDislikePostAttributeMap>(
-		button,
-		LIKE_DISLIKE_POST_ATTRIBUTE_MAP
-	);
 	if (!data)
 		return 1
 	request = {
@@ -37,6 +38,10 @@ function sendLikeDislikeRequest(button: HTMLElement, action: string): number {
 		},
 		body: JSON.stringify(request)
 	})
+	.then(response => {
+		if (!response.ok)
+			throw new Error('The request failed');
+	})
 	.catch((error: Error) => {
 		console.error('Error:', error);
 		alert('Something went wrong, please try again.');
@@ -45,9 +50,10 @@ function sendLikeDislikeRequest(button: HTMLElement, action: string): number {
 }
 
 function addToLikeDislikeButtonValue(button: HTMLButtonElement, nb: number) {
-	let		buttonCount:	HTMLElement | null;
+	const	buttonCount:	HTMLElement | null = (
+		button.querySelector('.like-dislike-count') as HTMLElement | null
+	);
 
-	buttonCount = button.querySelector('.like-dislike-count')
 	if (!buttonCount) {
 		console.error("Element with class like-dislike-count not found")
 		return
@@ -57,7 +63,9 @@ function addToLikeDislikeButtonValue(button: HTMLButtonElement, nb: number) {
 
 function handleLikeDislikeButton(event: Event, action: string,
 									oppositeButton: HTMLButtonElement): void {
-	const	button = event.currentTarget as HTMLButtonElement | null;
+	const	button:	HTMLButtonElement | null = (
+		event.currentTarget as HTMLButtonElement | null
+	);
 
 	if (!button)
 		return
@@ -76,10 +84,12 @@ function handleLikeDislikeButton(event: Event, action: string,
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	const likeButton = document.getElementById(
-							'likeButton') as HTMLButtonElement;
-	const dislikeButton = document.getElementById(
-							'dislikeButton') as HTMLButtonElement;
+	const	likeButton:		HTMLButtonElement = (
+		document.getElementById('likeButton') as HTMLButtonElement
+	);
+	const	dislikeButton:	HTMLButtonElement = (
+		document.getElementById('dislikeButton') as HTMLButtonElement
+	);
 
 	likeButton.addEventListener('click',
 		(event) => handleLikeDislikeButton(event, "/post/like", dislikeButton)

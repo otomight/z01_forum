@@ -1,8 +1,7 @@
 export function addToElemValue(elem: HTMLElement, toAdd: number) {
-	let		text:	string | null;
+	const	text:	string | null = elem.textContent;
 	let		nb:		number;
 
-	text = elem.textContent;
 	if (!text)
 		return
 	nb = parseInt(text);
