@@ -16,7 +16,8 @@ const	LIKE_DISLIKE_POST_ATTRIBUTE_MAP: LikeDislikePostAttributeMap = {
 	user_id: 'data-user-id'
 }
 
-function sendLikeDislikeRequest(button: HTMLElement, action: string): number {
+async function sendLikeDislikeRequest(button: HTMLElement,
+										action: string): Promise<number> {
 	const	data:		LikeDislikePostAttributeMap | null = (
 		extractAttributes<LikeDislikePostAttributeMap>(
 			button,
@@ -24,6 +25,7 @@ function sendLikeDislikeRequest(button: HTMLElement, action: string): number {
 		)
 	);
 	let		request:	LikeDislikePostRequestAjax | null;
+	let		result:		number;
 
 	if (!data)
 		return 1
@@ -31,7 +33,7 @@ function sendLikeDislikeRequest(button: HTMLElement, action: string): number {
 		post_id: parseInt(data.post_id, 10),
 		user_id: parseInt(data.user_id, 10)
 	}
-	fetch(action, {
+	result = await fetch(action, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -39,14 +41,20 @@ function sendLikeDislikeRequest(button: HTMLElement, action: string): number {
 		body: JSON.stringify(request)
 	})
 	.then(response => {
+		if (response.status == 401) { // unauthorized
+			alert('You must be logged in to use this feature.');
+			return 1
+		}
 		if (!response.ok)
 			throw new Error(response.status + ' The request failed');
+		return 0
 	})
 	.catch((error: Error) => {
 		console.error('Error:', error);
 		alert('Something went wrong, please try again.');
+		return 1
 	});
-	return 0
+	return result
 }
 
 function addToLikeDislikeButtonValue(button: HTMLButtonElement, nb: number) {
@@ -61,15 +69,15 @@ function addToLikeDislikeButtonValue(button: HTMLButtonElement, nb: number) {
 	addToElemValue(buttonCount, nb)
 }
 
-function handleLikeDislikeButton(event: Event, action: string,
-									oppositeButton: HTMLButtonElement): void {
+async function handleLikeDislikeButton(event: Event, action: string,
+									oppositeButton: HTMLButtonElement) {
 	const	button:	HTMLButtonElement | null = (
 		event.currentTarget as HTMLButtonElement | null
 	);
 
 	if (!button)
 		return
-	if (sendLikeDislikeRequest(button, action) == 1)
+	if (await sendLikeDislikeRequest(button, action) == 1)
 		return
 	if (!button.classList.contains('active')) {
 		addToLikeDislikeButtonValue(button, 1);

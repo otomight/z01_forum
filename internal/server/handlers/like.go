@@ -5,6 +5,7 @@ import (
 	"fmt"
 	db "forum/internal/database"
 	"forum/internal/server/models"
+	"forum/internal/server/services"
 	"net/http"
 )
 
@@ -16,9 +17,6 @@ func updateLikeDislikeInDb(
 	ldl, err = db.GetLikeDislike(received.PostId, received.UserId)
 	if err != nil {
 		return err
-	}
-	if ldl != nil {
-		fmt.Printf("ldl liked=%v\n", ldl.Liked)
 	}
 	if ldl != nil && ldl.Liked == liked {
 		err = db.DeleteLikeDislike(received.PostId, received.UserId)
@@ -38,9 +36,15 @@ func LikeDislikePostHandler(w http.ResponseWriter,
 							r *http.Request, liked bool) {
 	var		received	models.LikeDislikePostRequestAjax
 	var		err			error
+	var		session		*db.UserSession
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "", http.StatusMethodNotAllowed)
+		return
+	}
+	session, _ = services.GetSession(r)
+	if !session.IsLoggedIn {
+		http.Error(w, "", http.StatusUnauthorized)
 		return
 	}
 	// get data from js

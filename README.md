@@ -1,14 +1,19 @@
 ## Dependencies
 
 - nodejs and npm
-```sh
-sudo apt install nodejs npm
-```
+	- download nodejs from the [website](https://nodejs.org/en/download/prebuilt-binaries)
+	- extract the file<br>
+	`sudo tar -C /usr/local -xJf ~/Downloads/node-v22.11.0-linux-x64.tar.xz`
+	- add the binaries to your path<br>
+	`echo "PATH=/usr/local/bin/node-v22.11.0-linux-x64/bin:$PATH" >> ~/.profile`
+	`source ~/.profile`
 
-- typescript
+- typescript and packages
 ```sh
 # install typescripts locally in the project
-npm install typescript@5.0 --save-dev
+npm install typescript
+npm install http-status-codes
+npm install --save-dev vite
 ```
 
 ## Project Structure

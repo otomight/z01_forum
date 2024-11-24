@@ -1,19 +1,17 @@
 {{ define "post_buttons" }}
-	{{ if .Session.IsLoggedIn }}
-		<div id="like-dislike-section">
-			<button class="" id="likeButton" data-post-id="{{ .PostID }}"
-					data-user-id="{{ .Session.UserID }}">
-				<span class="like-dislike-icon">👍</span>
-				<span class="like-dislike-count">0</span>
-			</button>
-			<button class="" id="dislikeButton" data-post-id="{{ .PostID }}"
-					data-user-id="{{ .Session.UserID }}">
-				<span class="like-dislike-icon">👎</span>
-				<span class="like-dislike-count">0</span>
-			</button>
-		</div>
-		<script type="module" src="/static/scripts/typescript/like.js"></script>
-	{{ end }}
+	<div id="like-dislike-section">
+		<button class="" id="likeButton" data-post-id="{{ .PostID }}"
+				data-user-id="{{ .Session.UserID }}">
+			<span class="like-dislike-icon">👍</span>
+			<span class="like-dislike-count">0</span>
+		</button>
+		<button class="" id="dislikeButton" data-post-id="{{ .PostID }}"
+				data-user-id="{{ .Session.UserID }}">
+			<span class="like-dislike-icon">👎</span>
+			<span class="like-dislike-count">0</span>
+		</button>
+	</div>
+	<script type="module" src="/static/scripts/typescript/like.js"></script>
 
 	<!-- Additional features for user/admin/moderator -->
 	{{ if eq .AuthorID .Session.UserID }}
