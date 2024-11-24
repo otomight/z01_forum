@@ -40,7 +40,7 @@ function sendLikeDislikeRequest(button: HTMLElement, action: string): number {
 	})
 	.then(response => {
 		if (!response.ok)
-			throw new Error('The request failed');
+			throw new Error(response.status + ' The request failed');
 	})
 	.catch((error: Error) => {
 		console.error('Error:', error);
