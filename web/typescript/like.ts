@@ -1,63 +1,94 @@
 import { extractAttributes } from "./tools/attribute.js";
 import { addToElemValue } from "./tools/math.js";
 
-interface LikeDislikePostRequestAjax {
+// match with LikeDislikePostRequestAjax struct in server
+interface LikeRequest {
 	post_id: number;
 	user_id: number;
 }
 
-interface LikeDislikePostAttributeMap {
+// match with LikeRequest and HTML
+interface LikeAttributeMap {
 	post_id: string
 	user_id: string
 }
 
-const	LIKE_DISLIKE_POST_ATTRIBUTE_MAP: LikeDislikePostAttributeMap = {
+// match with LikeDislikePostResponseAjax struct in server
+interface LikeResponse {
+	added:		boolean;
+	deleted:	boolean;
+	replaced:	boolean;
+}
+
+const	LIKE_DISLIKE_POST_ATTRIBUTE_MAP: LikeAttributeMap = {
 	post_id: 'data-post-id',
 	user_id: 'data-user-id'
 }
 
-async function sendLikeDislikeRequest(button: HTMLElement,
-										action: string): Promise<number> {
-	const	data:		LikeDislikePostAttributeMap | null = (
-		extractAttributes<LikeDislikePostAttributeMap>(
+function	buildRequest(button: HTMLElement): LikeRequest | null {
+	const	data:		LikeAttributeMap | null = (
+		extractAttributes<LikeAttributeMap>(
 			button,
 			LIKE_DISLIKE_POST_ATTRIBUTE_MAP
 		)
 	);
-	let		request:	LikeDislikePostRequestAjax | null;
-	let		result:		number;
+	let		request:	LikeRequest;
 
 	if (!data)
-		return 1
+		return null
 	request = {
 		post_id: parseInt(data.post_id, 10),
 		user_id: parseInt(data.user_id, 10)
 	}
-	result = await fetch(action, {
+	return request
+}
+
+async function	fetchRequest(
+	action: string,
+	request: LikeRequest
+): Promise<Response | null> {
+	let		response:	Response
+
+	response = await fetch(action, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(request)
-	})
-	.then(response => {
-		if (response.status == 401) { // unauthorized
-			alert('You must be logged in to use this feature.');
-			return 1
-		}
-		if (!response.ok)
-			throw new Error(response.status + ' The request failed');
-		return 0
-	})
-	.catch((error: Error) => {
-		console.error('Error:', error);
-		alert('Something went wrong, please try again.');
-		return 1
 	});
-	return result
+	if (response.status == 401) {
+		alert('You must be logged in to use this feature.');
+		return null
+	} else if (!response.ok)
+		throw new Error(response.status + ' The request failed');
+	return response
 }
 
-function addToLikeDislikeButtonValue(button: HTMLButtonElement, nb: number) {
+async function sendLikeDislikeRequest(
+	button: HTMLElement,
+	action: string
+): Promise<LikeResponse | null> {
+
+	const	request:	LikeRequest | null = (
+		buildRequest(button)
+	);
+	let		response:	Response | null
+
+	if (request == null)
+		return null
+	try {
+		response = await fetchRequest(action, request)
+		if (response == null)
+			return null
+		return response.json()
+	} catch (error) {
+		console.error('Error:', error);
+		alert('Something went wrong, please try again.');
+		return null
+	}
+}
+
+function addToButtonValue(button: HTMLButtonElement, nb: number) {
 	const	buttonCount:	HTMLElement | null = (
 		button.querySelector('.like-dislike-count') as HTMLElement | null
 	);
@@ -71,22 +102,24 @@ function addToLikeDislikeButtonValue(button: HTMLButtonElement, nb: number) {
 
 async function handleLikeDislikeButton(event: Event, action: string,
 									oppositeButton: HTMLButtonElement) {
-	const	button:	HTMLButtonElement | null = (
+	const	button:		HTMLButtonElement | null = (
 		event.currentTarget as HTMLButtonElement | null
 	);
+	let		response:	LikeResponse | null
 
 	if (!button)
 		return
-	if (await sendLikeDislikeRequest(button, action) == 1)
+	response = await sendLikeDislikeRequest(button, action)
+	if (response == null)
 		return
-	if (!button.classList.contains('active')) {
-		addToLikeDislikeButtonValue(button, 1);
-	} else {
-		addToLikeDislikeButtonValue(button, -1);
+	if (response.added) {
+		addToButtonValue(button, 1);
+	} else if (response.deleted) {
+		addToButtonValue(button, -1);
 	}
 	button.classList.toggle('active');
-	if (oppositeButton.classList.contains('active')) {
-		addToLikeDislikeButtonValue(oppositeButton, -1);
+	if (response.added && response.replaced) {
+		addToButtonValue(oppositeButton, -1);
 		oppositeButton.classList.remove('active');
 	}
 }

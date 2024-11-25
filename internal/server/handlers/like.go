@@ -10,34 +10,42 @@ import (
 )
 
 func updateLikeDislikeInDb(
-			received models.LikeDislikePostRequestAjax, liked bool) error {
-	var	err	error
-	var	ldl	*db.LikeDislike
+			received models.LikeDislikePostRequestAjax,
+			liked bool) (*models.LikeDislikePostResponseAjax, error) {
+	var	ldl			*db.LikeDislike
+	var	response	models.LikeDislikePostResponseAjax
+	var	err			error
 
 	ldl, err = db.GetLikeDislikeByUser(received.PostId, received.UserId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if ldl != nil && ldl.Liked == liked {
 		err = db.DeleteLikeDislike(received.PostId, received.UserId)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		response.Deleted = true
 	} else {
 		err = db.AddLikeDislike(received.PostId, received.UserId, liked)
 		if err != nil {
-			return err
+			return nil, err
+		}
+		response.Added = true
+		if ldl != nil && ldl.Liked != liked {
+			response.Replaced = true
 		}
 	}
 	err = db.UpdatePostLikesDislikesCount(received.PostId)
-	return nil
+	return &response, nil
 }
 
 func LikeDislikePostHandler(w http.ResponseWriter,
 							r *http.Request, liked bool) {
 	var		received	models.LikeDislikePostRequestAjax
-	var		err			error
 	var		session		*db.UserSession
+	var		response	*models.LikeDislikePostResponseAjax
+	var		err			error
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "", http.StatusMethodNotAllowed)
@@ -54,12 +62,15 @@ func LikeDislikePostHandler(w http.ResponseWriter,
 		return
 	}
 	// write data in db
-	if err = updateLikeDislikeInDb(received, liked); err != nil {
+	if response, err = updateLikeDislikeInDb(received, liked); err != nil {
 		fmt.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func LikePostHandler(w http.ResponseWriter, r *http.Request) {
