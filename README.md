@@ -8,12 +8,10 @@
 	`echo "PATH=/usr/local/bin/node-v22.11.0-linux-x64/bin:$PATH" >> ~/.profile`
 	`source ~/.profile`
 
-- typescript and packages
+- typescript
 ```sh
 # install typescripts locally in the project
 npm install typescript
-npm install http-status-codes
-npm install --save-dev vite
 ```
 
 ## Project Structure

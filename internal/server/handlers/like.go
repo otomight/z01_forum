@@ -14,7 +14,7 @@ func updateLikeDislikeInDb(
 	var	err	error
 	var	ldl	*db.LikeDislike
 
-	ldl, err = db.GetLikeDislike(received.PostId, received.UserId)
+	ldl, err = db.GetLikeDislikeByUser(received.PostId, received.UserId)
 	if err != nil {
 		return err
 	}
@@ -29,6 +29,7 @@ func updateLikeDislikeInDb(
 			return err
 		}
 	}
+	err = db.UpdatePostLikesDislikesCount(received.PostId)
 	return nil
 }
 

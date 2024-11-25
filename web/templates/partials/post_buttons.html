@@ -3,12 +3,12 @@
 		<button class="" id="likeButton" data-post-id="{{ .PostID }}"
 				data-user-id="{{ .Session.UserID }}">
 			<span class="like-dislike-icon">👍</span>
-			<span class="like-dislike-count">0</span>
+			<span class="like-dislike-count">{{ .Likes }}</span>
 		</button>
 		<button class="" id="dislikeButton" data-post-id="{{ .PostID }}"
 				data-user-id="{{ .Session.UserID }}">
 			<span class="like-dislike-icon">👎</span>
-			<span class="like-dislike-count">0</span>
+			<span class="like-dislike-count">{{ .Dislikes }}</span>
 		</button>
 	</div>
 	<script type="module" src="/static/scripts/typescript/like.js"></script>

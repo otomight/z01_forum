@@ -33,18 +33,20 @@ type UserSession struct {
 }
 
 type Post struct {
-	PostID       int        `json:"post_id"`
-	AuthorID     int        `json:"author_id"`
-	UserName     string     `json:"user_name"`
-	Title        string     `json:"title"`
-	Category     string     `json:"category"`
-	Tags         string     `json:"tags"`
-	Content      string     `json:"content"`
-	CreationDate time.Time  `json:"creation_date"`
-	UpdateDate   time.Time  `json:"update_date"`
-	DeletionDate *time.Time `json:"deletion_date"`
-	IsDeleted    bool       `json:"is_deleted"`
-	Comments     []Comment  `json:"comments"`
+	PostID			int			`json:"post_id"`
+	AuthorID		int			`json:"author_id"`
+	UserName		string		`json:"user_name"`
+	Title			string		`json:"title"`
+	Category		string		`json:"category"`
+	Tags			string		`json:"tags"`
+	Content			string		`json:"content"`
+	CreationDate	time.Time	`json:"creation_date"`
+	UpdateDate		time.Time	`json:"update_date"`
+	DeletionDate	*time.Time	`json:"deletion_date"`
+	IsDeleted		bool		`json:"is_deleted"`
+	Likes			int
+	Dislikes		int
+	Comments		[]Comment	`json:"comments"`
 }
 
 type Comment struct {
