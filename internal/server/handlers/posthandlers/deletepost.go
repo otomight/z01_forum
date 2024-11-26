@@ -9,9 +9,9 @@ import (
 )
 
 func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
-	var form	models.DeletePostForm
-	var err		error
-	var postId	int
+	var	form	models.DeletePostForm
+	var	err		error
+	var	postId	int
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "", http.StatusMethodNotAllowed)

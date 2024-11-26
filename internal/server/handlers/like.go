@@ -10,8 +10,8 @@ import (
 )
 
 func updateLikeDislikeInDb(
-	received models.LikeDislikePostRequestAjax,
-	liked bool,
+	received	models.LikeDislikePostRequestAjax,
+	liked		bool,
 ) (*models.LikeDislikePostResponseAjax, error) {
 	var	ldl			*db.LikeDislike
 	var	response	models.LikeDislikePostResponseAjax
@@ -41,8 +41,11 @@ func updateLikeDislikeInDb(
 	return &response, nil
 }
 
-func LikeDislikePostHandler(w http.ResponseWriter,
-							r *http.Request, liked bool) {
+func LikeDislikePostHandler(
+	w		http.ResponseWriter,
+	r		*http.Request,
+	liked	bool,
+) {
 	var	received	models.LikeDislikePostRequestAjax
 	var	response	*models.LikeDislikePostResponseAjax
 	var	ok			bool

@@ -32,9 +32,9 @@ func createPost(userId int, form models.CreatePostForm) (int64, error) {
 func createPostFromForm(
 	w http.ResponseWriter, r *http.Request, session *db.UserSession,
 ) (int64, error) {
-	var form	models.CreatePostForm
-	var postId	int64
-	var err		error
+	var	form	models.CreatePostForm
+	var	postId	int64
+	var	err		error
 
 	if err = utils.ParseForm(r, &form); err != nil {
 		http.Error(w, "Unable to parse form:" + err.Error(),

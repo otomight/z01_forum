@@ -21,10 +21,10 @@ func AddComment(postID, userID int, content string) error {
 func GetCommentsByPostID(postID int) ([]Comment, error) {
 	query := `
 	SELECT c.comment_id, c.post_id, c.user_id, u.user_name, c.content, c.creation_date
-    FROM Comments c
-    INNER JOIN Clients u ON c.user_id = u.user_id
-    WHERE c.post_id = ?
-    ORDER BY c.creation_date ASC;
+	FROM Comments c
+	INNER JOIN Clients u ON c.user_id = u.user_id
+	WHERE c.post_id = ?
+	ORDER BY c.creation_date ASC;
 	`
 
 	rows, err := DB.Query(query, postID)

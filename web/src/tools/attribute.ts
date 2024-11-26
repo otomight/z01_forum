@@ -1,6 +1,8 @@
-export function extractAttributes<T>(element: HTMLElement,
-							attributeMap: Record<keyof T, string>): T | null {
-	const	result: 		Partial<T> = {};
+export function extractAttributes<T>(
+	element:		HTMLElement,
+	attributeMap:	Record<keyof T, string>
+): T | null {
+	const	result:			Partial<T> = {};
 	let		key:			keyof T;
 	let		attributeName:	string;
 	let		value:			string | null;

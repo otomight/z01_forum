@@ -4,9 +4,7 @@ import "forum/internal/database"
 
 type ViewPostPageData struct {
 	Session				*database.UserSession
-	Post				*database.Post
-	IsLikedByUser		bool
-	IsDislikedByUser	bool
+	PostWithUserConfig	*PostWithUserConfig
 }
 
 type CreatePostPageData struct {
@@ -14,6 +12,6 @@ type CreatePostPageData struct {
 }
 
 type HomePageData struct {
-	Posts		[]*PostWithUserConfig
 	Session		*database.UserSession
+	Posts		[]*PostWithUserConfig
 }

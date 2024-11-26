@@ -5,13 +5,15 @@ import (
 	"forum/internal/utils"
 )
 
-func addToStruct(structData interface{},
-					values ...interface{}) map[string]interface{} {
-	var newData	map[string]interface{}
-	var dataMap	map[string]interface{}
-	var i		int
-	var key		string
-	var ok		bool
+func addToStruct(
+	structData	interface{},
+	values		...interface{},
+) map[string]interface{} {
+	var	newData	map[string]interface{}
+	var	dataMap	map[string]interface{}
+	var	i		int
+	var	key		string
+	var	ok		bool
 
 	dataMap, err := utils.StructToMap(structData)
 	if err != nil {

@@ -6,8 +6,9 @@ import (
 )
 
 // returns IsLikedByUser and IsDislikedByUser
-func	GetUserLikesConfigsOfPost(
-	session *db.UserSession, post *db.Post,
+func GetUserLikesConfigsOfPost(
+	session	*db.UserSession,
+	post	*db.Post,
 ) (bool, bool) {
 	var	ldl		*db.LikeDislike
 	var	err		error

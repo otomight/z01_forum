@@ -1,16 +1,16 @@
 import { extractAttributes } from "./tools/attribute.js";
-import { addToElemValue } from "./tools/math.js";
+import { addToElemNumber } from "./tools/math.js";
 
 // match with LikeDislikePostRequestAjax struct in server
 interface LikeRequest {
-	post_id: number;
-	user_id: number;
+	post_id:	number;
+	user_id:	number;
 }
 
 // match with LikeRequest and HTML
 interface LikeAttributeMap {
-	post_id: string
-	user_id: string
+	post_id:	string
+	user_id:	string
 }
 
 // match with LikeDislikePostResponseAjax struct in server
@@ -21,11 +21,11 @@ interface LikeResponse {
 }
 
 const	LIKE_DISLIKE_POST_ATTRIBUTE_MAP: LikeAttributeMap = {
-	post_id: 'data-post-id',
-	user_id: 'data-user-id'
+	post_id:	'data-post-id',
+	user_id:	'data-user-id'
 }
 
-function	buildRequest(button: HTMLElement): LikeRequest | null {
+function buildRequest(button: HTMLElement): LikeRequest | null {
 	const	data:		LikeAttributeMap | null = (
 		extractAttributes<LikeAttributeMap>(
 			button,
@@ -43,9 +43,9 @@ function	buildRequest(button: HTMLElement): LikeRequest | null {
 	return request
 }
 
-async function	fetchRequest(
-	action: string,
-	request: LikeRequest
+async function fetchRequest(
+	action:		string,
+	request:	LikeRequest
 ): Promise<Response | null> {
 	let		response:	Response
 
@@ -65,8 +65,8 @@ async function	fetchRequest(
 }
 
 async function sendLikeDislikeRequest(
-	button: HTMLElement,
-	action: string
+	button:	HTMLElement,
+	action:	string
 ): Promise<LikeResponse | null> {
 
 	const	request:	LikeRequest | null = (
@@ -97,11 +97,14 @@ function addToButtonValue(button: HTMLButtonElement, nb: number) {
 		console.error("Element with class like-dislike-count not found")
 		return
 	}
-	addToElemValue(buttonCount, nb)
+	addToElemNumber(buttonCount, nb)
 }
 
-async function handleLikeDislikeButton(event: Event, action: string,
-									oppositeButton: HTMLButtonElement) {
+async function handleLikeDislikeButton(
+	event:			Event,
+	action:			string,
+	oppositeButton:	HTMLButtonElement
+) {
 	const	button:		HTMLButtonElement | null = (
 		event.currentTarget as HTMLButtonElement | null
 	);

@@ -10,8 +10,9 @@ import (
 	"net/http"
 )
 
-func	IncludeUserLikesConfigs(
-	session *db.UserSession, posts []db.Post,
+func IncludeUserLikesConfigs(
+	session	*db.UserSession,
+	posts	[]db.Post,
 ) []*models.PostWithUserConfig {
 	var	userPost	*models.PostWithUserConfig
 	var	userPosts	[]*models.PostWithUserConfig
@@ -43,8 +44,8 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	userPosts = IncludeUserLikesConfigs(session, posts)
 	data := models.HomePageData{
-		Posts:		userPosts,
 		Session:	session,
+		Posts:		userPosts,
 	}
 	templates.RenderTemplate(w, config.HomeTmpl, data)
 }

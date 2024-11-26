@@ -35,9 +35,9 @@ func getHtmlFiles(dirPath string) ([]string, error) {
 }
 
 func LoadTemplates() error {
-	var funcMap	template.FuncMap
-	var files	[]string
-	var err		error
+	var	funcMap	template.FuncMap
+	var	files	[]string
+	var	err		error
 
 	funcMap = template.FuncMap{
 		// insert here function to use into the templates
@@ -58,7 +58,7 @@ func LoadTemplates() error {
 }
 
 func RenderTemplate(w http.ResponseWriter, tmpl string, data any) {
-	var err		error
+	var	err		error
 
 	if templates == nil {
 		fmt.Println("No templates loaded")

@@ -2,11 +2,13 @@
 <html lang="en">
 	<body>
 		{{ template "header" . }}
-		<h3>{{ .Post.Title }}</h3>
-		<p>{{ .Post.Content }}</p>
-		<p>By: {{ .Post.UserName }}</p>
-		<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
-		{{ template "post_buttons" . }}
-		{{ template "post_comments" . }}
+		{{ with .PostWithUserConfig }}
+			<h3>{{ .Post.Title }}</h3>
+			<p>{{ .Post.Content }}</p>
+			<p>By: {{ .Post.UserName }}</p>
+			<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
+			{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
+			{{ template "post_comments" (addToStruct . "Session" $.Session) }}
+		{{ end }}
 	</body>
 </html>

@@ -1,6 +1,7 @@
 package posthandlers
 
 import (
+	"context"
 	"forum/internal/config"
 	db "forum/internal/database"
 	"forum/internal/server/models"
@@ -11,13 +12,37 @@ import (
 	"strings"
 )
 
+func fillViewPostPageData(
+	post	*db.Post,
+	ctx		context.Context,
+) *models.ViewPostPageData {
+	var	session				*db.UserSession
+	var	data				models.ViewPostPageData
+	var	postWithUserConfig	models.PostWithUserConfig
+	var	isLikedByUser		bool
+	var	isDislikedByUser	bool
+
+	session, _ = ctx.Value(config.SessionKey).(*db.UserSession)
+	isLikedByUser, isDislikedByUser =
+			services.GetUserLikesConfigsOfPost(session, post)
+	postWithUserConfig = models.PostWithUserConfig{
+		Post:				post,
+		IsLikedByUser:		isLikedByUser,
+		IsDislikedByUser:	isDislikedByUser,
+	}
+	data = models.ViewPostPageData{
+		PostWithUserConfig:	&postWithUserConfig,
+		Session:			session,
+	}
+	return &data
+}
+
 func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
-	var postIdStr	string
-	var postId		int
-	var post		*db.Post
-	var data		models.ViewPostPageData
-	var session		*db.UserSession
-	var err			error
+	var	postIdStr			string
+	var	postId				int
+	var	post				*db.Post
+	var	data				*models.ViewPostPageData
+	var	err					error
 
 	if r.Method != http.MethodGet {
 		http.Error(w, "", http.StatusMethodNotAllowed)
@@ -36,12 +61,6 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
-	data = models.ViewPostPageData{
-		Post:		post,
-		Session:	session,
-	}
-	data.IsLikedByUser, data.IsDislikedByUser =
-					services.GetUserLikesConfigsOfPost(session, post)
+	data = fillViewPostPageData(post, r.Context())
 	templates.RenderTemplate(w, config.ViewPostTmpl, data)
 }
