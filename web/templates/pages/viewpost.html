@@ -6,7 +6,7 @@
 		<p>{{ .Post.Content }}</p>
 		<p>By: {{ .Post.UserName }}</p>
 		<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
-		{{ template "post_buttons" (addToStruct .Post "Session" $.Session) }}
-		{{ template "post_comments" (addToStruct .Post "Session" $.Session) }}
+		{{ template "post_buttons" . }}
+		{{ template "post_comments" . }}
 	</body>
 </html>

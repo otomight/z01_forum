@@ -3,8 +3,10 @@ package models
 import "forum/internal/database"
 
 type ViewPostPageData struct {
-	Session		*database.UserSession
-	Post		*database.Post
+	Session				*database.UserSession
+	Post				*database.Post
+	IsLikedByUser		bool
+	IsDislikedByUser	bool
 }
 
 type CreatePostPageData struct {
@@ -12,6 +14,6 @@ type CreatePostPageData struct {
 }
 
 type HomePageData struct {
-	Posts		[]database.Post
+	Posts		[]*PostWithUserConfig
 	Session		*database.UserSession
 }

@@ -4,15 +4,34 @@ import (
 	"forum/internal/config"
 	db "forum/internal/database"
 	"forum/internal/server/models"
+	"forum/internal/server/services"
 	"forum/internal/server/templates"
 	"log"
 	"net/http"
 )
 
+func	IncludeUserLikesConfigs(
+	session *db.UserSession, posts []db.Post,
+) []*models.PostWithUserConfig {
+	var	userPost	*models.PostWithUserConfig
+	var	userPosts	[]*models.PostWithUserConfig
+	var	i			int
+
+	for i = 0; i < len(posts); i++ {
+		userPost = &models.PostWithUserConfig{}
+		userPost.Post = &posts[i]
+		userPost.IsLikedByUser, userPost.IsDislikedByUser =
+						services.GetUserLikesConfigsOfPost(session, &posts[i])
+		userPosts = append(userPosts, userPost)
+	}
+	return userPosts
+}
+
 func HomePageHandler(w http.ResponseWriter, r *http.Request) {
-	var session	*db.UserSession
-	var posts	[]db.Post
-	var	err		error
+	var	session		*db.UserSession
+	var	posts		[]db.Post
+	var	userPosts	[]*models.PostWithUserConfig
+	var	err			error
 
 	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
 	posts, err = db.GetAllPosts()
@@ -22,18 +41,9 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to retrieve posts", http.StatusInternalServerError)
 		return
 	}
-
-	//For each post display the corresponding comments
-	for i := range posts {
-		comments, err := db.GetCommentsByPostID(posts[i].PostID)
-		if err != nil {
-			log.Printf("failed to fetch comments for post %d: %v", posts[i].PostID, err)
-			continue
-		}
-		posts[i].Comments = comments
-	}
+	userPosts = IncludeUserLikesConfigs(session, posts)
 	data := models.HomePageData{
-		Posts:		posts,
+		Posts:		userPosts,
 		Session:	session,
 	}
 	templates.RenderTemplate(w, config.HomeTmpl, data)

@@ -4,6 +4,7 @@ import (
 	"forum/internal/config"
 	db "forum/internal/database"
 	"forum/internal/server/models"
+	"forum/internal/server/services"
 	"forum/internal/server/templates"
 	"net/http"
 	"strconv"
@@ -40,5 +41,7 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 		Post:		post,
 		Session:	session,
 	}
+	data.IsLikedByUser, data.IsDislikedByUser =
+					services.GetUserLikesConfigsOfPost(session, post)
 	templates.RenderTemplate(w, config.ViewPostTmpl, data)
 }

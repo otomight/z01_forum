@@ -114,10 +114,11 @@ async function handleLikeDislikeButton(event: Event, action: string,
 		return
 	if (response.added) {
 		addToButtonValue(button, 1);
+		button.classList.add('active');
 	} else if (response.deleted) {
 		addToButtonValue(button, -1);
+		button.classList.remove('active');
 	}
-	button.classList.toggle('active');
 	if (response.added && response.replaced) {
 		addToButtonValue(oppositeButton, -1);
 		oppositeButton.classList.remove('active');

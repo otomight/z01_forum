@@ -45,13 +45,10 @@ func GetPostByID(postID int) (*Post, error) {
 	}
 
 	// Fetch associated comments for the post
-	comments, err := GetCommentsByPostID(postID)
+	post.Comments, err = GetCommentsByPostID(postID)
 	if err != nil {
-		return nil, fmt.Errorf("could not fetch comments: %w", err)
+		log.Println(err.Error())
 	}
-
-	// Assign the comments to the post
-	post.Comments = comments
 
 	return post, nil
 }
@@ -76,18 +73,22 @@ func GetAllPosts() ([]Post, error) {
 	// Iterate through rows and append to posts slice
 	for rows.Next() {
 		var post Post
-		err := rows.Scan(&post.PostID, &post.AuthorID, &post.UserName,
+		err = rows.Scan(&post.PostID, &post.AuthorID, &post.UserName,
 				&post.Title, &post.Category, &post.Tags, &post.Content,
 				&post.CreationDate, &post.UpdateDate, &post.DeletionDate,
 				&post.IsDeleted, &post.Likes, &post.Dislikes)
 		if err != nil {
 			log.Printf("Error scanning post: %v", err)
-			return nil, err
+			continue
+		}
+		post.Comments, err = GetCommentsByPostID(post.PostID)
+		if err != nil {
+			log.Println(err.Error())
 		}
 		posts = append(posts, post)
 	}
 	//Check iteration errors
-	if err := rows.Err(); err != nil {
+	if err = rows.Err(); err != nil {
 		log.Printf("Error during row iteration: %v", err)
 		return nil, err
 	}
