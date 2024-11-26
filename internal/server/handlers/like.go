@@ -3,15 +3,16 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"forum/internal/config"
 	db "forum/internal/database"
 	"forum/internal/server/models"
-	"forum/internal/server/services"
 	"net/http"
 )
 
 func updateLikeDislikeInDb(
-			received models.LikeDislikePostRequestAjax,
-			liked bool) (*models.LikeDislikePostResponseAjax, error) {
+	received models.LikeDislikePostRequestAjax,
+	liked bool,
+) (*models.LikeDislikePostResponseAjax, error) {
 	var	ldl			*db.LikeDislike
 	var	response	models.LikeDislikePostResponseAjax
 	var	err			error
@@ -42,17 +43,17 @@ func updateLikeDislikeInDb(
 
 func LikeDislikePostHandler(w http.ResponseWriter,
 							r *http.Request, liked bool) {
-	var		received	models.LikeDislikePostRequestAjax
-	var		session		*db.UserSession
-	var		response	*models.LikeDislikePostResponseAjax
-	var		err			error
+	var	received	models.LikeDislikePostRequestAjax
+	var	response	*models.LikeDislikePostResponseAjax
+	var	ok			bool
+	var	err			error
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "", http.StatusMethodNotAllowed)
 		return
 	}
-	session, _ = services.GetSession(r)
-	if !session.IsLoggedIn {
+	_, ok = r.Context().Value(config.SessionKey).(*db.UserSession)
+	if !ok {
 		http.Error(w, "", http.StatusUnauthorized)
 		return
 	}

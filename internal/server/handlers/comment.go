@@ -23,9 +23,8 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, ok := r.Context().Value(config.UserIDKey).(int)
+	session, ok := r.Context().Value(config.SessionKey).(*database.UserSession)
 	if !ok {
-		log.Println("Failed to retrieve userID from sesison")
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
@@ -42,9 +41,10 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Attempting to add comment : userID=%d, postID=%d, content=%s", userID, postID, content)
+	log.Printf("Attempting to add comment : userID=%d, postID=%d, content=%s",
+												session.UserID, postID, content)
 
-	err = database.AddComment(postID, userID, content)
+	err = database.AddComment(postID, session.UserID, content)
 	if err != nil {
 		log.Printf("Failed to add comment: %v", err)
 		http.Error(w, "Failed to add comment", http.StatusInternalServerError)

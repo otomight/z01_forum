@@ -19,6 +19,8 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 // Check session + set user role
 func SessionMiddleWare(next http.Handler) http.Handler {
+	var	ctx	context.Context
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//Retrieve session from cookie
 		cookie, err := r.Cookie("session_id")
@@ -26,18 +28,13 @@ func SessionMiddleWare(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-
 		//Get session data from database
 		session, err := database.GetSessionByID(cookie.Value)
 		if err != nil || session.IsDeleted || time.Now().After(session.Expiration) {
 			next.ServeHTTP(w, r)
 			return
 		}
-
-		//Set user info in request context
-		ctx := context.WithValue(r.Context(), config.UserIDKey, session.UserID)
-		ctx = context.WithValue(ctx, config.UserRoleKey, session.UserRole)
-
+		ctx = context.WithValue(r.Context(), config.SessionKey, session)
 		//Call next handler with updated context
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

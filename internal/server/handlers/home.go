@@ -2,21 +2,20 @@ package handlers
 
 import (
 	"forum/internal/config"
-	"forum/internal/database"
+	db "forum/internal/database"
 	"forum/internal/server/models"
-	"forum/internal/server/services"
 	"forum/internal/server/templates"
 	"log"
 	"net/http"
 )
 
 func HomePageHandler(w http.ResponseWriter, r *http.Request) {
-	var session	*database.UserSession
-	var posts	[]database.Post
+	var session	*db.UserSession
+	var posts	[]db.Post
 	var	err		error
 
-	session, _ = services.GetSession(r)
-	posts, err = database.GetAllPosts()
+	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
+	posts, err = db.GetAllPosts()
 	// Prepare posts
 	if err != nil {
 		log.Printf("Failed to retrieve posts: %v", err)
@@ -26,7 +25,7 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 
 	//For each post display the corresponding comments
 	for i := range posts {
-		comments, err := database.GetCommentsByPostID(posts[i].PostID)
+		comments, err := db.GetCommentsByPostID(posts[i].PostID)
 		if err != nil {
 			log.Printf("failed to fetch comments for post %d: %v", posts[i].PostID, err)
 			continue
@@ -34,7 +33,7 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		posts[i].Comments = comments
 	}
 	data := models.HomePageData{
-		Posts:      posts,
+		Posts:		posts,
 		Session:	session,
 	}
 	templates.RenderTemplate(w, config.HomeTmpl, data)

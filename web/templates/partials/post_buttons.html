@@ -1,37 +1,33 @@
 {{ define "post_buttons" }}
 	<div id="like-dislike-section">
 		<button class="" id="likeButton" data-post-id="{{ .PostID }}"
-				data-user-id="{{ .Session.UserID }}">
+		data-user-id="{{ if .Session }}{{ .Session.UserID }}{{ else }}0{{ end }}">
 			<span class="like-dislike-icon">👍</span>
 			<span class="like-dislike-count">{{ .Likes }}</span>
 		</button>
 		<button class="" id="dislikeButton" data-post-id="{{ .PostID }}"
-				data-user-id="{{ .Session.UserID }}">
+		data-user-id="{{ if .Session }}{{ .Session.UserID }}{{ else }}0{{ end }}">
 			<span class="like-dislike-icon">👎</span>
 			<span class="like-dislike-count">{{ .Dislikes }}</span>
 		</button>
 	</div>
-	<script type="module" src="/static/scripts/typescript/like.js"></script>
+	<script type="module" src="/static/scripts/like.js"></script>
 
 	<!-- Additional features for user/admin/moderator -->
-	{{ if eq .AuthorID .Session.UserID }}
-		<div class="post-controls">
-			<a href="/post/edit/{{ .PostID }}">Edit</a>
-		</div>
-	{{ end }}
+	{{ if .Session }}
+		{{ if or (eq .AuthorID .Session.UserID)
+				(doesStrMatchAny .Session.UserRole "moderator" "administrator") }}
+			<form action="/post/delete" method="POST" class="post-controls"
+				onsubmit="return confirm('Are you sure you want to delete this post ?');">
+				<input type="hidden" name="post_id" value="{{ .PostID }}">
+				<button type="submit">Delete</button>
+			</form>
+		{{ end }}
 
-	{{ if or (eq .AuthorID .Session.UserID)
-			(doesStrMatchAny .Session.UserRole "moderator" "administrator") }}
-		<form action="/post/delete" method="POST" class="post-controls"
-			onsubmit="return confirm('Are you sure you want to delete this post ?');">
-			<input type="hidden" name="post_id" value="{{ .PostID }}">
-			<button type="submit">Delete</button>
-		</form>
-	{{ end }}
-
-	{{ if (doesStrMatchAny .Session.UserRole "moderator") }}
-		<div class="post-controls">
-			<a href="/post/report/{{ .PostID }}">Report</a>
-		</div>
+		{{ if (doesStrMatchAny .Session.UserRole "moderator") }}
+			<div class="post-controls">
+				<a href="/post/report/{{ .PostID }}">Report</a>
+			</div>
+		{{ end }}
 	{{ end }}
 {{ end }}

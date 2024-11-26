@@ -8,7 +8,7 @@
 <body>
 	{{ template "header" . }}
 	<main>
-		{{ if .Session.IsLoggedIn }}
+		{{ if .Session }}
 			<a href="/post/create">Create post</a>
 		{{ end }}
 		<h2>Latest Posts</h2>

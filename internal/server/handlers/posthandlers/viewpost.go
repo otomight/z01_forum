@@ -4,7 +4,6 @@ import (
 	"forum/internal/config"
 	db "forum/internal/database"
 	"forum/internal/server/models"
-	"forum/internal/server/services"
 	"forum/internal/server/templates"
 	"net/http"
 	"strconv"
@@ -36,7 +35,7 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	session, _ = services.GetSession(r)
+	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
 	data = models.ViewPostPageData{
 		Post:		post,
 		Session:	session,

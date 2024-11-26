@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"forum/internal/config"
 	"forum/internal/database"
 	"forum/internal/server/models"
@@ -130,14 +129,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 	})
-
-	// Store user info in context (including UserName)
-	ctx := context.WithValue(r.Context(), config.UserIDKey, user.UserID)
-	ctx = context.WithValue(ctx, config.UserRoleKey, user.UserRole)
-	ctx = context.WithValue(ctx, config.UserNameKey, user.UserName) // Store the username here
-
-	// Create a new request with the updated context
-	r = r.WithContext(ctx)
 
 	// Redirect to /home
 	http.Redirect(w, r, "/home", http.StatusSeeOther)

@@ -5,7 +5,6 @@ import (
 	"forum/internal/config"
 	db "forum/internal/database"
 	"forum/internal/server/models"
-	"forum/internal/server/services"
 	"forum/internal/server/templates"
 	"forum/internal/utils"
 	"net/http"
@@ -30,8 +29,9 @@ func createPost(userId int, form models.CreatePostForm) (int64, error) {
 	return id, nil
 }
 
-func createPostFromForm(w http.ResponseWriter,
-	r *http.Request, session *db.UserSession) (int64, error) {
+func createPostFromForm(
+	w http.ResponseWriter, r *http.Request, session *db.UserSession,
+) (int64, error) {
 	var form	models.CreatePostForm
 	var postId	int64
 	var err		error
@@ -55,29 +55,30 @@ func createPostFromForm(w http.ResponseWriter,
 }
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	var postId			int64
-	var redirectLink	string
-	var session			*db.UserSession
-	var data			models.CreatePostPageData
-	var err				error
+	var	postId			int64
+	var	redirectLink	string
+	var	session			*db.UserSession
+	var	data			models.CreatePostPageData
+	var	ok				bool
+	var	err				error
 
-	session, err = services.GetSession(r)
-	if err != nil {
-	http.Error(w, "User not logged", http.StatusUnauthorized)
-	return
+	session, ok = r.Context().Value(config.SessionKey).(*db.UserSession)
+	if !ok {
+		http.Error(w, "User not logged", http.StatusUnauthorized)
+		return
 	}
 	if r.Method == http.MethodGet {
 	// render the post creation page
-	data = models.CreatePostPageData{
-		Session: session,
-	}
-	templates.RenderTemplate(w, config.CreatePostTmpl, data)
+		data = models.CreatePostPageData{
+			Session: session,
+		}
+		templates.RenderTemplate(w, config.CreatePostTmpl, data)
 	} else if r.Method == http.MethodPost {
 	// handle the form send on post creation
-	if postId, err = createPostFromForm(w, r, session); err != nil {
-		return
-	}
-	redirectLink = fmt.Sprintf("/post/view/%d", postId)
-	http.Redirect(w, r, redirectLink, http.StatusSeeOther)
+		if postId, err = createPostFromForm(w, r, session); err != nil {
+			return
+		}
+		redirectLink = fmt.Sprintf("/post/view/%d", postId)
+		http.Redirect(w, r, redirectLink, http.StatusSeeOther)
 	}
 }

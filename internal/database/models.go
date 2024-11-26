@@ -24,7 +24,6 @@ type UserSession struct {
 	UserID       int        `json:"user_id"`
 	UserRole     string     `json:"user_role"`
 	UserName     string     `json:"user_name"`
-	IsLoggedIn   bool       `json:"is_logged_in"`
 	Expiration   time.Time  `json:"expiration"`
 	CreationDate time.Time  `json:"creation_date"`
 	UpdateDate   time.Time  `json:"update_date"`
