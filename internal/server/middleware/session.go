@@ -19,7 +19,7 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 // Check session + set user role
 func SessionMiddleWare(next http.Handler) http.Handler {
-	var	ctx	context.Context
+	var ctx context.Context
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//Retrieve session from cookie

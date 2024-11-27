@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS Clients (
     user_name TEXT UNIQUE,
     email TEXT UNIQUE,
     oauth_provider TEXT,
-    oautH_id TEXT,
+    oauth_id TEXT UNIQUE,
     password TEXT,
     avatar TEXT,
     birth_date DATE,

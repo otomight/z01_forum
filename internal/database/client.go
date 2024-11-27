@@ -145,14 +145,17 @@ func GetOrCreateUserByOAuth(oauthProvider, oauthID, email, name, avatar string) 
 			VALUES (?, ?, ?, ?, ?, 'user', ?, ?)
 		`, "", name, name, email, avatar, oauthProvider, oauthID)
 		if insertErr != nil {
+			log.Printf("Insert failed: %v", insertErr)
 			return nil, fmt.Errorf("failed to create user: %w", insertErr)
 		}
 
 		// Get the ID of the newly inserted user
 		userID, err := result.LastInsertId()
 		if err != nil {
+			log.Printf("Failed to retrieve new userID:%v", err)
 			return nil, fmt.Errorf("failed to retrieve new user ID: %w", err)
 		}
+		log.Printf("User inserted with ID: %d", userID)
 
 		// Return the newly created user
 		return &Client{
