@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 	<body>
-		{{ template "header" . }}
-		{{ with .PostWithUserConfig }}
-			<h3>{{ .Post.Title }}</h3>
-			<p>{{ .Post.Content }}</p>
-			<p>By: {{ .Post.UserName }}</p>
-			<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
-			{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
-			{{ template "post_comments" (addToStruct . "Session" $.Session) }}
-		{{ end }}
+		<main>
+			{{ template "header" . }}
+			{{ with .PostWithUserConfig }}
+				<h3>{{ .Post.Title }}</h3>
+				<p>{{ .Post.Content }}</p>
+				<p>By: {{ .Post.UserName }}</p>
+				<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
+				{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
+				{{ template "post_comments" (addToStruct . "Session" $.Session) }}
+			{{ end }}
+			{{ template "footer" . }}
+		</main>
 	</body>
 </html>
