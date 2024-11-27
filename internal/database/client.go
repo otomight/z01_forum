@@ -11,7 +11,7 @@ import (
 // Client CRUD operations
 func CreateClient(client *Client) error {
 	_, err := DB.Exec(`
-		INSERT INTO Clients (last_name, first_name, user_name, email, password, avatar, bith_date, user_role)
+		INSERT INTO clients (last_name, first_name, user_name, email, password, avatar, bith_date, user_role)
 		VALUES 	(?, ?, ?, ?, ?, ?, ?)
 	`, client.LastName, client.FirstName, client.UserName, client.Email, client.Password, client.Avatar, client.BirthDate, client.UserRole)
 	return err
@@ -20,7 +20,7 @@ func CreateClient(client *Client) error {
 func GetClientByID(userID int) (*Client, error) {
 	row := DB.QueryRow(`
 		SELECT user_id, last_name, first_name, user_name, email, avatar, birth_date, user_role, creation_date, update_date, deletion_date
-		FROM Clients WERE user_id = ?
+		FROM clients WERE user_id = ?
 	`, userID)
 	var client Client
 	err := row.Scan(&client.UserID, &client.LastName, &client.FirstName, &client.UserName, &client.Email,
@@ -31,7 +31,7 @@ func GetClientByID(userID int) (*Client, error) {
 // Save new user to database
 func SaveUser(userName, email, password, firstName, lastName, userRole string) (int, error) {
 	query := `
-	INSERT INTO Clients (user_name, email, password, first_name, last_name, user_role)
+	INSERT INTO clients (user_name, email, password, first_name, last_name, user_role)
 	VALUES (?, ?, ?, ?, ?, ?)
 	`
 
@@ -53,8 +53,8 @@ func GetClientByUsernameOrEmail(email string) (*Client, error) {
 	var client Client
 
 	//Query to find user by Email
-	query := `SELECT user_id, last_name, first_name, email, password, avatar, birthdate, user_role, creation_date, update_date, deletion_date 
-	FROM Clients 
+	query := `SELECT user_id, last_name, first_name, email, password, avatar, birthdate, user_role, creation_date, update_date, deletion_date
+	FROM clients
 	WHERE user_name = ? OR email = ?`
 
 	//Execute query
@@ -91,7 +91,7 @@ func GetClientByUsernameOrEmail(email string) (*Client, error) {
 func GetUserRole(userID int) (string, error) {
 	var role string
 
-	query := "SELECT user_role FROM Clients WHERE user_id = ?"
+	query := "SELECT user_role FROM clients WHERE user_id = ?"
 	err := DB.QueryRow(query, userID).Scan(&role)
 	if err != nil {
 		return "", err
@@ -105,7 +105,7 @@ func ValidateUserCredentials(username, password string) (Client, error) {
 
 	//Get user by username/email
 	query := `SELECT user_id, first_name, last_name, user_name, email, password, user_role
-	FROM Clients WHERE user_name = ? OR email = ? `
+	FROM clients WHERE user_name = ? OR email = ? `
 
 	row := DB.QueryRow(query, username, username)
 
@@ -130,7 +130,7 @@ func GetOrCreateUserByOAuth(oauthProvider, oauthID, email, name, avatar string) 
 	// Check if the user already exists
 	err := DB.QueryRow(`
 		SELECT user_id, last_name, first_name, user_name, email, avatar, user_role, oauth_provider, oauth_id
-		FROM Clients
+		FROM clients
 		WHERE oauth_provider = ? AND oauth_id = ?
 	`, oauthProvider, oauthID).Scan(
 		&user.UserID, &user.LastName, &user.FirstName, &user.UserName, &user.Email,
@@ -141,7 +141,7 @@ func GetOrCreateUserByOAuth(oauthProvider, oauthID, email, name, avatar string) 
 	if err == sql.ErrNoRows {
 		// Insert new user
 		result, insertErr := DB.Exec(`
-			INSERT INTO Clients (last_name, first_name, user_name, email, avatar, user_role, oauth_provider, oauth_id)
+			INSERT INTO clients (last_name, first_name, user_name, email, avatar, user_role, oauth_provider, oauth_id)
 			VALUES (?, ?, ?, ?, ?, 'user', ?, ?)
 		`, "", name, name, email, avatar, oauthProvider, oauthID)
 		if insertErr != nil {
@@ -180,7 +180,7 @@ func GetOrCreateUserByOAuth(oauthProvider, oauthID, email, name, avatar string) 
 func InsertSampleClient() {
 	// Check if the sample client already exists
 	var exists bool
-	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM Clients WHERE email = ?)", "sample@example.com").Scan(&exists)
+	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM clients WHERE email = ?)", "sample@example.com").Scan(&exists)
 	if err != nil {
 		log.Printf("Error checking if sample client exists: %v", err)
 		return
@@ -198,7 +198,7 @@ func InsertSampleClient() {
 
 		// Insert the client with the hashed password
 		_, err = DB.Exec(`
-            INSERT INTO Clients (last_name, first_name, user_name, email, password, user_role)
+            INSERT INTO clients (last_name, first_name, user_name, email, password, user_role)
             VALUES ('Doe', 'John', 'johndoe', 'sample@example.com', ?, 'administrator')
         `, hashedPassword)
 		if err != nil {

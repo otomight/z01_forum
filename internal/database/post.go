@@ -56,11 +56,11 @@ func GetPostByID(postID int) (*Post, error) {
 // Retrieve all the posts from database
 func GetAllPosts() ([]Post, error) {
 	query := `
-		SELECT p.post_id, p.author_id, Clients.user_name, p.title, p.category,
+		SELECT p.post_id, p.author_id, clients.user_name, p.title, p.category,
 		p.Tags, p.content, p.creation_date, p.update_date, p.deletion_date,
 		p.is_deleted, p.likes, p.dislikes
 		FROM posts p
-		JOIN Clients ON p.author_id = Clients.user_id
+		JOIN clients ON p.author_id = clients.user_id
 		WHERE p.is_deleted = 0 -- Only select non deleted posts
 	`
 	rows, err := DB.Query(query)

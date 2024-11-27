@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS Clients (
+CREATE TABLE IF NOT EXISTS clients (
 	user_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	last_name TEXT,
 	first_name TEXT,
@@ -12,10 +12,10 @@ CREATE TABLE IF NOT EXISTS Clients (
 	user_role TEXT DEFAULT 'user',
 	creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	deletion_date TIMESTAMP 
+	deletion_date TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS Sessions (
+CREATE TABLE IF NOT EXISTS sessions (
 	session_id TEXT PRIMARY KEY,
 	user_id INTEGER,
 	user_role TEXT,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS Sessions (
 	update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	deletion_date TIMESTAMP,
 	is_deleted BOOLEAN DEFAULT FALSE,
-	FOREIGN KEY(user_id) REFERENCES Clients(user_id)
+	FOREIGN KEY(user_id) REFERENCES clients(user_id)
 );
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -42,17 +42,17 @@ CREATE TABLE IF NOT EXISTS posts (
 	is_deleted BOOLEAN DEFAULT FALSE,
 	likes INTEGER DEFAULT 0,
 	dislikes INTEGER DEFAULT 0,
-	FOREIGN KEY(author_id) REFERENCES Clients(user_id) ON DELETE CASCADE
+	FOREIGN KEY(author_id) REFERENCES clients(user_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Comments (
+CREATE TABLE IF NOT EXISTS comments (
 	comment_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	post_id INT NOT NULL,
 	user_id INT NOT NULL,
 	content TEXT,
 	creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
-	FOREIGN KEY (user_id) REFERENCES Clients(user_id) ON DELETE CASCADE
+	FOREIGN KEY (user_id) REFERENCES clients(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS likes_dislikes (
@@ -62,6 +62,6 @@ CREATE TABLE IF NOT EXISTS likes_dislikes (
 	liked BOOLEAN DEFAULT NULL,
 	update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
-	FOREIGN KEY (user_id) REFERENCES Clients(user_id) ON DELETE CASCADE
+	FOREIGN KEY (user_id) REFERENCES clients(user_id) ON DELETE CASCADE
 	UNIQUE (post_id, user_id)
 );

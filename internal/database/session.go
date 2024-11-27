@@ -20,7 +20,7 @@ func CreateSession(session *UserSession) error {
 		session.SessionID, session.UserID, session.Expiration, session.UserRole)
 
 	_, err := DB.Exec(`
-		INSERT INTO Sessions (session_id, user_id, expiration, user_role, user_name)
+		INSERT INTO sessions (session_id, user_id, expiration, user_role, user_name)
 		VALUES (?, ?, ?, ?, ?)
 	`, session.SessionID, session.UserID, session.Expiration, session.UserRole, session.UserName)
 
@@ -34,7 +34,7 @@ func CreateSession(session *UserSession) error {
 func GetSessionByID(sessionID string) (*UserSession, error) {
 	row := DB.QueryRow(`
 		SELECT session_id, user_id, expiration, creation_date, update_date, deletion_date, is_deleted, user_role, user_name
-		FROM Sessions WHERE session_id = ?
+		FROM sessions WHERE session_id = ?
 	`, sessionID)
 	var session UserSession
 	err := row.Scan(&session.SessionID, &session.UserID, &session.Expiration, &session.CreationDate,
@@ -84,7 +84,7 @@ func GenerateSessionID() string {
 
 func DeleteSession(sessionID string) error {
 	_, err := DB.Exec(`
-		DELETE FROM Sessions
+		DELETE FROM sessions
 		WHERE session_id = ?
 	`, sessionID)
 

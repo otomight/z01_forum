@@ -7,7 +7,7 @@ import (
 
 func AddComment(postID, userID int, content string) error {
 	query := `
-	INSERT INTO Comments (post_id, user_id, content)
+	INSERT INTO comments (post_id, user_id, content)
 	VALUES(?, ?, ?)
 	`
 	_, err := DB.Exec(query, postID, userID, content)
@@ -21,8 +21,8 @@ func AddComment(postID, userID int, content string) error {
 func GetCommentsByPostID(postID int) ([]Comment, error) {
 	query := `
 	SELECT c.comment_id, c.post_id, c.user_id, u.user_name, c.content, c.creation_date
-	FROM Comments c
-	INNER JOIN Clients u ON c.user_id = u.user_id
+	FROM comments c
+	INNER JOIN clients u ON c.user_id = u.user_id
 	WHERE c.post_id = ?
 	ORDER BY c.creation_date ASC;
 	`
@@ -36,7 +36,9 @@ func GetCommentsByPostID(postID int) ([]Comment, error) {
 	var comments []Comment
 	for rows.Next() {
 		var comment Comment
-		if err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.UserID, &comment.UserName, &comment.Content, &comment.CreationDate); err != nil {
+		err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.UserID,
+					&comment.UserName, &comment.Content, &comment.CreationDate)
+		if err != nil {
 			return nil, fmt.Errorf("error scanning comment: %w", err)
 		}
 		comments = append(comments, comment)
