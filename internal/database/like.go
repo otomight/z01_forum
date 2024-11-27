@@ -22,10 +22,10 @@ func AddLikeDislike(postId int, userId int, liked bool) error {
 }
 
 func GetLikeDislikeByUser(postId int, userId int) (*LikeDislike, error) {
-	var	query	string
-	var	rows	*sql.Rows
-	var	err		error
-	var	ldl		LikeDislike
+	var query string
+	var rows *sql.Rows
+	var err error
+	var ldl LikeDislike
 
 	query = `
 	SELECT id, post_id, user_id, liked, update_date
@@ -39,7 +39,7 @@ func GetLikeDislikeByUser(postId int, userId int) (*LikeDislike, error) {
 	defer rows.Close()
 	if rows.Next() {
 		err = rows.Scan(&ldl.Id, &ldl.PostId,
-						&ldl.UserId, &ldl.Liked, &ldl.UpdateDate)
+			&ldl.UserId, &ldl.Liked, &ldl.UpdateDate)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning LikeDislike: %w", err)
 		}
@@ -49,11 +49,11 @@ func GetLikeDislikeByUser(postId int, userId int) (*LikeDislike, error) {
 	}
 }
 
-func	GetLikeDislikeCounts(postId int) (int, int, error) {
-	var	query			string
-	var	likesCount		int
-	var	dislikesCount	int
-	var	err				error
+func GetLikeDislikeCounts(postId int) (int, int, error) {
+	var query string
+	var likesCount int
+	var dislikesCount int
+	var err error
 
 	query = `
 		SELECT
@@ -70,7 +70,7 @@ func	GetLikeDislikeCounts(postId int) (int, int, error) {
 }
 
 func DeleteLikeDislike(postId int, userId int) error {
-	var	query	string
+	var query string
 
 	query = `
 	DELETE FROM likes_dislikes

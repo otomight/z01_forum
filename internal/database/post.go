@@ -74,9 +74,9 @@ func GetAllPosts() ([]Post, error) {
 	for rows.Next() {
 		var post Post
 		err = rows.Scan(&post.PostID, &post.AuthorID, &post.UserName,
-				&post.Title, &post.Category, &post.Tags, &post.Content,
-				&post.CreationDate, &post.UpdateDate, &post.DeletionDate,
-				&post.IsDeleted, &post.Likes, &post.Dislikes)
+			&post.Title, &post.Category, &post.Tags, &post.Content,
+			&post.CreationDate, &post.UpdateDate, &post.DeletionDate,
+			&post.IsDeleted, &post.Likes, &post.Dislikes)
 		if err != nil {
 			log.Printf("Error scanning post: %v", err)
 			continue
@@ -121,15 +121,15 @@ func DeletePost(postID int) error {
 }
 
 func UpdatePostLikesDislikesCount(postId int) error {
-	var	query				string
-	var	result				sql.Result
-	var	newLikesCount		int
-	var	newDislikesCount	int
-	var	err					error
+	var query string
+	var result sql.Result
+	var newLikesCount int
+	var newDislikesCount int
+	var err error
 
 	newLikesCount, newDislikesCount, err = GetLikeDislikeCounts(postId)
 	if err != nil {
-		return fmt.Errorf("Failed to fetch likes and dislikes counts: %v", err)
+		return fmt.Errorf("failed to fetch likes and dislikes counts: %v", err)
 	}
 	query = `
 		UPDATE posts
@@ -138,11 +138,11 @@ func UpdatePostLikesDislikesCount(postId int) error {
 	`
 	result, err = DB.Exec(query, newLikesCount, newDislikesCount, postId)
 	if err != nil {
-		return fmt.Errorf("Failed to update like-dislike on post: %w", err)
+		return fmt.Errorf("failed to update like-dislike on post: %w", err)
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("No row edited: %w", err)
+		return fmt.Errorf("no row edited: %w", err)
 	}
 	if rowsAffected == 0 {
 		return fmt.Errorf("Post %d not found", postId)
