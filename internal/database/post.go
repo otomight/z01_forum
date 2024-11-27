@@ -3,16 +3,21 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"forum/internal/config"
 	"log"
 )
 
 // Post CRUD operations
 func NewPost(post *Post) (int64, error) {
-	result, err := DB.Exec(`
-		INSERT INTO posts (author_id, title, category, content,
-				tags, creation_date, update_date, is_deleted, likes, dislikes)
+	var	query	string
+
+	query = fmt.Sprintf(`
+		INSERT INTO %s (author_id, title, category, content,
+						tags, creation_date, update_date, is_deleted)
 		VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
-	`, post.AuthorID, post.Title, post.Category, post.Content, post.Tags)
+	`, config.Table.Posts.Name)
+	result, err := DB.Exec(query, post.AuthorID, post.Title,
+							post.Category, post.Content, post.Tags)
 	if err != nil {
 		return 0, err
 	}
@@ -25,14 +30,14 @@ func NewPost(post *Post) (int64, error) {
 
 func GetPostByID(postID int) (*Post, error) {
 	// Updated query to join Posts and Clients to get the user_name
-	query := `
+	query := fmt.Sprintf(`
 	SELECT p.post_id, p.author_id, c.user_name, p.title, p.category, p.tags, p.content,
 			p.creation_date, p.update_date, p.deletion_date, p.is_deleted,
 			p.likes, p.dislikes
-	FROM posts p
-	JOIN Clients c ON p.author_id = c.user_id
+	FROM %s p
+	JOIN %s c ON p.author_id = c.user_id
 	WHERE p.post_id = ? AND p.is_deleted = FALSE
-	`
+	`, config.Table.Posts.Name, config.Table.Clients.Name)
 	post := &Post{}
 	err := DB.QueryRow(query, postID).Scan(
 		&post.PostID, &post.AuthorID, &post.UserName, &post.Title, &post.Category,
@@ -55,14 +60,14 @@ func GetPostByID(postID int) (*Post, error) {
 
 // Retrieve all the posts from database
 func GetAllPosts() ([]Post, error) {
-	query := `
-		SELECT p.post_id, p.author_id, clients.user_name, p.title, p.category,
-		p.Tags, p.content, p.creation_date, p.update_date, p.deletion_date,
-		p.is_deleted, p.likes, p.dislikes
-		FROM posts p
-		JOIN clients ON p.author_id = clients.user_id
+	query := fmt.Sprintf(`
+		SELECT p.post_id, p.author_id, c.user_name, p.title, p.category,
+			p.Tags, p.content, p.creation_date, p.update_date, p.deletion_date,
+			p.is_deleted, p.likes, p.dislikes
+		FROM %s p
+		JOIN %s c ON p.author_id = c.user_id
 		WHERE p.is_deleted = 0 -- Only select non deleted posts
-	`
+	`, config.Table.Posts.Name, config.Table.Clients.Name)
 	rows, err := DB.Query(query)
 	if err != nil {
 		log.Printf("Error fetching posts: %v", err)
@@ -97,11 +102,11 @@ func GetAllPosts() ([]Post, error) {
 
 // Delete post
 func DeletePost(postID int) error {
-	query := `
-		UPDATE posts
+	query := fmt.Sprintf(`
+		UPDATE %s
 		SET is_deleted = 1, deletion_date = CURRENT_TIMESTAMP
 		WHERE post_id = ?
-	`
+	`, config.Table.Posts.Name)
 	result, err := DB.Exec(query, postID)
 	if err != nil {
 		log.Printf("Error deleting post %d: %v", postID, err)
@@ -121,21 +126,21 @@ func DeletePost(postID int) error {
 }
 
 func UpdatePostLikesDislikesCount(postId int) error {
-	var query string
-	var result sql.Result
-	var newLikesCount int
-	var newDislikesCount int
-	var err error
+	var	query				string
+	var	result				sql.Result
+	var	newLikesCount		int
+	var	newDislikesCount	int
+	var	err					error
 
 	newLikesCount, newDislikesCount, err = GetLikeDislikeCounts(postId)
 	if err != nil {
 		return fmt.Errorf("failed to fetch likes and dislikes counts: %v", err)
 	}
-	query = `
-		UPDATE posts
+	query = fmt.Sprintf(`
+		UPDATE %s
 		SET likes = ?, dislikes = ?
 		WHERE post_id = ?;
-	`
+	`, config.Table.Posts.Name)
 	result, err = DB.Exec(query, newLikesCount, newDislikesCount, postId)
 	if err != nil {
 		return fmt.Errorf("failed to update like-dislike on post: %w", err)
@@ -153,22 +158,27 @@ func UpdatePostLikesDislikesCount(postId int) error {
 // inserting post for testing
 func InsertSamplePost() {
 	// Check if any posts already exist
-	var count int
-	err := DB.QueryRow("SELECT COUNT(*) FROM posts").Scan(&count)
+	var	count	int
+	var	query	string
+
+	query = fmt.Sprintf(`
+		SELECT COUNT(*) FROM %s
+	`, config.Table.Posts.Name)
+	err := DB.QueryRow(query).Scan(&count)
 	if err != nil {
 		log.Printf("Failed to count posts: %v", err)
 		return
 	}
-
 	// If no posts exist, insert the sample post
 	if count == 0 {
-		_, err := DB.Exec(`
-			INSERT INTO posts (author_id, title, category, tags, content,
-				creation_date, update_date, is_deleted)
+		query = fmt.Sprintf(`
+			INSERT INTO %s (author_id, title, category, tags, content,
+							creation_date, update_date, is_deleted)
 			VALUES (1, 'Sample Post', 'General', 'other',
-				'This is a sample post content.',
-				CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
-		`)
+					'This is a sample post content.',
+					CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
+		`, config.Table.Posts.Name)
+		_, err := DB.Exec(query)
 		if err != nil {
 			log.Printf("Failed to insert sample post: %v", err)
 		}

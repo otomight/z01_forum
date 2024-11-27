@@ -2,14 +2,15 @@ package database
 
 import (
 	"fmt"
+	"forum/internal/config"
 	"log"
 )
 
 func AddComment(postID, userID int, content string) error {
-	query := `
-	INSERT INTO comments (post_id, user_id, content)
-	VALUES(?, ?, ?)
-	`
+	query := fmt.Sprintf(`
+		INSERT INTO %s (post_id, user_id, content)
+		VALUES(?, ?, ?)
+	`, config.Table.Comments.Name)
 	_, err := DB.Exec(query, postID, userID, content)
 	if err != nil {
 		log.Printf("Error adding comment tp post %d: %v", postID, err)
@@ -19,13 +20,13 @@ func AddComment(postID, userID int, content string) error {
 }
 
 func GetCommentsByPostID(postID int) ([]Comment, error) {
-	query := `
+	query := fmt.Sprintf(`
 	SELECT c.comment_id, c.post_id, c.user_id, u.user_name, c.content, c.creation_date
-	FROM comments c
-	INNER JOIN clients u ON c.user_id = u.user_id
+	FROM %s c
+	INNER JOIN %s u ON c.user_id = u.user_id
 	WHERE c.post_id = ?
 	ORDER BY c.creation_date ASC;
-	`
+	`, config.Table.Comments.Name, config.Table.Clients.Name)
 
 	rows, err := DB.Query(query, postID)
 	if err != nil {

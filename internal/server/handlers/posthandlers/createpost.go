@@ -7,6 +7,7 @@ import (
 	"forum/internal/server/models"
 	"forum/internal/server/templates"
 	"forum/internal/utils"
+	"log"
 	"net/http"
 	"time"
 )
@@ -47,6 +48,7 @@ func createPostFromForm(
 		return 0, err
 	}
 	if postId, err = createPost(session.UserID, form); err != nil {
+		log.Printf(err.Error())
 		http.Error(w, "Failed to create post",
 							http.StatusInternalServerError)
 		return 0, err

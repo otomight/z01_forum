@@ -27,7 +27,7 @@ func InitDB() error {
 	var	schema	string
 	var	err		error
 
-	DB, err = sql.Open("sqlite3", "./forum.db")
+	DB, err = sql.Open("sqlite3", config.DbFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}

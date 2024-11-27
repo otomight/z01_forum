@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"forum/internal/config"
 	"log"
 	"time"
 
@@ -19,11 +20,12 @@ func CreateSession(session *UserSession) error {
 	log.Printf("Attempting to create session: sessionID=%s, userID=%d, expiration=%v, userRole=%s",
 		session.SessionID, session.UserID, session.Expiration, session.UserRole)
 
-	_, err := DB.Exec(`
-		INSERT INTO sessions (session_id, user_id, expiration, user_role, user_name)
+	query := fmt.Sprintf(`
+		INSERT INTO %s (session_id, user_id, expiration, user_role, user_name)
 		VALUES (?, ?, ?, ?, ?)
-	`, session.SessionID, session.UserID, session.Expiration, session.UserRole, session.UserName)
-
+	`, config.Table.Sessions.Name)
+	_, err := DB.Exec(query, session.SessionID, session.UserID,
+						session.Expiration, session.UserRole, session.UserName)
 	if err != nil {
 		log.Printf("Error creating session for user %d: %v", session.UserID, err)
 		return fmt.Errorf("failed to create session: %w", err)
@@ -32,13 +34,17 @@ func CreateSession(session *UserSession) error {
 }
 
 func GetSessionByID(sessionID string) (*UserSession, error) {
-	row := DB.QueryRow(`
-		SELECT session_id, user_id, expiration, creation_date, update_date, deletion_date, is_deleted, user_role, user_name
-		FROM sessions WHERE session_id = ?
-	`, sessionID)
+	query := fmt.Sprintf(`
+		SELECT session_id, user_id, expiration, creation_date,
+				update_date, deletion_date, is_deleted, user_role, user_name
+		FROM %s WHERE session_id = ?
+	`, config.Table.Sessions.Name)
+	row := DB.QueryRow(query, sessionID)
 	var session UserSession
-	err := row.Scan(&session.SessionID, &session.UserID, &session.Expiration, &session.CreationDate,
-		&session.UpdateDate, &session.DeletionDate, &session.IsDeleted, &session.UserRole, &session.UserName)
+	err := row.Scan(&session.SessionID, &session.UserID,
+					&session.Expiration, &session.CreationDate,
+					&session.UpdateDate, &session.DeletionDate,
+					&session.IsDeleted, &session.UserRole, &session.UserName)
 
 	// Handle specific error if no rows are returned
 	if err == sql.ErrNoRows {
@@ -83,10 +89,11 @@ func GenerateSessionID() string {
 }
 
 func DeleteSession(sessionID string) error {
-	_, err := DB.Exec(`
-		DELETE FROM sessions
+	query := fmt.Sprintf(`
+		DELETE FROM %s
 		WHERE session_id = ?
-	`, sessionID)
+	`, config.Table.Sessions.Name)
+	_, err := DB.Exec(query, sessionID)
 
 	if err != nil {
 		log.Printf("Error deleting session: %v", err)
