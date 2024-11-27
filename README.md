@@ -1,12 +1,25 @@
 ## Dependencies
 
-- nodejs and npm
-	- download nodejs from the [website](https://nodejs.org/en/download/prebuilt-binaries)
-	- extract the file<br>
-	`sudo tar -C /usr/local -xJf ~/Downloads/node-v22.11.0-linux-x64.tar.xz`
-	- add the binaries to your path<br>
-	`echo "PATH=/usr/local/bin/node-v22.11.0-linux-x64/bin:$PATH" >> ~/.profile`
-	`source ~/.profile`
+- nodejs and npm<br>
+First download nodejs from the [ official website](https://nodejs.org/en/download/prebuilt-binaries).
+```sh
+# make sure that the location is right
+# --------------------------------------------------------------- #
+DOWNLOADED_FILE=$(echo ~/Downloads/node-v*-linux-x64.tar.xz)
+# --------------------------------------------------------------- #
+
+# extract the file
+rm -rf ~/.local/share/Trash/nodejs
+[ -d /usr/local/nodejs ] && sudo mv /usr/local/nodejs ~/.local/share/Trash
+sudo tar -C /usr/local -xJf $DOWNLOADED_FILE
+sudo mv /usr/local/node-v*-linux-x64 /usr/local/nodejs
+
+# add the binaries to your path if necessary
+echo '
+# includes nodejs
+PATH="/usr/local/nodejs/bin:$PATH"' >> ~/.profile
+source ~/.profile
+```
 
 - typescript
 ```sh
@@ -40,29 +53,29 @@ The project's directory structure is organized as follows:
 
 		- **`models/`**: Contains structures related to the server.
 
-		- **`services/`**: Contains functionality related to the handlers
-			or specific to the business logic.
+		- **`services/`**: Contains functionality used in several handlers.
 
-		- **`templates/`**: Contains basic functions related to the templates.
-			Can also include specific functions that can be called inside of
-			the template.
+		- **`templates/`**: Contains the core logic of the template rendering and also
+			include specific functions that can be called inside of the templates.
 
 	- **`utils/`**: Utility functions that are used throughout the application.
 
 - **`web/`**: Contains all the web-related files.
 
+	- **`src/`**: Typescript files.
+
 	- **`static/`**: Every files directly accessible by the browser.
 
-		- **`scripts/`**: Additionnal scripts JS.
+		- **`scripts/`**: JS files generated from src/.
 
 		- **`style/`**: Every CSS files.
 
 	- **`templates/`**: Contains every html templates.
 
-		- **`components`**: Other reusable elements.
+		- **`components/`**: Template with single reusable elements.
 
 		- **`layout/`**: Templates for the main layout (header, footer ...)
 
-		- **`pages`**: Templates of the pages. Only those templates are called.
+		- **`pages/`**: Templates of the pages. Only those templates are called.
 
-		- **`partials`**: Templates shared between several pages.
+		- **`partials/`**: Templates shared between several pages.
