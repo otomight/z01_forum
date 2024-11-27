@@ -83,6 +83,17 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 //// Login \\\\
 
+func removeExistingUserSession(user database.Client) {
+	var	session	*database.UserSession
+	var	err		error
+
+	session, err = database.GetSessionByUserId(user.UserID)
+	if err != nil {
+		return // no session found or any other error
+	}
+	database.DeleteSession(session.SessionID)
+}
+
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var form models.LoginForm
 	if r.Method != http.MethodPost {
@@ -113,6 +124,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("User successfully logged in with role: %s", user.UserRole)
 
 	//Create new session for logged user
+	removeExistingUserSession(user)
 	sessionID, err := database.CreateUserSession(user.UserID, user.UserRole, user.UserName)
 	if err != nil {
 		http.Error(w, "Failed to create session", http.StatusInternalServerError)

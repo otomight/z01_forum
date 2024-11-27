@@ -6,7 +6,9 @@ type ClientsTable struct {
 }
 
 type SessionsTable struct {
-	Name	string
+	Name		string
+	SessionId	string
+	UserId		string
 }
 
 type PostsTable struct {
@@ -36,7 +38,9 @@ var clients = ClientsTable{
 }
 
 var sessions = SessionsTable{
-	Name:	"sessions",
+	Name:		"sessions",
+	SessionId:	"session_id",
+	UserId:		"user_id",
 }
 
 var posts = PostsTable{
