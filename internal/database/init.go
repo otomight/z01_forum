@@ -43,6 +43,7 @@ func InitDB() error {
 		return err
 	}
 
+	InsertCategories()
 	InsertSampleClient()
 	InsertSamplePost()
 

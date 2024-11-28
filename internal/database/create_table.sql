@@ -20,13 +20,17 @@ CREATE TABLE IF NOT EXISTS sessions (
 	user_id INTEGER,
 	user_role TEXT,
 	user_name TEXT,
-	is_logged_in BOOLEAN DEFAULT FALSE,
 	expiration TIMESTAMP,
 	creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	deletion_date TIMESTAMP,
 	is_deleted BOOLEAN DEFAULT FALSE,
 	FOREIGN KEY(user_id) REFERENCES clients(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name TEXT
 );
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -43,6 +47,14 @@ CREATE TABLE IF NOT EXISTS posts (
 	likes INTEGER DEFAULT 0,
 	dislikes INTEGER DEFAULT 0,
 	FOREIGN KEY(author_id) REFERENCES clients(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS posts_categories (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	category_id INTEGER,
+	post_id INTEGER,
+	FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+	FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS comments (
@@ -62,6 +74,6 @@ CREATE TABLE IF NOT EXISTS likes_dislikes (
 	liked BOOLEAN DEFAULT NULL,
 	update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
-	FOREIGN KEY (user_id) REFERENCES clients(user_id) ON DELETE CASCADE
+	FOREIGN KEY (user_id) REFERENCES clients(user_id) ON DELETE CASCADE,
 	UNIQUE (post_id, user_id)
 );

@@ -8,12 +8,14 @@ import (
 )
 
 func AddLikeDislike(postId int, userId int, liked bool) error {
-	query := fmt.Sprintf(`
-	INSERT INTO %s (post_id, user_id, liked)
+	var	k	config.StructTablesKeys = config.TableKeys
+
+	query := `
+	INSERT INTO `+k.LikesDislikes.Table+` (post_id, user_id, liked)
 	VALUES(?, ?, ?)
 	ON CONFLICT(post_id, user_id) DO UPDATE
 	SET liked = excluded.liked, update_date = CURRENT_TIMESTAMP;
-	`, config.Table.LikesDislikes.Name)
+	`
 	_, err := DB.Exec(query, postId, userId, liked)
 	if err != nil {
 		log.Printf("Error adding like to post %d: %v", postId, err)
@@ -24,15 +26,16 @@ func AddLikeDislike(postId int, userId int, liked bool) error {
 
 func GetLikeDislikeByUser(postId int, userId int) (*LikeDislike, error) {
 	var	query	string
+	var	k		config.StructTablesKeys = config.TableKeys
 	var	rows	*sql.Rows
 	var	err		error
 	var	ldl		LikeDislike
 
-	query = fmt.Sprintf(`
-	SELECT id, post_id, user_id, liked, update_date
-	FROM %s
-	WHERE post_id = ? AND user_id = ?;
-	`, config.Table.LikesDislikes.Name)
+	query = `
+		SELECT id, post_id, user_id, liked, update_date
+		FROM `+k.LikesDislikes.Table+`
+		WHERE post_id = ? AND user_id = ?;
+	`
 	rows, err = DB.Query(query, postId, userId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch LikeDislike: %w", err)
@@ -52,17 +55,18 @@ func GetLikeDislikeByUser(postId int, userId int) (*LikeDislike, error) {
 
 func GetLikeDislikeCounts(postId int) (int, int, error) {
 	var	query			string
+	var	k				config.StructTablesKeys = config.TableKeys
 	var	likesCount		int
 	var	dislikesCount	int
 	var	err				error
 
-	query = fmt.Sprintf(`
+	query = `
 		SELECT
 			COUNT(CASE WHEN liked = 1 THEN 1 END) AS likes_count,
 			COUNT(CASE WHEN liked = 0 THEN 1 END) AS dislikes_count
-		FROM %s
+		FROM `+k.LikesDislikes.Table+`
 		WHERE post_id = ?;
-	`, config.Table.LikesDislikes.Name)
+	`
 	err = DB.QueryRow(query, postId).Scan(&likesCount, &dislikesCount)
 	if err != nil {
 		return 0, 0, err
@@ -72,11 +76,12 @@ func GetLikeDislikeCounts(postId int) (int, int, error) {
 
 func DeleteLikeDislike(postId int, userId int) error {
 	var	query	string
+	var	k		config.StructTablesKeys = config.TableKeys
 
-	query = fmt.Sprintf(`
-	DELETE FROM %s
-	WHERE post_id = ? AND user_id = ?;
-	`, config.Table.LikesDislikes.Name)
+	query = `
+		DELETE FROM `+k.LikesDislikes.Table+`
+		WHERE post_id = ? AND user_id = ?;
+	`
 	_, err := DB.Exec(query, postId, userId)
 	if err != nil {
 		log.Printf("Error deleting like-dislike of post %d: %v", postId, err)
