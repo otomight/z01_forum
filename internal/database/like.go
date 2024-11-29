@@ -8,13 +8,15 @@ import (
 )
 
 func AddLikeDislike(postId int, userId int, liked bool) error {
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	l	config.LikesDislikesTableKeys
 
+	l = config.TableKeys.LikesDislikes
 	query := `
-	INSERT INTO `+k.LikesDislikes.Table+` (post_id, user_id, liked)
+	INSERT INTO `+l.LikesDislikes+` (`+l.PostID+`, `+l.UserID+`, `+l.Liked+`)
 	VALUES(?, ?, ?)
-	ON CONFLICT(post_id, user_id) DO UPDATE
-	SET liked = excluded.liked, update_date = CURRENT_TIMESTAMP;
+	ON CONFLICT(`+l.PostID+`, `+l.UserID+`) DO UPDATE
+	SET `+l.Liked+` = excluded.`+l.Liked+`,
+		`+l.UpdateDate+` = CURRENT_TIMESTAMP;
 	`
 	_, err := DB.Exec(query, postId, userId, liked)
 	if err != nil {
@@ -26,15 +28,17 @@ func AddLikeDislike(postId int, userId int, liked bool) error {
 
 func GetLikeDislikeByUser(postId int, userId int) (*LikeDislike, error) {
 	var	query	string
-	var	k		config.StructTablesKeys = config.TableKeys
+	var	l		config.LikesDislikesTableKeys
 	var	rows	*sql.Rows
 	var	err		error
 	var	ldl		LikeDislike
 
+	l = config.TableKeys.LikesDislikes
 	query = `
-		SELECT id, post_id, user_id, liked, update_date
-		FROM `+k.LikesDislikes.Table+`
-		WHERE post_id = ? AND user_id = ?;
+		SELECT `+l.ID+`, `+l.PostID+`,
+				`+l.UserID+`, `+l.Liked+`, `+l.UpdateDate+`
+		FROM `+l.LikesDislikes+`
+		WHERE `+l.PostID+` = ? AND `+l.UserID+` = ?;
 	`
 	rows, err = DB.Query(query, postId, userId)
 	if err != nil {
@@ -42,8 +46,8 @@ func GetLikeDislikeByUser(postId int, userId int) (*LikeDislike, error) {
 	}
 	defer rows.Close()
 	if rows.Next() {
-		err = rows.Scan(&ldl.Id, &ldl.PostId,
-			&ldl.UserId, &ldl.Liked, &ldl.UpdateDate)
+		err = rows.Scan(&ldl.ID, &ldl.PostID,
+			&ldl.UserID, &ldl.Liked, &ldl.UpdateDate)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning LikeDislike: %w", err)
 		}
@@ -55,17 +59,18 @@ func GetLikeDislikeByUser(postId int, userId int) (*LikeDislike, error) {
 
 func GetLikeDislikeCounts(postId int) (int, int, error) {
 	var	query			string
-	var	k				config.StructTablesKeys = config.TableKeys
+	var	l				config.LikesDislikesTableKeys
 	var	likesCount		int
 	var	dislikesCount	int
 	var	err				error
 
+	l = config.TableKeys.LikesDislikes
 	query = `
 		SELECT
-			COUNT(CASE WHEN liked = 1 THEN 1 END) AS likes_count,
-			COUNT(CASE WHEN liked = 0 THEN 1 END) AS dislikes_count
-		FROM `+k.LikesDislikes.Table+`
-		WHERE post_id = ?;
+			COUNT(CASE WHEN `+l.Liked+` = 1 THEN 1 END) AS likes_count,
+			COUNT(CASE WHEN `+l.Liked+` = 0 THEN 1 END) AS dislikes_count
+		FROM `+l.LikesDislikes+`
+		WHERE `+l.PostID+` = ?;
 	`
 	err = DB.QueryRow(query, postId).Scan(&likesCount, &dislikesCount)
 	if err != nil {
@@ -76,11 +81,12 @@ func GetLikeDislikeCounts(postId int) (int, int, error) {
 
 func DeleteLikeDislike(postId int, userId int) error {
 	var	query	string
-	var	k		config.StructTablesKeys = config.TableKeys
+	var	l		config.LikesDislikesTableKeys
 
+	l = config.TableKeys.LikesDislikes
 	query = `
-		DELETE FROM `+k.LikesDislikes.Table+`
-		WHERE post_id = ? AND user_id = ?;
+		DELETE FROM `+l.LikesDislikes+`
+		WHERE `+l.PostID+` = ? AND `+l.UserID+` = ?;
 	`
 	_, err := DB.Exec(query, postId, userId)
 	if err != nil {

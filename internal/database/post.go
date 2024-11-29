@@ -10,11 +10,13 @@ import (
 // Post CRUD operations
 func NewPost(post *Post) (int64, error) {
 	var	query	string
-	var	k		config.StructTablesKeys = config.TableKeys
+	var	p		config.PostsTableKeys
 
+	p = config.TableKeys.Posts
 	query = `
-		INSERT INTO `+k.Posts.Table+` (author_id, title, category, content,
-						tags, creation_date, update_date, is_deleted)
+		INSERT INTO `+p.Posts+` (
+			`+p.AuthorID+`, `+p.Title+`, `+p.Category+`, `+p.Content+`,
+			`+p.Tags+`, `+p.CreationDate+`, `+p.UpdateDate+`, `+p.IsDeleted+`)
 		VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
 	`
 	result, err := DB.Exec(query, post.AuthorID, post.Title,
@@ -22,24 +24,28 @@ func NewPost(post *Post) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	postId, err := result.LastInsertId()
+	postID, err := result.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
-	return postId, err
+	return postID, err
 }
 
 func GetPostByID(postID int) (*Post, error) {
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	p	config.PostsTableKeys
+	var	c	config.ClientsTableKeys
 
+	p = config.TableKeys.Posts
+	c = config.TableKeys.Clients
 	// Updated query to join Posts and Clients to get the user_name
 	query := `
-	SELECT p.post_id, p.author_id, c.user_name, p.title, p.category, p.tags, p.content,
-			p.creation_date, p.update_date, p.deletion_date, p.is_deleted,
-			p.likes, p.dislikes
-	FROM `+k.Posts.Table+` p
-	JOIN clients c ON p.author_id = c.user_id
-	WHERE p.post_id = ? AND p.is_deleted = FALSE
+	SELECT p.`+p.PostID+`, p.`+p.AuthorID+`, c.`+c.UserName+`, p.`+p.Title+`,
+			p.`+p.Category+`, p.`+p.Tags+`, p.`+p.Content+`,
+			p.`+p.CreationDate+`, p.`+p.UpdateDate+`, p.`+p.DeletionDate+`,
+			p.`+p.IsDeleted+`, p.`+p.Likes+`, p.`+p.Dislikes+`
+	FROM `+p.Posts+` p
+	JOIN `+c.Clients+` c ON p.`+p.AuthorID+` = c.`+c.UserID+`
+	WHERE p.`+p.PostID+` = ? AND p.`+p.IsDeleted+` = FALSE
 	`
 	post := &Post{}
 	err := DB.QueryRow(query, postID).Scan(
@@ -63,15 +69,19 @@ func GetPostByID(postID int) (*Post, error) {
 
 // Retrieve all the posts from database
 func GetAllPosts() ([]Post, error) {
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	p	config.PostsTableKeys
+	var c	config.ClientsTableKeys
 
+	p = config.TableKeys.Posts
+	c = config.TableKeys.Clients
 	query := `
-		SELECT p.post_id, p.author_id, c.user_name, p.title, p.category,
-			p.Tags, p.content, p.creation_date, p.update_date, p.deletion_date,
-			p.is_deleted, p.likes, p.dislikes
-		FROM `+k.Posts.Table+` p
-		JOIN clients c ON p.author_id = c.user_id
-		WHERE p.is_deleted = 0 -- Only select non deleted posts
+		SELECT p.`+p.PostID+`, p.`+p.AuthorID+`, c.`+c.UserName+`,
+				p.`+p.Title+`, p.`+p.Category+`, p.`+p.Tags+`, p.`+p.Content+`,
+				p.`+p.CreationDate+`, p.`+p.UpdateDate+`, p.`+p.DeletionDate+`,
+				p.`+p.IsDeleted+`, p.`+p.Likes+`, p.`+p.Dislikes+`
+		FROM `+p.Posts+` p
+		JOIN `+c.Clients+` c ON p.`+p.AuthorID+` = c.`+c.UserID+`
+		WHERE p.`+p.IsDeleted+` = 0 -- Only select non deleted posts
 	`
 	rows, err := DB.Query(query)
 	if err != nil {
@@ -105,14 +115,14 @@ func GetAllPosts() ([]Post, error) {
 	return posts, nil
 }
 
-// Delete post
 func DeletePost(postID int) error {
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	p	config.PostsTableKeys
 
+	p = config.TableKeys.Posts
 	query := `
-		UPDATE `+k.Posts.Table+`
-		SET is_deleted = 1, deletion_date = CURRENT_TIMESTAMP
-		WHERE post_id = ?
+		UPDATE `+p.Posts+`
+		SET `+p.IsDeleted+` = 1, `+p.DeletionDate+` = CURRENT_TIMESTAMP
+		WHERE `+p.PostID+` = ?
 	`
 	result, err := DB.Exec(query, postID)
 	if err != nil {
@@ -132,24 +142,25 @@ func DeletePost(postID int) error {
 	return nil
 }
 
-func UpdatePostLikesDislikesCount(postId int) error {
+func UpdatePostLikesDislikesCount(postID int) error {
 	var	query				string
-	var	k					config.StructTablesKeys = config.TableKeys
+	var	p					config.PostsTableKeys
 	var	result				sql.Result
 	var	newLikesCount		int
 	var	newDislikesCount	int
 	var	err					error
 
-	newLikesCount, newDislikesCount, err = GetLikeDislikeCounts(postId)
+	p = config.TableKeys.Posts
+	newLikesCount, newDislikesCount, err = GetLikeDislikeCounts(postID)
 	if err != nil {
 		return fmt.Errorf("failed to fetch likes and dislikes counts: %v", err)
 	}
 	query = `
-		UPDATE `+k.Posts.Table+`
-		SET likes = ?, dislikes = ?
-		WHERE post_id = ?;
+		UPDATE `+p.Posts+`
+		SET `+p.Likes+` = ?, `+p.Dislikes+` = ?
+		WHERE `+p.PostID+` = ?;
 	`
-	result, err = DB.Exec(query, newLikesCount, newDislikesCount, postId)
+	result, err = DB.Exec(query, newLikesCount, newDislikesCount, postID)
 	if err != nil {
 		return fmt.Errorf("failed to update like-dislike on post: %w", err)
 	}
@@ -158,7 +169,7 @@ func UpdatePostLikesDislikesCount(postId int) error {
 		return fmt.Errorf("no row edited: %w", err)
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("Post %d not found", postId)
+		return fmt.Errorf("Post %d not found", postID)
 	}
 	return nil
 }

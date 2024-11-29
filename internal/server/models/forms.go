@@ -16,7 +16,7 @@ type RegisterForm struct {
 }
 
 type DeletePostForm struct {
-	PostId	string	`form:"post_id"`
+	PostID	string	`form:"post_id"`
 }
 
 type LoginForm struct {

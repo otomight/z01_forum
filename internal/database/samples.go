@@ -11,10 +11,11 @@ import (
 func InsertSampleClient() {
 	// Check if the sample client already exists
 	var exists	bool
-	var	k		config.StructTablesKeys = config.TableKeys
+	var	c		config.ClientsTableKeys
 
+	c = config.TableKeys.Clients
 	query := `
-		SELECT EXISTS(SELECT 1 FROM `+k.Clients.Table+` WHERE email = ?)
+		SELECT EXISTS(SELECT 1 FROM `+c.Clients+` WHERE `+c.Email+` = ?);
 	`
 	err := DB.QueryRow(query, "sample@example.com").Scan(&exists)
 	if err != nil {
@@ -34,10 +35,14 @@ func InsertSampleClient() {
 
 		// Insert the client with the hashed password
 		query := `
-			INSERT INTO `+k.Clients.Table+` (last_name, first_name,
-							user_name, email, password, user_role)
-			VALUES ('Doe', 'John', 'johndoe',
-					'sample@example.com', ?, 'administrator')
+			INSERT INTO `+c.Clients+` (
+				`+c.LastName+`, `+c.FirstName+`, `+c.UserName+`,
+				`+c.Email+`, `+c.Password+`, `+c.UserRole+`
+			)
+			VALUES (
+				'Doe', 'John', 'johndoe',
+				'sample@example.com', ?, 'administrator'
+			);
 		`
 		_, err = DB.Exec(query, hashedPassword)
 		if err != nil {
@@ -55,10 +60,11 @@ func InsertSamplePost() {
 	// Check if any posts already exist
 	var	count	int
 	var	query	string
-	var	k		config.StructTablesKeys = config.TableKeys
+	var	p		config.PostsTableKeys
 
+	p = config.TableKeys.Posts
 	query = `
-		SELECT COUNT(*) FROM `+k.Posts.Table+`
+		SELECT COUNT(*) FROM `+p.Posts+`;
 	`
 	err := DB.QueryRow(query).Scan(&count)
 	if err != nil {
@@ -68,11 +74,16 @@ func InsertSamplePost() {
 	// If no posts exist, insert the sample post
 	if count == 0 {
 		query = `
-			INSERT INTO `+k.Posts.Table+` (author_id, title, category, tags, content,
-							creation_date, update_date, is_deleted)
-			VALUES (1, 'Sample Post', 'General', 'other',
-					'This is a sample post content.',
-					CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
+			INSERT INTO `+p.Posts+` (
+				`+p.AuthorID+`, `+p.Title+`, `+p.Category+`,
+				`+p.Tags+`, `+p.Content+`, `+p.CreationDate+`,
+				`+p.UpdateDate+`, `+p.IsDeleted+`
+			)
+			VALUES (
+				1, 'Sample Post', 'General',
+				'other', 'This is a sample post content.', CURRENT_TIMESTAMP,
+				CURRENT_TIMESTAMP, 0
+			);
 		`
 		_, err := DB.Exec(query)
 		if err != nil {

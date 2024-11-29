@@ -12,9 +12,9 @@ import (
 	"time"
 )
 
-func createPost(userId int, form models.CreatePostForm) (int64, error) {
+func createPost(userID int, form models.CreatePostForm) (int64, error) {
 	post := &db.Post{
-		AuthorID:		userId,
+		AuthorID:		userID,
 		Title:			form.Title,
 		Content:		form.Content,
 		Category:		form.Category,
@@ -34,7 +34,7 @@ func createPostFromForm(
 	w http.ResponseWriter, r *http.Request, session *db.UserSession,
 ) (int64, error) {
 	var	form	models.CreatePostForm
-	var	postId	int64
+	var	postID	int64
 	var	err		error
 
 	if err = utils.ParseForm(r, &form); err != nil {
@@ -47,17 +47,17 @@ func createPostFromForm(
 							http.StatusBadRequest)
 		return 0, err
 	}
-	if postId, err = createPost(session.UserID, form); err != nil {
+	if postID, err = createPost(session.UserID, form); err != nil {
 		log.Printf(err.Error())
 		http.Error(w, "Failed to create post",
 							http.StatusInternalServerError)
 		return 0, err
 	}
-	return postId, nil
+	return postID, nil
 }
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	var	postId			int64
+	var	postID			int64
 	var	redirectLink	string
 	var	session			*db.UserSession
 	var	data			models.CreatePostPageData
@@ -77,10 +77,10 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		templates.RenderTemplate(w, config.CreatePostTmpl, data)
 	} else if r.Method == http.MethodPost {
 	// handle the form send on post creation
-		if postId, err = createPostFromForm(w, r, session); err != nil {
+		if postID, err = createPostFromForm(w, r, session); err != nil {
 			return
 		}
-		redirectLink = fmt.Sprintf("/post/view/%d", postId)
+		redirectLink = fmt.Sprintf("/post/view/%d", postID)
 		http.Redirect(w, r, redirectLink, http.StatusSeeOther)
 	}
 }

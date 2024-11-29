@@ -60,9 +60,9 @@ type Comment struct {
 }
 
 type LikeDislike struct {
-	Id			int
-	PostId		int
-	UserId		int
+	ID			int
+	PostID		int
+	UserID		int
 	Liked		bool
 	UpdateDate	time.Time
 }

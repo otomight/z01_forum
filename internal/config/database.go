@@ -2,14 +2,14 @@ package config
 
 // TABLES DEFINITIONS
 type ClientsTableKeys struct {
-	Table			string
-	UserId			string
+	Clients			string
+	UserID			string
 	LastName		string
 	FirstName		string
 	UserName		string
 	Email			string
 	OauthProvider	string
-	OauthId			string
+	OauthID			string
 	Password		string
 	Avatar			string
 	BirthDate		string
@@ -20,9 +20,9 @@ type ClientsTableKeys struct {
 }
 
 type SessionsTableKeys struct {
-	Table			string
-	SessionId		string
-	UserId			string
+	Sessions		string
+	SessionID		string
+	UserID			string
 	UserRole		string
 	UserName		string
 	Expiration		string
@@ -33,15 +33,15 @@ type SessionsTableKeys struct {
 }
 
 type CategoriesTableKeys struct {
-	Table	string
-	Id		string
-	Name	string
+	Categories	string
+	ID			string
+	Name		string
 }
 
 type PostsTableKeys struct {
-	Table			string
-	PostId			string
-	AuthorId		string
+	Posts			string
+	PostID			string
+	AuthorID		string
 	Title			string
 	Category		string
 	Tags			string
@@ -55,28 +55,28 @@ type PostsTableKeys struct {
 }
 
 type PostsCategoriesTableKeys struct {
-	Table		string
-	Id			string
-	CategoryId	string
-	PostId		string
+	PostsCategories	string
+	ID				string
+	CategoryID		string
+	PostID			string
 }
 
 type CommentsTableKeys struct {
-	Table			string
-	CommentId		string
-	PostId			string
-	UserId			string
+	Comments		string
+	CommentID		string
+	PostID			string
+	UserID			string
 	Content			string
 	CreationDate	string
 }
 
 type LikesDislikesTableKeys struct {
-	Table		string
-	Id			string
-	PostID		string
-	UserId		string
-	Liked		string
-	UpdateDate	string
+	LikesDislikes	string
+	ID				string
+	PostID			string
+	UserID			string
+	Liked			string
+	UpdateDate		string
 }
 
 // TABLES IN STRUCT DEFINITION
@@ -93,14 +93,14 @@ type StructTablesKeys struct {
 
 // TABLES
 var clients = ClientsTableKeys{
-	Table:			"clients",
-	UserId:			"user_id",
+	Clients:		"clients",
+	UserID:			"user_id",
 	LastName:		"last_name",
 	FirstName:		"first_name",
 	UserName:		"user_name",
 	Email:			"email",
 	OauthProvider:	"oauth_provider",
-	OauthId:		"oauth_id",
+	OauthID:		"oauth_id",
 	Password:		"password",
 	Avatar:			"avatar",
 	BirthDate:		"birth_date",
@@ -111,9 +111,9 @@ var clients = ClientsTableKeys{
 }
 
 var sessions = SessionsTableKeys{
-	Table:			"sessions",
-	SessionId:		"session_id",
-	UserId:			"user_id",
+	Sessions:		"sessions",
+	SessionID:		"session_id",
+	UserID:			"user_id",
 	UserRole:		"user_role",
 	UserName:		"user_name",
 	Expiration:		"expiration",
@@ -124,15 +124,15 @@ var sessions = SessionsTableKeys{
 }
 
 var categories = CategoriesTableKeys{
-	Table:	"categories",
-	Id:		"id",
-	Name:	"name",
+	Categories:	"categories",
+	ID:			"id",
+	Name:		"name",
 }
 
 var posts = PostsTableKeys{
-	Table:			"posts",
-	PostId:			"post_id",
-	AuthorId:		"author_id",
+	Posts:			"posts",
+	PostID:			"post_id",
+	AuthorID:		"author_id",
 	Title:			"title",
 	Category:		"category",
 	Tags:			"tags",
@@ -146,28 +146,28 @@ var posts = PostsTableKeys{
 }
 
 var postsCategories = PostsCategoriesTableKeys{
-	Table:		"posts_categories",
-	Id:			"id",
-	CategoryId:	"category_id",
-	PostId:		"post_id",
+	PostsCategories:	"posts_categories",
+	ID:					"id",
+	CategoryID:			"category_id",
+	PostID:				"post_id",
 }
 
 var comments = CommentsTableKeys{
-	Table:			"comments",
-	CommentId:		"comment_id",
-	PostId:			"post_id",
-	UserId:			"user_id",
+	Comments:		"comments",
+	CommentID:		"comment_id",
+	PostID:			"post_id",
+	UserID:			"user_id",
 	Content:		"content",
 	CreationDate:	"creation_date",
 }
 
 var likesDislikes = LikesDislikesTableKeys{
-	Table:		"likes_dislikes",
-	Id:			"id",
-	PostID:		"post_id",
-	UserId:		"user_id",
-	Liked:		"liked",
-	UpdateDate:	"update_date",
+	LikesDislikes:	"likes_dislikes",
+	ID:				"id",
+	PostID:			"post_id",
+	UserID:			"user_id",
+	Liked:			"liked",
+	UpdateDate:		"update_date",
 }
 
 // TABLES IN STRUCT

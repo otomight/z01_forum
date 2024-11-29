@@ -11,7 +11,7 @@ import (
 func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 	var	form	models.DeletePostForm
 	var	err		error
-	var	postId	int
+	var	postID	int
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "", http.StatusMethodNotAllowed)
@@ -22,11 +22,11 @@ func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 			http.StatusBadRequest)
 		return
 	}
-	if postId, err = strconv.Atoi(form.PostId); err != nil {
+	if postID, err = strconv.Atoi(form.PostID); err != nil {
 		http.Error(w, "Failed to delete post", http.StatusInternalServerError)
 		return
 	}
-	if err = database.DeletePost(postId); err != nil {
+	if err = database.DeletePost(postID); err != nil {
 		http.Error(w, "Failed to delete post", http.StatusInternalServerError)
 		return
 	}

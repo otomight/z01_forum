@@ -86,7 +86,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 func removeExistingUserSession(user database.Client) {
 	var	session	*database.UserSession
 
-	session, _ = database.GetSessionByUserId(user.UserID)
+	session, _ = database.GetSessionByUserID(user.UserID)
 	if session == nil {
 		return // no session found or any other error
 	}

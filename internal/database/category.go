@@ -8,12 +8,13 @@ import (
 
 func IsThereAnyCategories() bool {
 	var	query	string
-	var	k		config.StructTablesKeys = config.TableKeys
+	var	c		config.CategoriesTableKeys
 	var	count	int
 	var	err		error
 
+	c = config.TableKeys.Categories
 	query = `
-		SELECT COUNT(*) FROM `+k.Categories.Table+`;
+		SELECT COUNT(*) FROM `+c.Categories+`;
 	`
 	err = DB.QueryRow(query).Scan(&count)
 	if err != nil {
@@ -31,6 +32,7 @@ func InsertCategories() {
 	var	query		string
 	var	categories	string
 	var	err			error
+	var	c			config.CategoriesTableKeys
 	var	i			int
 
 	if IsThereAnyCategories() {
@@ -42,8 +44,9 @@ func InsertCategories() {
 			categories += " ,"
 		}
 	}
+	c = config.TableKeys.Categories
 	query = `
-		INSERT INTO categories (name)
+		INSERT INTO `+c.Categories+` (`+c.Name+`)
 		VALUES `+categories+`;
 	`
 	_, err = DB.Exec(query)

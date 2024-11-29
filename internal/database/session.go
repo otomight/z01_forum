@@ -13,8 +13,9 @@ import (
 
 // Session CRUD operations
 func CreateSession(session *UserSession) error {
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	s	config.SessionsTableKeys
 
+	s = config.TableKeys.Sessions
 	if session.SessionID == "" || session.UserID == 0 {
 		return fmt.Errorf("invalid session data: session_id & user_id can't be empty")
 	}
@@ -23,7 +24,8 @@ func CreateSession(session *UserSession) error {
 		session.SessionID, session.UserID, session.Expiration, session.UserRole)
 
 	query := `
-		INSERT INTO `+k.Sessions.Table+` (session_id, user_id, expiration, user_role, user_name)
+		INSERT INTO `+s.Sessions+` (`+s.SessionID+`, `+s.UserID+`,
+							`+s.Expiration+`, `+s.UserRole+`, `+s.UserName+`)
 		VALUES (?, ?, ?, ?, ?)
 	`
 	_, err := DB.Exec(query, session.SessionID, session.UserID,
@@ -37,15 +39,17 @@ func CreateSession(session *UserSession) error {
 
 func GetSessionWithKey(key string, value any) (*UserSession, error) {
 	var	query	string
-	var	k		config.StructTablesKeys = config.TableKeys
+	var	s		config.SessionsTableKeys
 	var	row		*sql.Row
 	var	session	UserSession
 	var	err		error
 
+	s = config.TableKeys.Sessions
 	query = `
-		SELECT session_id, user_id, expiration, creation_date,
-				update_date, deletion_date, is_deleted, user_role, user_name
-		FROM `+k.Sessions.Table+`
+		SELECT `+s.SessionID+`, `+s.UserID+`, `+s.Expiration+`,
+				`+s.CreationDate+`, `+s.UpdateDate+`, `+s.DeletionDate+`,
+				`+s.IsDeleted+`, `+s.UserRole+`, `+s.UserName+`
+		FROM `+s.Sessions+`
 		WHERE `+key+` = ?
 	`
 	row = DB.QueryRow(query, value)
@@ -66,11 +70,11 @@ func GetSessionWithKey(key string, value any) (*UserSession, error) {
 }
 
 func GetSessionByID(sessionID string) (*UserSession, error) {
-	return GetSessionWithKey(config.TableKeys.Sessions.SessionId, sessionID)
+	return GetSessionWithKey(config.TableKeys.Sessions.SessionID, sessionID)
 }
 
-func GetSessionByUserId(userId int) (*UserSession, error) {
-	return GetSessionWithKey(config.TableKeys.Sessions.UserId, userId)
+func GetSessionByUserID(userId int) (*UserSession, error) {
+	return GetSessionWithKey(config.TableKeys.Sessions.UserID, userId)
 }
 
 
@@ -101,11 +105,12 @@ func GenerateSessionID() string {
 }
 
 func DeleteSession(sessionID string) error {
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	s	config.SessionsTableKeys
 
+	s = config.TableKeys.Sessions
 	query := `
-		DELETE FROM `+k.Sessions.Table+`
-		WHERE session_id = ?
+		DELETE FROM `+s.Sessions+`
+		WHERE `+s.SessionID+` = ?
 	`
 	_, err := DB.Exec(query, sessionID)
 

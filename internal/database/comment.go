@@ -7,10 +7,11 @@ import (
 )
 
 func AddComment(postID, userID int, content string) error {
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	c	config.CommentsTableKeys
 
+	c = config.TableKeys.Comments
 	query := `
-		INSERT INTO `+k.Comments.Table+` (post_id, user_id, content)
+		INSERT INTO `+c.Comments+` (`+c.PostID+`, `+c.UserID+`, `+c.Content+`)
 		VALUES(?, ?, ?)
 	`
 	_, err := DB.Exec(query, postID, userID, content)
@@ -22,14 +23,18 @@ func AddComment(postID, userID int, content string) error {
 }
 
 func GetCommentsByPostID(postID int) ([]Comment, error) {
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	c	config.CommentsTableKeys
+	var	cl	config.ClientsTableKeys
 
+	c = config.TableKeys.Comments
+	cl = config.TableKeys.Clients
 	query := `
-		SELECT c.comment_id, c.post_id, c.user_id, u.user_name, c.content, c.creation_date
-		FROM `+k.Comments.Table+` c
-		INNER JOIN clients u ON c.user_id = u.user_id
-		WHERE c.post_id = ?
-		ORDER BY c.creation_date ASC;
+		SELECT c.`+c.CommentID+`, c.`+c.PostID+`, c.`+c.UserID+`,
+				cl.`+cl.UserName+`, c.`+c.Content+`, c.`+c.CreationDate+`
+		FROM `+c.Comments+` c
+		INNER JOIN `+cl.Clients+` cl ON c.`+c.UserID+` = cl.`+cl.UserID+`
+		WHERE c.`+c.PostID+` = ?
+		ORDER BY c.`+c.CreationDate+` ASC;
 	`
 
 	rows, err := DB.Query(query, postID)

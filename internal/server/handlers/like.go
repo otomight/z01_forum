@@ -17,18 +17,18 @@ func updateLikeDislikeInDb(
 	var	response	models.LikeDislikePostResponseAjax
 	var	err			error
 
-	ldl, err = db.GetLikeDislikeByUser(received.PostId, received.UserId)
+	ldl, err = db.GetLikeDislikeByUser(received.PostID, received.UserID)
 	if err != nil {
 		return nil, err
 	}
 	if ldl != nil && ldl.Liked == liked {
-		err = db.DeleteLikeDislike(received.PostId, received.UserId)
+		err = db.DeleteLikeDislike(received.PostID, received.UserID)
 		if err != nil {
 			return nil, err
 		}
 		response.Deleted = true
 	} else {
-		err = db.AddLikeDislike(received.PostId, received.UserId, liked)
+		err = db.AddLikeDislike(received.PostID, received.UserID, liked)
 		if err != nil {
 			return nil, err
 		}
@@ -37,7 +37,7 @@ func updateLikeDislikeInDb(
 			response.Replaced = true
 		}
 	}
-	err = db.UpdatePostLikesDislikesCount(received.PostId)
+	err = db.UpdatePostLikesDislikesCount(received.PostID)
 	return &response, nil
 }
 

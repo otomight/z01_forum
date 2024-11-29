@@ -11,11 +11,15 @@ import (
 
 // Client CRUD operations
 func CreateClient(client *Client) error {
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	c	config.ClientsTableKeys
 
+	c = config.TableKeys.Clients
 	query := `
-		INSERT INTO `+k.Clients.Table+` (last_name, first_name, user_name,
-						email, password, avatar, bith_date, user_role)
+		INSERT INTO `+c.Clients+` (
+			`+c.LastName+`, `+c.FirstName+`, `+c.UserName+`,
+			`+c.Email+`, `+c.Password+`,
+			`+c.Avatar+`, `+c.BirthDate+`, `+c.UserRole+`
+		)
 		VALUES 	(?, ?, ?, ?, ?, ?, ?)
 	`
 	_, err := DB.Exec(query, client.LastName, client.FirstName,
@@ -25,12 +29,14 @@ func CreateClient(client *Client) error {
 }
 
 func GetClientByID(userID int) (*Client, error) {
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	c	config.ClientsTableKeys
 
+	c = config.TableKeys.Clients
 	query := `
-		SELECT user_id, last_name, first_name, user_name, email, avatar,
-				birth_date, user_role, creation_date, update_date, deletion_date
-		FROM `+k.Clients.Table+` WERE user_id = ?
+		SELECT `+c.UserID+`, `+c.LastName+`, `+c.FirstName+`, `+c.UserName+`,
+				`+c.Email+`, `+c.Avatar+`, `+c.BirthDate+`, `+c.UserRole+`,
+				`+c.CreationDate+`, `+c.UpdateDate+`, `+c.DeletionDate+`
+		FROM `+c.Clients+` WERE `+c.UserID+` = ?
 	`
 	row := DB.QueryRow(query, userID)
 	var client Client
@@ -44,11 +50,12 @@ func SaveUser(
 	userName, email, password string,
 	firstName, lastName, userRole string,
 ) (int, error) {
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	c	config.ClientsTableKeys
 
+	c = config.TableKeys.Clients
 	query := `
-		INSERT INTO `+k.Clients.Table+` (user_name, email, password,
-										first_name, last_name, user_role)
+		INSERT INTO `+c.Clients+` (`+c.UserName+`, `+c.Email+`, `+c.Password+`,
+								`+c.FirstName+`, `+c.LastName+`, `+c.UserRole+`)
 		VALUES (?, ?, ?, ?, ?, ?)
 	`
 
@@ -68,15 +75,17 @@ func SaveUser(
 
 // Retrieve client from database by their Email
 func GetClientByUsernameOrEmail(email string) (*Client, error) {
-	var client Client
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	client	Client
+	var	c		config.ClientsTableKeys
 
 	//Query to find user by Email
+	c = config.TableKeys.Clients
 	query := `
-		SELECT user_id, last_name, first_name, email, password, avatar,
-			birthdate, user_role, creation_date, update_date, deletion_date
-		FROM `+k.Clients.Table+`
-		WHERE user_name = ? OR email = ?
+		SELECT `+c.UserID+`, `+c.LastName+`, `+c.FirstName+`, `+c.Email+`,
+				`+c.Password+`, `+c.Avatar+`, `+c.BirthDate+`, `+c.UserRole+`,
+				`+c.CreationDate+`, `+c.UpdateDate+`, `+c.DeletionDate+`
+		FROM `+c.Clients+`
+		WHERE `+c.UserName+` = ? OR `+c.Email+` = ?
 	`
 
 	//Execute query
@@ -112,10 +121,11 @@ func GetClientByUsernameOrEmail(email string) (*Client, error) {
 // Setting user role
 func GetUserRole(userID int) (string, error) {
 	var role string
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	c	config.ClientsTableKeys
 
+	c = config.TableKeys.Clients
 	query := `
-		SELECT user_role FROM `+k.Clients.Table+` WHERE user_id = ?
+		SELECT `+c.UserRole+` FROM `+c.Clients+` WHERE `+c.UserName+` = ?
 	`
 	err := DB.QueryRow(query, userID).Scan(&role)
 	if err != nil {
@@ -127,19 +137,21 @@ func GetUserRole(userID int) (string, error) {
 // Validate User credentials
 func ValidateUserCredentials(username, password string) (Client, error) {
 	var user Client
-	var	k	config.StructTablesKeys = config.TableKeys
+	var	c	config.ClientsTableKeys
 
+	c = config.TableKeys.Clients
 	//Get user by username/email
 	query := `
-		SELECT user_id, first_name,
-			last_name, user_name, email, password, user_role
-		FROM `+k.Clients.Table+` WHERE user_name = ? OR email = ?
+		SELECT `+c.UserID+`, `+c.FirstName+`, `+c.LastName+`,
+				`+c.UserName+`, `+c.Email+`, `+c.Password+`, `+c.UserRole+`
+		FROM `+c.Clients+` WHERE `+c.UserName+` = ? OR `+c.Email+` = ?
 	`
 
 	row := DB.QueryRow(query, username, username)
 
 	//Scan results into user struct
-	err := row.Scan(&user.UserID, &user.FirstName, &user.LastName, &user.UserName, &user.Email, &user.Password, &user.UserRole)
+	err := row.Scan(&user.UserID, &user.FirstName, &user.LastName,
+					&user.UserName, &user.Email, &user.Password, &user.UserRole)
 	if err == sql.ErrNoRows {
 		return user, fmt.Errorf("user not found")
 	} else if err != nil {
@@ -147,7 +159,8 @@ func ValidateUserCredentials(username, password string) (Client, error) {
 	}
 
 	//Compare hashed/provided password
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
 		return user, fmt.Errorf("invalid password")
 	}
 	return user, nil
@@ -156,13 +169,16 @@ func ValidateUserCredentials(username, password string) (Client, error) {
 // Social Login
 func GetOrCreateUserByOAuth(oauthProvider, oauthID, email, name, avatar string) (*Client, error) {
 	var user	Client
-	var	k		config.StructTablesKeys = config.TableKeys
-	// Check if the user already exists
+	var	c		config.ClientsTableKeys
 
+	c = config.TableKeys.Clients
+	// Check if the user already exists
 	query := `
-		SELECT user_id, last_name, first_name, user_name, email, avatar, user_role, oauth_provider, oauth_id
-		FROM `+k.Clients.Table+`
-		WHERE oauth_provider = ? AND oauth_id = ?
+		SELECT `+c.UserID+`, `+c.LastName+`, `+c.FirstName+`,
+				`+c.UserName+`, `+c.Email+`, `+c.Avatar+`,
+				`+c.UserRole+`, `+c.OauthProvider+`, `+c.OauthID+`
+		FROM `+c.Clients+`
+		WHERE `+c.OauthProvider+` = ? AND `+c.OauthID+` = ?
 	`
 	err := DB.QueryRow(query, oauthProvider, oauthID).Scan(
 		&user.UserID, &user.LastName, &user.FirstName, &user.UserName, &user.Email,
@@ -173,8 +189,11 @@ func GetOrCreateUserByOAuth(oauthProvider, oauthID, email, name, avatar string) 
 	if err == sql.ErrNoRows {
 		// Insert new user
 		query := `
-			INSERT INTO `+k.Clients.Table+` (last_name, first_name, user_name,
-				email, avatar, user_role, oauth_provider, oauth_id)
+			INSERT INTO `+c.Clients+` (
+				`+c.LastName+`, `+c.FirstName+`, `+c.UserName+`,
+				`+c.Email+`, `+c.Avatar+`, `+c.UserRole+`,
+				`+c.OauthProvider+`, `+c.OauthID+`
+			)
 			VALUES (?, ?, ?, ?, ?, 'user', ?, ?)
 		`
 		result, insertErr := DB.Exec(query, "", name, name, email,

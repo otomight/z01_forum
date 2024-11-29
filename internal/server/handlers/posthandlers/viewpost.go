@@ -38,8 +38,8 @@ func fillViewPostPageData(
 }
 
 func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
-	var	postIdStr			string
-	var	postId				int
+	var	postIDStr			string
+	var	postID				int
 	var	post				*db.Post
 	var	data				*models.ViewPostPageData
 	var	err					error
@@ -48,16 +48,16 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusMethodNotAllowed)
 		return
 	}
-	postIdStr = strings.TrimPrefix(r.URL.Path, "/post/view/")
-	if postIdStr == "" || strings.Contains(postIdStr, "/") {
+	postIDStr = strings.TrimPrefix(r.URL.Path, "/post/view/")
+	if postIDStr == "" || strings.Contains(postIDStr, "/") {
 		http.NotFound(w, r)
 		return
 	}
-	if postId, err = strconv.Atoi(postIdStr); err != nil {
+	if postID, err = strconv.Atoi(postIDStr); err != nil {
 		http.NotFound(w, r)
 		return
 	}
-	if post, err = db.GetPostByID(postId); err != nil {
+	if post, err = db.GetPostByID(postID); err != nil {
 		http.NotFound(w, r)
 		return
 	}

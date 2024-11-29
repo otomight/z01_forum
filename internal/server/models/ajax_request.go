@@ -1,6 +1,6 @@
 package models
 
 type LikeDislikePostRequestAjax struct {
-	PostId	int	`json:"post_id"`
-	UserId	int	`json:"user_id"`
+	PostID	int	`json:"post_id"`
+	UserID	int	`json:"user_id"`
 }
