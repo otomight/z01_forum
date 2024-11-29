@@ -17,8 +17,6 @@ func createPost(userID int, form models.CreatePostForm) (int64, error) {
 		AuthorID:		userID,
 		Title:			form.Title,
 		Content:		form.Content,
-		Category:		form.Category,
-		Tags:			form.Tags,
 		CreationDate:	time.Now(),
 		UpdateDate:		time.Now(),
 		IsDeleted:		false,

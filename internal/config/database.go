@@ -43,8 +43,6 @@ type PostsTableKeys struct {
 	ID				string
 	AuthorID		string
 	Title			string
-	Category		string
-	Tags			string
 	Content			string
 	CreationDate	string
 	UpdateDate		string
@@ -134,8 +132,6 @@ var posts = PostsTableKeys{
 	ID:				"id",
 	AuthorID:		"author_id",
 	Title:			"title",
-	Category:		"category",
-	Tags:			"tags",
 	Content:		"content",
 	CreationDate:	"creation_date",
 	UpdateDate:		"update_date",

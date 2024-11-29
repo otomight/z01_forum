@@ -75,13 +75,11 @@ func InsertSamplePost() {
 	if count == 0 {
 		query = `
 			INSERT INTO `+p.Posts+` (
-				`+p.AuthorID+`, `+p.Title+`, `+p.Category+`,
-				`+p.Tags+`, `+p.Content+`, `+p.CreationDate+`,
-				`+p.UpdateDate+`, `+p.IsDeleted+`
+				`+p.AuthorID+`, `+p.Title+`, `+p.Content+`,
+				`+p.CreationDate+`, `+p.UpdateDate+`, `+p.IsDeleted+`
 			)
 			VALUES (
-				1, 'Sample Post', 'General',
-				'other', 'This is a sample post content.', CURRENT_TIMESTAMP,
+				1, 'Sample Post', 'This is a sample post content.', CURRENT_TIMESTAMP,
 				CURRENT_TIMESTAMP, 0
 			);
 		`

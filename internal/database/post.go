@@ -15,12 +15,12 @@ func NewPost(post *Post) (int64, error) {
 	p = config.TableKeys.Posts
 	query = `
 		INSERT INTO `+p.Posts+` (
-			`+p.AuthorID+`, `+p.Title+`, `+p.Category+`, `+p.Content+`,
-			`+p.Tags+`, `+p.CreationDate+`, `+p.UpdateDate+`, `+p.IsDeleted+`)
-		VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
+			`+p.AuthorID+`, `+p.Title+`, `+p.Content+`,
+			`+p.CreationDate+`, `+p.UpdateDate+`, `+p.IsDeleted+`
+		)
+		VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
 	`
-	result, err := DB.Exec(query, post.AuthorID, post.Title,
-							post.Category, post.Content, post.Tags)
+	result, err := DB.Exec(query, post.AuthorID, post.Title, post.Content)
 	if err != nil {
 		return 0, err
 	}
@@ -39,9 +39,9 @@ func GetPostByID(postID int) (*Post, error) {
 	c = config.TableKeys.Clients
 	// Updated query to join Posts and Clients to get the user_name
 	query := `
-	SELECT p.`+p.ID+`, p.`+p.AuthorID+`, c.`+c.UserName+`, p.`+p.Title+`,
-			p.`+p.Category+`, p.`+p.Tags+`, p.`+p.Content+`,
-			p.`+p.CreationDate+`, p.`+p.UpdateDate+`, p.`+p.DeletionDate+`,
+	SELECT p.`+p.ID+`, p.`+p.AuthorID+`, c.`+c.UserName+`,
+			p.`+p.Title+`, p.`+p.Content+`, p.`+p.CreationDate+`,
+			p.`+p.UpdateDate+`, p.`+p.DeletionDate+`,
 			p.`+p.IsDeleted+`, p.`+p.Likes+`, p.`+p.Dislikes+`
 	FROM `+p.Posts+` p
 	JOIN `+c.Clients+` c ON p.`+p.AuthorID+` = c.`+c.ID+`
@@ -49,8 +49,8 @@ func GetPostByID(postID int) (*Post, error) {
 	`
 	post := &Post{}
 	err := DB.QueryRow(query, postID).Scan(
-		&post.PostID, &post.AuthorID, &post.UserName, &post.Title, &post.Category,
-		&post.Tags, &post.Content, &post.CreationDate, &post.UpdateDate,
+		&post.PostID, &post.AuthorID, &post.UserName, &post.Title,
+		&post.Content, &post.CreationDate, &post.UpdateDate,
 		&post.DeletionDate, &post.IsDeleted, &post.Likes, &post.Dislikes,
 	)
 	if err != nil {
@@ -76,8 +76,8 @@ func GetAllPosts() ([]Post, error) {
 	c = config.TableKeys.Clients
 	query := `
 		SELECT p.`+p.ID+`, p.`+p.AuthorID+`, c.`+c.UserName+`,
-				p.`+p.Title+`, p.`+p.Category+`, p.`+p.Tags+`, p.`+p.Content+`,
-				p.`+p.CreationDate+`, p.`+p.UpdateDate+`, p.`+p.DeletionDate+`,
+				p.`+p.Title+`, p.`+p.Content+`, p.`+p.CreationDate+`,
+				p.`+p.UpdateDate+`, p.`+p.DeletionDate+`,
 				p.`+p.IsDeleted+`, p.`+p.Likes+`, p.`+p.Dislikes+`
 		FROM `+p.Posts+` p
 		JOIN `+c.Clients+` c ON p.`+p.AuthorID+` = c.`+c.ID+`
@@ -93,10 +93,11 @@ func GetAllPosts() ([]Post, error) {
 	// Iterate through rows and append to posts slice
 	for rows.Next() {
 		var post Post
-		err = rows.Scan(&post.PostID, &post.AuthorID, &post.UserName,
-			&post.Title, &post.Category, &post.Tags, &post.Content,
-			&post.CreationDate, &post.UpdateDate, &post.DeletionDate,
-			&post.IsDeleted, &post.Likes, &post.Dislikes)
+		err = rows.Scan(
+			&post.PostID, &post.AuthorID, &post.UserName, &post.Title,
+			&post.Content, &post.CreationDate, &post.UpdateDate,
+			&post.DeletionDate, &post.IsDeleted, &post.Likes, &post.Dislikes,
+		)
 		if err != nil {
 			log.Printf("Error scanning post: %v", err)
 			continue
