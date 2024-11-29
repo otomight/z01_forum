@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 )
 
 func StructToMap(data interface{}) (map[string]interface{}, error) {
@@ -24,6 +25,22 @@ func StructToMap(data interface{}) (map[string]interface{}, error) {
 		field = value.Field(i)
 		fieldName = value.Type().Field(i).Name
 		result[fieldName] = field.Interface()
+	}
+	return result, nil
+}
+
+func StrSliceToIntSlice(slice []string) ([]int, error) {
+	var	result	[]int
+	var	i		int
+	var	id		int
+	var	err		error
+
+	for i = 0; i < len(slice); i++ {
+		id, err = strconv.Atoi(slice[i])
+		if err != nil {
+			return result, err
+		}
+		result = append(result, id)
 	}
 	return result, nil
 }

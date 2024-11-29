@@ -12,7 +12,10 @@ import (
 	"time"
 )
 
-func createPost(userID int, form models.CreatePostForm) (int64, error) {
+func createPost(userID int, form models.CreatePostForm) (int, error) {
+	var	err			error
+	var	categories	[]int
+
 	post := &db.Post{
 		AuthorID:		userID,
 		Title:			form.Title,
@@ -25,14 +28,20 @@ func createPost(userID int, form models.CreatePostForm) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	if categories, err = utils.StrSliceToIntSlice(form.Categories); err != nil {
+		log.Printf("Error during convertion of categories IDs: %v", err)
+	}
+	if err = db.AddPostCategories(id, categories...); err != nil {
+		log.Printf("Error adding categories to the database: %v", err)
+	}
 	return id, nil
 }
 
 func createPostFromForm(
 	w http.ResponseWriter, r *http.Request, session *db.UserSession,
-) (int64, error) {
+) (int, error) {
 	var	form	models.CreatePostForm
-	var	postID	int64
+	var	postID	int
 	var	err		error
 
 	if err = utils.ParseStringForm(r, &form); err != nil {
@@ -40,7 +49,6 @@ func createPostFromForm(
 							http.StatusBadRequest)
 		return 0, err
 	}
-	fmt.Println(form.Categories)
 	if form.Title == "" || form.Content == "" {
 	http.Error(w, "Title and Content are required",
 							http.StatusBadRequest)
@@ -56,7 +64,7 @@ func createPostFromForm(
 }
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	var	postID			int64
+	var	postID			int
 	var	redirectLink	string
 	var	session			*db.UserSession
 	var	categories		[]*db.Category
@@ -71,7 +79,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.Method == http.MethodGet {
 	// render the post creation page
-		categories, _ = db.GetCategories()
+		categories, _ = db.GetGlobalCategories()
 		data = models.CreatePostPageData{
 			Session: session,
 			Categories: categories,

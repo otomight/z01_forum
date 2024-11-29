@@ -8,7 +8,7 @@ import (
 )
 
 // Post CRUD operations
-func NewPost(post *Post) (int64, error) {
+func NewPost(post *Post) (int, error) {
 	var	query	string
 	var	p		config.PostsTableKeys
 
@@ -28,7 +28,7 @@ func NewPost(post *Post) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return postID, err
+	return int(postID), err
 }
 
 func GetPostByID(postID int) (*Post, error) {

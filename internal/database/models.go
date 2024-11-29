@@ -50,14 +50,8 @@ type Post struct {
 	IsDeleted		bool		`json:"is_deleted"`
 	Likes			int
 	Dislikes		int
-	Categories		[]PostCategory
+	Categories		[]Category
 	Comments		[]Comment	`json:"comments"`
-}
-
-type PostCategory struct {
-	ID		int
-	Name	string
-	PostID	int
 }
 
 type Comment struct {
