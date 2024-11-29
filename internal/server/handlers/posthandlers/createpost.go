@@ -35,11 +35,12 @@ func createPostFromForm(
 	var	postID	int64
 	var	err		error
 
-	if err = utils.ParseForm(r, &form); err != nil {
+	if err = utils.ParseStringForm(r, &form); err != nil {
 		http.Error(w, "Unable to parse form:" + err.Error(),
 							http.StatusBadRequest)
 		return 0, err
 	}
+	fmt.Println(form.Categories)
 	if form.Title == "" || form.Content == "" {
 	http.Error(w, "Title and Content are required",
 							http.StatusBadRequest)
@@ -58,6 +59,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	var	postID			int64
 	var	redirectLink	string
 	var	session			*db.UserSession
+	var	categories		[]*db.Category
 	var	data			models.CreatePostPageData
 	var	ok				bool
 	var	err				error
@@ -69,8 +71,10 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.Method == http.MethodGet {
 	// render the post creation page
+		categories, _ = db.GetCategories()
 		data = models.CreatePostPageData{
 			Session: session,
+			Categories: categories,
 		}
 		templates.RenderTemplate(w, config.CreatePostTmpl, data)
 	} else if r.Method == http.MethodPost {

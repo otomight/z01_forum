@@ -23,7 +23,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// store form
-	if err := utils.ParseForm(r, &form); err != nil {
+	if err := utils.ParseStringForm(r, &form); err != nil {
 		http.Error(w, "Unable to parse form:"+err.Error(),
 			http.StatusBadRequest)
 		return
@@ -86,11 +86,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 func removeExistingUserSession(user database.Client) {
 	var	session	*database.UserSession
 
-	session, _ = database.GetSessionByUserID(user.UserID)
+	session, _ = database.GetSessionByUserID(user.ID)
 	if session == nil {
 		return // no session found or any other error
 	}
-	database.DeleteSession(session.SessionID)
+	database.DeleteSession(session.ID)
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -101,7 +101,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// store form
-	if err := utils.ParseForm(r, &form); err != nil {
+	if err := utils.ParseStringForm(r, &form); err != nil {
 		http.Error(w, "Unable to parse form:"+err.Error(),
 			http.StatusBadRequest)
 		return
@@ -124,7 +124,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Create new session for logged user
 	removeExistingUserSession(user)
-	sessionID, err := database.CreateUserSession(user.UserID, user.UserRole, user.UserName)
+	sessionID, err := database.CreateUserSession(user.ID, user.UserRole, user.UserName)
 	if err != nil {
 		http.Error(w, "Failed to create session", http.StatusInternalServerError)
 		return

@@ -49,7 +49,7 @@ func GetPostByID(postID int) (*Post, error) {
 	`
 	post := &Post{}
 	err := DB.QueryRow(query, postID).Scan(
-		&post.PostID, &post.AuthorID, &post.UserName, &post.Title,
+		&post.ID, &post.AuthorID, &post.UserName, &post.Title,
 		&post.Content, &post.CreationDate, &post.UpdateDate,
 		&post.DeletionDate, &post.IsDeleted, &post.Likes, &post.Dislikes,
 	)
@@ -94,7 +94,7 @@ func GetAllPosts() ([]Post, error) {
 	for rows.Next() {
 		var post Post
 		err = rows.Scan(
-			&post.PostID, &post.AuthorID, &post.UserName, &post.Title,
+			&post.ID, &post.AuthorID, &post.UserName, &post.Title,
 			&post.Content, &post.CreationDate, &post.UpdateDate,
 			&post.DeletionDate, &post.IsDeleted, &post.Likes, &post.Dislikes,
 		)
@@ -102,7 +102,7 @@ func GetAllPosts() ([]Post, error) {
 			log.Printf("Error scanning post: %v", err)
 			continue
 		}
-		post.Comments, err = GetCommentsByPostID(post.PostID)
+		post.Comments, err = GetCommentsByPostID(post.ID)
 		if err != nil {
 			log.Println(err.Error())
 		}

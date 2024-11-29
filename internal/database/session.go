@@ -16,19 +16,19 @@ func CreateSession(session *UserSession) error {
 	var	s	config.SessionsTableKeys
 
 	s = config.TableKeys.Sessions
-	if session.SessionID == "" || session.UserID == 0 {
+	if session.ID == "" || session.UserID == 0 {
 		return fmt.Errorf("invalid session data: session_id & user_id can't be empty")
 	}
 
 	log.Printf("Attempting to create session: sessionID=%s, userID=%d, expiration=%v, userRole=%s",
-		session.SessionID, session.UserID, session.Expiration, session.UserRole)
+		session.ID, session.UserID, session.Expiration, session.UserRole)
 
 	query := `
 		INSERT INTO `+s.Sessions+` (`+s.ID+`, `+s.UserID+`,
 							`+s.Expiration+`, `+s.UserRole+`, `+s.UserName+`)
 		VALUES (?, ?, ?, ?, ?)
 	`
-	_, err := DB.Exec(query, session.SessionID, session.UserID,
+	_, err := DB.Exec(query, session.ID, session.UserID,
 						session.Expiration, session.UserRole, session.UserName)
 	if err != nil {
 		log.Printf("Error creating session for user %d: %v", session.UserID, err)
@@ -53,7 +53,7 @@ func GetSessionWithKey(key string, value any) (*UserSession, error) {
 		WHERE `+key+` = ?
 	`
 	row = DB.QueryRow(query, value)
-	err = row.Scan(&session.SessionID, &session.UserID,
+	err = row.Scan(&session.ID, &session.UserID,
 					&session.Expiration, &session.CreationDate,
 					&session.UpdateDate, &session.DeletionDate,
 					&session.IsDeleted, &session.UserRole, &session.UserName)
@@ -84,11 +84,11 @@ func CreateUserSession(userID int, userRole, userName string) (string, error) {
 	expiration := time.Now().Add(24 * time.Hour)
 
 	session := &UserSession{
-		SessionID:  sessionID,
-		UserID:     userID,
-		UserRole:   userRole,
-		UserName:   userName,
-		Expiration: expiration,
+		ID:			sessionID,
+		UserID:		userID,
+		UserRole:	userRole,
+		UserName:	userName,
+		Expiration:	expiration,
 	}
 
 	//Store session to database

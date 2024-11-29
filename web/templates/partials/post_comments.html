@@ -2,14 +2,14 @@
 	<div class="comments">
 		<h4>Comments</h4>
 		{{ if .Session }}
-			<form action="/post/comment/{{ .Post.PostID }}"
+			<form action="/post/comment/{{ .Post.ID }}"
 				method="POST" class="comment-form">
 				<textarea
 					name="content"
 					placeholder="Write your comment here..."
 					required>
 				</textarea>
-				<input type="hidden" name="postID" value="{{ .Post.PostID }}">
+				<input type="hidden" name="postID" value="{{ .Post.ID }}">
 				<button type="submit">Comment</button>
 			</form>
 		{{ end }}

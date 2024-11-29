@@ -15,7 +15,7 @@
 		<div id="posts">
 			{{ range .Posts }}
 				<div class="post">
-					<a href="/post/view/{{ .Post.PostID }}"><h3>{{ .Post.Title }}</h3></a>
+					<a href="/post/view/{{ .Post.ID }}"><h3>{{ .Post.Title }}</h3></a>
 					<p>By: {{ .Post.UserName }}</p>
 					<p>{{ .Post.Content }}</p>
 					<p><em>Posted on: {{ .Post.CreationDate }}</em></p>

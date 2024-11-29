@@ -40,7 +40,7 @@ func GetClientByID(userID int) (*Client, error) {
 	`
 	row := DB.QueryRow(query, userID)
 	var client Client
-	err := row.Scan(&client.UserID, &client.LastName, &client.FirstName, &client.UserName, &client.Email,
+	err := row.Scan(&client.ID, &client.LastName, &client.FirstName, &client.UserName, &client.Email,
 		&client.BirthDate, &client.UserRole, &client.CreationDate, &client.UpdateDate, &client.DeletionDate)
 	return &client, err
 }
@@ -93,7 +93,7 @@ func GetClientByUsernameOrEmail(email string) (*Client, error) {
 
 	//Scan results into client struct
 	err := row.Scan(
-		&client.UserID,
+		&client.ID,
 		&client.LastName,
 		&client.FirstName,
 		&client.UserName,
@@ -150,7 +150,7 @@ func ValidateUserCredentials(username, password string) (Client, error) {
 	row := DB.QueryRow(query, username, username)
 
 	//Scan results into user struct
-	err := row.Scan(&user.UserID, &user.FirstName, &user.LastName,
+	err := row.Scan(&user.ID, &user.FirstName, &user.LastName,
 					&user.UserName, &user.Email, &user.Password, &user.UserRole)
 	if err == sql.ErrNoRows {
 		return user, fmt.Errorf("user not found")
@@ -181,7 +181,7 @@ func GetOrCreateUserByOAuth(oauthProvider, oauthID, email, name, avatar string) 
 		WHERE `+c.OauthProvider+` = ? AND `+c.OauthID+` = ?
 	`
 	err := DB.QueryRow(query, oauthProvider, oauthID).Scan(
-		&user.UserID, &user.LastName, &user.FirstName, &user.UserName, &user.Email,
+		&user.ID, &user.LastName, &user.FirstName, &user.UserName, &user.Email,
 		&user.Avatar, &user.UserRole, &user.OauthProvider, &user.OauthID,
 	)
 
@@ -213,7 +213,7 @@ func GetOrCreateUserByOAuth(oauthProvider, oauthID, email, name, avatar string) 
 
 		// Return the newly created user
 		return &Client{
-			UserID:        int(userID),
+			ID:        int(userID),
 			FirstName:     name,
 			UserName:      name,
 			Email:         email,

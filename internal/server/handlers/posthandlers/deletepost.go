@@ -17,7 +17,7 @@ func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusMethodNotAllowed)
 		return
 	}
-	if err = utils.ParseForm(r, &form); err != nil {
+	if err = utils.ParseStringForm(r, &form); err != nil {
 		http.Error(w, "Unable to parse form:"+err.Error(),
 			http.StatusBadRequest)
 		return

@@ -46,7 +46,7 @@ func GetCommentsByPostID(postID int) ([]Comment, error) {
 	var comments []Comment
 	for rows.Next() {
 		var comment Comment
-		err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.UserID,
+		err := rows.Scan(&comment.ID, &comment.PostID, &comment.UserID,
 					&comment.UserName, &comment.Content, &comment.CreationDate)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning comment: %w", err)

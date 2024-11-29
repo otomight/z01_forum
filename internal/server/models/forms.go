@@ -1,10 +1,9 @@
 package models
 
 type CreatePostForm struct {
-	Title		string	`form:"title"`
-	Content		string	`form:"content"`
-	Category	string	`form:"category"`
-	Tags		string	`form:"tags"`
+	Title		string		`form:"title"`
+	Content		string		`form:"content"`
+	Categories	[]string	`form:"categories"`
 }
 
 type RegisterForm struct {

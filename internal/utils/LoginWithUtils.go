@@ -137,7 +137,7 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 		return
 	}
 
-	sessionID, err := database.CreateUserSession(user.UserID, user.UserRole, user.UserName)
+	sessionID, err := database.CreateUserSession(user.ID, user.UserRole, user.UserName)
 	if err != nil {
 		log.Printf("Failed to create session: %v", err)
 		http.Error(w, "Failed to create session:"+err.Error(), http.StatusInternalServerError)

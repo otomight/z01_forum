@@ -8,7 +8,8 @@ type ViewPostPageData struct {
 }
 
 type CreatePostPageData struct {
-	Session	*database.UserSession
+	Session		*database.UserSession
+	Categories	[]*database.Category
 }
 
 type HomePageData struct {

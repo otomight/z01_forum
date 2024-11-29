@@ -16,7 +16,7 @@ func GetUserLikesConfigsOfPost(
 	if session == nil {
 		return false, false
 	}
-	ldl, err = db.GetLikeDislikeByUser(post.PostID, session.UserID)
+	ldl, err = db.GetLikeDislikeByUser(post.ID, session.UserID)
 	if err != nil {
 		log.Println(err.Error())
 		return false, false
