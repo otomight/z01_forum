@@ -29,10 +29,10 @@ func GetCommentsByPostID(postID int) ([]Comment, error) {
 	c = config.TableKeys.Comments
 	cl = config.TableKeys.Clients
 	query := `
-		SELECT c.`+c.CommentID+`, c.`+c.PostID+`, c.`+c.UserID+`,
+		SELECT c.`+c.ID+`, c.`+c.PostID+`, c.`+c.UserID+`,
 				cl.`+cl.UserName+`, c.`+c.Content+`, c.`+c.CreationDate+`
 		FROM `+c.Comments+` c
-		INNER JOIN `+cl.Clients+` cl ON c.`+c.UserID+` = cl.`+cl.UserID+`
+		INNER JOIN `+cl.Clients+` cl ON c.`+c.UserID+` = cl.`+cl.ID+`
 		WHERE c.`+c.PostID+` = ?
 		ORDER BY c.`+c.CreationDate+` ASC;
 	`

@@ -39,13 +39,13 @@ func GetPostByID(postID int) (*Post, error) {
 	c = config.TableKeys.Clients
 	// Updated query to join Posts and Clients to get the user_name
 	query := `
-	SELECT p.`+p.PostID+`, p.`+p.AuthorID+`, c.`+c.UserName+`, p.`+p.Title+`,
+	SELECT p.`+p.ID+`, p.`+p.AuthorID+`, c.`+c.UserName+`, p.`+p.Title+`,
 			p.`+p.Category+`, p.`+p.Tags+`, p.`+p.Content+`,
 			p.`+p.CreationDate+`, p.`+p.UpdateDate+`, p.`+p.DeletionDate+`,
 			p.`+p.IsDeleted+`, p.`+p.Likes+`, p.`+p.Dislikes+`
 	FROM `+p.Posts+` p
-	JOIN `+c.Clients+` c ON p.`+p.AuthorID+` = c.`+c.UserID+`
-	WHERE p.`+p.PostID+` = ? AND p.`+p.IsDeleted+` = FALSE
+	JOIN `+c.Clients+` c ON p.`+p.AuthorID+` = c.`+c.ID+`
+	WHERE p.`+p.ID+` = ? AND p.`+p.IsDeleted+` = FALSE
 	`
 	post := &Post{}
 	err := DB.QueryRow(query, postID).Scan(
@@ -75,12 +75,12 @@ func GetAllPosts() ([]Post, error) {
 	p = config.TableKeys.Posts
 	c = config.TableKeys.Clients
 	query := `
-		SELECT p.`+p.PostID+`, p.`+p.AuthorID+`, c.`+c.UserName+`,
+		SELECT p.`+p.ID+`, p.`+p.AuthorID+`, c.`+c.UserName+`,
 				p.`+p.Title+`, p.`+p.Category+`, p.`+p.Tags+`, p.`+p.Content+`,
 				p.`+p.CreationDate+`, p.`+p.UpdateDate+`, p.`+p.DeletionDate+`,
 				p.`+p.IsDeleted+`, p.`+p.Likes+`, p.`+p.Dislikes+`
 		FROM `+p.Posts+` p
-		JOIN `+c.Clients+` c ON p.`+p.AuthorID+` = c.`+c.UserID+`
+		JOIN `+c.Clients+` c ON p.`+p.AuthorID+` = c.`+c.ID+`
 		WHERE p.`+p.IsDeleted+` = 0 -- Only select non deleted posts
 	`
 	rows, err := DB.Query(query)
@@ -122,7 +122,7 @@ func DeletePost(postID int) error {
 	query := `
 		UPDATE `+p.Posts+`
 		SET `+p.IsDeleted+` = 1, `+p.DeletionDate+` = CURRENT_TIMESTAMP
-		WHERE `+p.PostID+` = ?
+		WHERE `+p.ID+` = ?
 	`
 	result, err := DB.Exec(query, postID)
 	if err != nil {
@@ -158,7 +158,7 @@ func UpdatePostLikesDislikesCount(postID int) error {
 	query = `
 		UPDATE `+p.Posts+`
 		SET `+p.Likes+` = ?, `+p.Dislikes+` = ?
-		WHERE `+p.PostID+` = ?;
+		WHERE `+p.ID+` = ?;
 	`
 	result, err = DB.Exec(query, newLikesCount, newDislikesCount, postID)
 	if err != nil {

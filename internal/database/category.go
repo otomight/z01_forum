@@ -1,64 +1,39 @@
 package database
 
-import (
-	"fmt"
-	"forum/internal/config"
-	"log"
-)
+import "forum/internal/config"
 
-func IsThereAnyCategories() bool {
+func AddPostCategories(postID int, categoriesID ...int) error {
 	var	query	string
-	var	c		config.CategoriesTableKeys
-	var	count	int
+	var	pc		config.PostsCategoriesTableKeys
+	var	args	[]any
+	var	i		int
 	var	err		error
 
-	c = config.TableKeys.Categories
+	pc = config.TableKeys.PostsCategories
 	query = `
-		SELECT COUNT(*) FROM `+c.Categories+`;
+		INSERT INTO `+pc.PostsCategories+` (
+			`+pc.PostID+`, `+pc.CategoryID+`
+		)
+		VALUES
 	`
-	err = DB.QueryRow(query).Scan(&count)
-	if err != nil {
-		log.Printf("Error checking if there is any categorie in db: %v\n", err)
-		return true
-	}
-	if count > 0 {
-		return true
-	}
-	return false
-}
-
-// called on db init
-func InsertCategories() {
-	var	query		string
-	var	categories	string
-	var	err			error
-	var	c			config.CategoriesTableKeys
-	var	i			int
-
-	if IsThereAnyCategories() {
-		return
-	}
-	for i = 0; i < len(config.CategoriesNames); i++ {
-		categories += fmt.Sprintf("('%s')", config.CategoriesNames[i])
-		if i + 1 != len(config.CategoriesNames) {
-			categories += " ,"
+	args = make([]any, len(categoriesID)*2)
+	for i = 0; i < len(categoriesID); i++ {
+		query += " (?, ?)"
+		args[i*2] = postID
+		args[i*2 + 1] = categoriesID[i]
+		if i + 1 != len(categoriesID) {
+			query += ","
+		} else {
+			query += ";"
 		}
 	}
-	c = config.TableKeys.Categories
-	query = `
-		INSERT INTO `+c.Categories+` (`+c.Name+`)
-		VALUES `+categories+`;
-	`
-	_, err = DB.Exec(query)
+	_, err = DB.Exec(query, postID, categoriesID)
 	if err != nil {
-		log.Println("Categories not created:", err)
+		return err
 	}
+	return nil
 }
 
-func AddPostCategories(postId int, categories_id ...int) {
-
-}
-
-func GetPostCategories(postId int) {
+func GetPostCategories(postID int) {
 
 }

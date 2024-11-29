@@ -3,7 +3,7 @@ package config
 // TABLES DEFINITIONS
 type ClientsTableKeys struct {
 	Clients			string
-	UserID			string
+	ID			string
 	LastName		string
 	FirstName		string
 	UserName		string
@@ -21,7 +21,7 @@ type ClientsTableKeys struct {
 
 type SessionsTableKeys struct {
 	Sessions		string
-	SessionID		string
+	ID				string
 	UserID			string
 	UserRole		string
 	UserName		string
@@ -40,7 +40,7 @@ type CategoriesTableKeys struct {
 
 type PostsTableKeys struct {
 	Posts			string
-	PostID			string
+	ID				string
 	AuthorID		string
 	Title			string
 	Category		string
@@ -63,7 +63,7 @@ type PostsCategoriesTableKeys struct {
 
 type CommentsTableKeys struct {
 	Comments		string
-	CommentID		string
+	ID		string
 	PostID			string
 	UserID			string
 	Content			string
@@ -94,7 +94,7 @@ type StructTablesKeys struct {
 // TABLES
 var clients = ClientsTableKeys{
 	Clients:		"clients",
-	UserID:			"user_id",
+	ID:				"id",
 	LastName:		"last_name",
 	FirstName:		"first_name",
 	UserName:		"user_name",
@@ -112,7 +112,7 @@ var clients = ClientsTableKeys{
 
 var sessions = SessionsTableKeys{
 	Sessions:		"sessions",
-	SessionID:		"session_id",
+	ID:				"id",
 	UserID:			"user_id",
 	UserRole:		"user_role",
 	UserName:		"user_name",
@@ -131,7 +131,7 @@ var categories = CategoriesTableKeys{
 
 var posts = PostsTableKeys{
 	Posts:			"posts",
-	PostID:			"post_id",
+	ID:				"id",
 	AuthorID:		"author_id",
 	Title:			"title",
 	Category:		"category",
@@ -154,7 +154,7 @@ var postsCategories = PostsCategoriesTableKeys{
 
 var comments = CommentsTableKeys{
 	Comments:		"comments",
-	CommentID:		"comment_id",
+	ID:				"id",
 	PostID:			"post_id",
 	UserID:			"user_id",
 	Content:		"content",

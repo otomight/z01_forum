@@ -24,7 +24,7 @@ func CreateSession(session *UserSession) error {
 		session.SessionID, session.UserID, session.Expiration, session.UserRole)
 
 	query := `
-		INSERT INTO `+s.Sessions+` (`+s.SessionID+`, `+s.UserID+`,
+		INSERT INTO `+s.Sessions+` (`+s.ID+`, `+s.UserID+`,
 							`+s.Expiration+`, `+s.UserRole+`, `+s.UserName+`)
 		VALUES (?, ?, ?, ?, ?)
 	`
@@ -46,7 +46,7 @@ func GetSessionWithKey(key string, value any) (*UserSession, error) {
 
 	s = config.TableKeys.Sessions
 	query = `
-		SELECT `+s.SessionID+`, `+s.UserID+`, `+s.Expiration+`,
+		SELECT `+s.ID+`, `+s.UserID+`, `+s.Expiration+`,
 				`+s.CreationDate+`, `+s.UpdateDate+`, `+s.DeletionDate+`,
 				`+s.IsDeleted+`, `+s.UserRole+`, `+s.UserName+`
 		FROM `+s.Sessions+`
@@ -70,7 +70,7 @@ func GetSessionWithKey(key string, value any) (*UserSession, error) {
 }
 
 func GetSessionByID(sessionID string) (*UserSession, error) {
-	return GetSessionWithKey(config.TableKeys.Sessions.SessionID, sessionID)
+	return GetSessionWithKey(config.TableKeys.Sessions.ID, sessionID)
 }
 
 func GetSessionByUserID(userId int) (*UserSession, error) {
@@ -110,7 +110,7 @@ func DeleteSession(sessionID string) error {
 	s = config.TableKeys.Sessions
 	query := `
 		DELETE FROM `+s.Sessions+`
-		WHERE `+s.SessionID+` = ?
+		WHERE `+s.ID+` = ?
 	`
 	_, err := DB.Exec(query, sessionID)
 

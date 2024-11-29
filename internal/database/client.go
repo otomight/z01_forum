@@ -33,10 +33,10 @@ func GetClientByID(userID int) (*Client, error) {
 
 	c = config.TableKeys.Clients
 	query := `
-		SELECT `+c.UserID+`, `+c.LastName+`, `+c.FirstName+`, `+c.UserName+`,
+		SELECT `+c.ID+`, `+c.LastName+`, `+c.FirstName+`, `+c.UserName+`,
 				`+c.Email+`, `+c.Avatar+`, `+c.BirthDate+`, `+c.UserRole+`,
 				`+c.CreationDate+`, `+c.UpdateDate+`, `+c.DeletionDate+`
-		FROM `+c.Clients+` WERE `+c.UserID+` = ?
+		FROM `+c.Clients+` WERE `+c.ID+` = ?
 	`
 	row := DB.QueryRow(query, userID)
 	var client Client
@@ -81,7 +81,7 @@ func GetClientByUsernameOrEmail(email string) (*Client, error) {
 	//Query to find user by Email
 	c = config.TableKeys.Clients
 	query := `
-		SELECT `+c.UserID+`, `+c.LastName+`, `+c.FirstName+`, `+c.Email+`,
+		SELECT `+c.ID+`, `+c.LastName+`, `+c.FirstName+`, `+c.Email+`,
 				`+c.Password+`, `+c.Avatar+`, `+c.BirthDate+`, `+c.UserRole+`,
 				`+c.CreationDate+`, `+c.UpdateDate+`, `+c.DeletionDate+`
 		FROM `+c.Clients+`
@@ -142,7 +142,7 @@ func ValidateUserCredentials(username, password string) (Client, error) {
 	c = config.TableKeys.Clients
 	//Get user by username/email
 	query := `
-		SELECT `+c.UserID+`, `+c.FirstName+`, `+c.LastName+`,
+		SELECT `+c.ID+`, `+c.FirstName+`, `+c.LastName+`,
 				`+c.UserName+`, `+c.Email+`, `+c.Password+`, `+c.UserRole+`
 		FROM `+c.Clients+` WHERE `+c.UserName+` = ? OR `+c.Email+` = ?
 	`
@@ -174,7 +174,7 @@ func GetOrCreateUserByOAuth(oauthProvider, oauthID, email, name, avatar string) 
 	c = config.TableKeys.Clients
 	// Check if the user already exists
 	query := `
-		SELECT `+c.UserID+`, `+c.LastName+`, `+c.FirstName+`,
+		SELECT `+c.ID+`, `+c.LastName+`, `+c.FirstName+`,
 				`+c.UserName+`, `+c.Email+`, `+c.Avatar+`,
 				`+c.UserRole+`, `+c.OauthProvider+`, `+c.OauthID+`
 		FROM `+c.Clients+`
