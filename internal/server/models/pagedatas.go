@@ -1,18 +1,23 @@
 package models
 
-import "forum/internal/database"
+import db "forum/internal/database"
 
 type ViewPostPageData struct {
-	Session				*database.UserSession
+	Session				*db.UserSession
 	PostWithUserConfig	*PostWithUserConfig
 }
 
 type CreatePostPageData struct {
-	Session		*database.UserSession
-	Categories	[]*database.Category
+	Session		*db.UserSession
+	Categories	[]*db.Category
+}
+
+type CategoriesPageData struct {
+	Session		*db.UserSession
+	Categories	[]*db.Category
 }
 
 type HomePageData struct {
-	Session		*database.UserSession
+	Session		*db.UserSession
 	Posts		[]*PostWithUserConfig
 }

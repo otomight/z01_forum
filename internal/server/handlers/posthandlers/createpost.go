@@ -14,7 +14,7 @@ import (
 
 func createPost(userID int, form models.CreatePostForm) (int, error) {
 	var	err			error
-	var	categories	[]int
+	var	categoriesIDs	[]int
 
 	post := &db.Post{
 		AuthorID:		userID,
@@ -24,15 +24,13 @@ func createPost(userID int, form models.CreatePostForm) (int, error) {
 		UpdateDate:		time.Now(),
 		IsDeleted:		false,
 	}
-	id, err := db.NewPost(post)
+	categoriesIDs, err = utils.StrSliceToIntSlice(form.Categories)
 	if err != nil {
-		return 0, err
-	}
-	if categories, err = utils.StrSliceToIntSlice(form.Categories); err != nil {
 		log.Printf("Error during convertion of categories IDs: %v", err)
 	}
-	if err = db.AddPostCategories(id, categories...); err != nil {
-		log.Printf("Error adding categories to the database: %v", err)
+	id, err := db.NewPost(post, categoriesIDs)
+	if err != nil {
+		return 0, err
 	}
 	return id, nil
 }

@@ -18,6 +18,9 @@
 					<a href="/post/view/{{ .Post.ID }}"><h3>{{ .Post.Title }}</h3></a>
 					<p>By: {{ .Post.UserName }}</p>
 					<p>{{ .Post.Content }}</p>
+					{{ range .Post.Categories }}
+						<p>{{ .Name }}</p>
+					{{ end }}
 					<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
 					{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
 					{{ template "post_comments" (addToStruct . "Session" $.Session) }}

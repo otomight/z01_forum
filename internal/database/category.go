@@ -42,36 +42,38 @@ func AddPostCategories(postID int, categoriesID ...int) error {
 	return nil
 }
 
-// func GetPostCategories(postID int) ([]Category, error) {
-// 	var	query			string
-// 	var	pc				config.PostsCategoriesTableKeys
-// 	var	c				config.CategoriesTableKeys
-// 	var	rows			*sql.Rows
-// 	var	postCategories	[]Category
-// 	var	postCategory	Category
-// 	var	err				error
+func GetPostCategories(postID int) ([]*Category, error) {
+	var	query			string
+	var	pc				config.PostsCategoriesTableKeys
+	var	c				config.CategoriesTableKeys
+	var	rows			*sql.Rows
+	var	postCategories	[]*Category
+	var	postCategory	*Category
+	var	err				error
 
-// 	c = config.TableKeys.Categories
-// 	pc = config.TableKeys.PostsCategories
-// 	query = `
-// 		SELECT c.`+c.ID+`, c.`+c.Name+`
-// 		JOIN `+c.Categories+` c ON pc.`+pc.CategoryID+` = c.`+c.ID+`
-// 		WHERE pc.`+pc.PostID+` = ?;
-// 	`
-// 	rows, err = DB.Query(query, postID)
-// 	if err != nil {
-// 		return []Category{}, err
-// 	}
-// 	defer rows.Close()
-// 	for rows.Next() {
-// 		err = rows.Scan(&postCategory.ID, &postCategory.Name)
-// 		if err != nil {
-// 			log.Printf("Unexpected error at scan category name: %v", err)
-// 		}
-// 		postCategories = append(postCategories, postCategory)
-// 	}
-// 	return postCategories, nil
-// }
+	c = config.TableKeys.Categories
+	pc = config.TableKeys.PostsCategories
+	query = `
+		SELECT c.`+c.ID+`, c.`+c.Name+`
+		FROM `+c.Categories+` c
+		JOIN `+pc.PostsCategories+` pc ON pc.`+pc.CategoryID+` = c.`+c.ID+`
+		WHERE pc.`+pc.PostID+` = ?;
+	`
+	rows, err = DB.Query(query, postID)
+	if err != nil {
+		return []*Category{}, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		postCategory = &Category{}
+		err = rows.Scan(&postCategory.ID, &postCategory.Name)
+		if err != nil {
+			log.Printf("Unexpected error at scan category name: %v", err)
+		}
+		postCategories = append(postCategories, postCategory)
+	}
+	return postCategories, nil
+}
 
 func GetGlobalCategories() ([]*Category, error) {
 	var	query		string

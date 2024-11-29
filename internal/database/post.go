@@ -8,7 +8,7 @@ import (
 )
 
 // Post CRUD operations
-func NewPost(post *Post) (int, error) {
+func NewPost(post *Post, categoriesIDs []int) (int, error) {
 	var	query	string
 	var	p		config.PostsTableKeys
 
@@ -28,7 +28,23 @@ func NewPost(post *Post) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	if err = AddPostCategories(int(postID), categoriesIDs...); err != nil {
+		log.Printf("Error adding categories to the database: %v", err)
+	}
 	return int(postID), err
+}
+
+func fillPostExternalData(post *Post) {
+	var	err	error
+
+	post.Comments, err = GetCommentsByPostID(post.ID)
+	if err != nil {
+		log.Println(err.Error())
+	}
+	post.Categories, err = GetPostCategories(post.ID)
+	if err != nil {
+		log.Println(err.Error())
+	}
 }
 
 func GetPostByID(postID int) (*Post, error) {
@@ -57,13 +73,7 @@ func GetPostByID(postID int) (*Post, error) {
 		log.Printf("Error retrieving post by ID %d: %v", postID, err)
 		return nil, fmt.Errorf("could not fetch post: %w", err)
 	}
-
-	// Fetch associated comments for the post
-	post.Comments, err = GetCommentsByPostID(postID)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
+	fillPostExternalData(post)
 	return post, nil
 }
 
@@ -102,10 +112,7 @@ func GetAllPosts() ([]Post, error) {
 			log.Printf("Error scanning post: %v", err)
 			continue
 		}
-		post.Comments, err = GetCommentsByPostID(post.ID)
-		if err != nil {
-			log.Println(err.Error())
-		}
+		fillPostExternalData(&post)
 		posts = append(posts, post)
 	}
 	//Check iteration errors
