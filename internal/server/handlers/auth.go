@@ -23,7 +23,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// store form
-	if err := utils.ParseStringForm(r, &form); err != nil {
+	if err := utils.ParseForm(r, &form); err != nil {
 		http.Error(w, "Unable to parse form:"+err.Error(),
 			http.StatusBadRequest)
 		return
@@ -101,7 +101,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// store form
-	if err := utils.ParseStringForm(r, &form); err != nil {
+	if err := utils.ParseForm(r, &form); err != nil {
 		http.Error(w, "Unable to parse form:"+err.Error(),
 			http.StatusBadRequest)
 		return

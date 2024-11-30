@@ -10,6 +10,7 @@ import (
 func AddPostCategories(postID int, categoriesID ...int) error {
 	var	query	string
 	var	pc		config.PostsCategoriesTableKeys
+	var	c		config.CategoriesTableKeys
 	var	args	[]any
 	var	i		int
 	var	err		error
@@ -17,22 +18,25 @@ func AddPostCategories(postID int, categoriesID ...int) error {
 	if len(categoriesID) == 0 {
 		return fmt.Errorf("No categories id provided")
 	}
+	c = config.TableKeys.Categories
 	pc = config.TableKeys.PostsCategories
 	query = `
 		INSERT INTO `+pc.PostsCategories+` (
 			`+pc.PostID+`, `+pc.CategoryID+`
 		)
-		VALUES
+		SELECT ?, c.`+c.ID+`
+		FROM `+c.Categories+` c
+		WHERE c.`+c.ID+` IN (
 	`
-	args = make([]any, len(categoriesID)*2)
+	args = make([]any, len(categoriesID) + 1)
+	args[0] = postID
 	for i = 0; i < len(categoriesID); i++ {
-		query += " (?, ?)"
-		args[i*2] = postID
-		args[i*2 + 1] = categoriesID[i]
+		args[i + 1] = categoriesID[i]
+		query += "?"
 		if i + 1 != len(categoriesID) {
 			query += ","
 		} else {
-			query += ";"
+			query += ");"
 		}
 	}
 	_, err = DB.Exec(query, args...)

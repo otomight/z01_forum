@@ -26,7 +26,7 @@ func fillFormValueWithSliceStr(
 	}
 }
 
-func ParseStringForm(r *http.Request, form interface{}) error {
+func ParseForm(r *http.Request, form interface{}) error {
 	var	formValue		reflect.Value
 	var	formType		reflect.Type
 	var	structField		reflect.StructField
