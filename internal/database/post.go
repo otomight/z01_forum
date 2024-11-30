@@ -54,7 +54,7 @@ func getPostsWithConditionQueryResult(
 		conditions = `p.`+p.IsDeleted+` = FALSE`
 	}
 	query = `
-		SELECT p.`+p.ID+`, p.`+p.AuthorID+`, cl.`+cl.UserName+`,
+		SELECT DISTINCT p.`+p.ID+`, p.`+p.AuthorID+`, cl.`+cl.UserName+`,
 				p.`+p.Title+`, p.`+p.Content+`, p.`+p.CreationDate+`,
 				p.`+p.UpdateDate+`, p.`+p.DeletionDate+`,
 				p.`+p.IsDeleted+`, p.`+p.Likes+`, p.`+p.Dislikes+`
