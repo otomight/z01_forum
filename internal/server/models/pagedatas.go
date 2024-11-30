@@ -12,6 +12,12 @@ type CreatePostPageData struct {
 	Categories	[]*db.Category
 }
 
+type PostsInCategoriesPageData struct {
+	Session		*db.UserSession
+	Category	*db.Category
+	Posts		[]*db.Post
+}
+
 type CategoriesPageData struct {
 	Session		*db.UserSession
 	Categories	[]*db.Category

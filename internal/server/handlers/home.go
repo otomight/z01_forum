@@ -12,7 +12,7 @@ import (
 
 func IncludeUserLikesConfigs(
 	session	*db.UserSession,
-	posts	[]db.Post,
+	posts	[]*db.Post,
 ) []*models.PostWithUserConfig {
 	var	userPost	*models.PostWithUserConfig
 	var	userPosts	[]*models.PostWithUserConfig
@@ -20,9 +20,9 @@ func IncludeUserLikesConfigs(
 
 	for i = 0; i < len(posts); i++ {
 		userPost = &models.PostWithUserConfig{}
-		userPost.Post = &posts[i]
+		userPost.Post = posts[i]
 		userPost.IsLikedByUser, userPost.IsDislikedByUser =
-						services.GetUserLikesConfigsOfPost(session, &posts[i])
+						services.GetUserLikesConfigsOfPost(session, posts[i])
 		userPosts = append(userPosts, userPost)
 	}
 	return userPosts
@@ -30,7 +30,7 @@ func IncludeUserLikesConfigs(
 
 func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	var	session		*db.UserSession
-	var	posts		[]db.Post
+	var	posts		[]*db.Post
 	var	userPosts	[]*models.PostWithUserConfig
 	var	err			error
 

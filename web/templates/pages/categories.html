@@ -9,7 +9,7 @@
 	{{ template "header" . }}
 	<main>
 		{{ range .Categories }}
-			<a>{{ .Name }}</a>
+			<a href="/categories/{{ .ID }}">{{ .Name }}</a>
 		{{ end }}
 	</main>
 	{{ template "footer" . }}

@@ -79,6 +79,22 @@ func GetPostCategories(postID int) ([]*Category, error) {
 	return postCategories, nil
 }
 
+func GetGlobalCategoryByID(id int) (*Category, error) {
+	var	query	string
+	var	c		config.CategoriesTableKeys
+	var	result	Category
+	var	err		error
+
+	c = config.TableKeys.Categories
+	query = `
+		SELECT `+c.ID+`, `+c.Name+`
+		FROM `+c.Categories+`
+		WHERE `+c.ID+` = ?
+	`
+	err = DB.QueryRow(query, id).Scan(&result.ID, &result.Name)
+	return &result, err
+}
+
 func GetGlobalCategories() ([]*Category, error) {
 	var	query		string
 	var	c			config.CategoriesTableKeys
