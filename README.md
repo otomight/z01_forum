@@ -27,6 +27,11 @@ source ~/.profile
 npm install typescript
 ```
 
+### Windows
+- [tdm-gcc](https://jmeubank.github.io/tdm-gcc/download/)
+Include the bin folder into your path.
+
+
 ## Project Structure
 
 The project's directory structure is organized as follows:
