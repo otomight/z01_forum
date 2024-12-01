@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"forum/internal/config"
-	"forum/internal/utils"
+	"forum/internal/server/services"
 	"net/http"
 )
 
@@ -27,7 +27,7 @@ func GoogleCallBackHandler(w http.ResponseWriter, r *http.Request) {
 		ClientSecret: config.GoogleClientSecret,
 		RedirectURI:  config.GoogleRedirectURI,
 	}
-	utils.OAuthCallbackHandler(w, r, googleConfig)
+	services.OAuthCallbackHandler(w, r, googleConfig)
 }
 
 // Github
@@ -50,7 +50,7 @@ func GithubCallBackHandler(w http.ResponseWriter, r *http.Request) {
 		ClientSecret: config.GithubClientSecret,
 		RedirectURI:  config.GithubRedirectURI,
 	}
-	utils.OAuthCallbackHandler(w, r, githubConfig)
+	services.OAuthCallbackHandler(w, r, githubConfig)
 }
 
 // Fb
@@ -73,5 +73,5 @@ func FacebookCallBackHandler(w http.ResponseWriter, r *http.Request) {
 		ClientSecret: config.FacebookClientSecret,
 		RedirectURI:  config.FacebookRedirectURI,
 	}
-	utils.OAuthCallbackHandler(w, r, facebookConfig)
+	services.OAuthCallbackHandler(w, r, facebookConfig)
 }

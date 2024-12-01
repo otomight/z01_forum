@@ -19,17 +19,18 @@ func CreateSession(session *UserSession) error {
 	if session.ID == "" || session.UserID == 0 {
 		return fmt.Errorf("invalid session data: session_id & user_id can't be empty")
 	}
-
 	log.Printf("Attempting to create session: sessionID=%s, userID=%d, expiration=%v, userRole=%s",
 		session.ID, session.UserID, session.Expiration, session.UserRole)
-
-	query := `
-		INSERT INTO `+s.Sessions+` (`+s.ID+`, `+s.UserID+`,
-							`+s.Expiration+`, `+s.UserRole+`, `+s.UserName+`)
-		VALUES (?, ?, ?, ?, ?)
-	`
-	_, err := DB.Exec(query, session.ID, session.UserID,
-						session.Expiration, session.UserRole, session.UserName)
+	_, err := inserInto(InsertIntoQuery{
+		Table: s.Sessions,
+		Keys: []string{s.ID, s.UserID, s.Expiration, s.UserRole, s.UserName},
+		Values: [][]any{
+			{
+				session.ID, session.UserID, session.Expiration,
+				session.UserRole, session.UserName,
+			},
+		},
+	})
 	if err != nil {
 		log.Printf("Error creating session for user %d: %v", session.UserID, err)
 		return fmt.Errorf("failed to create session: %w", err)
@@ -53,10 +54,11 @@ func GetSessionWithKey(key string, value any) (*UserSession, error) {
 		WHERE `+key+` = ?
 	`
 	row = DB.QueryRow(query, value)
-	err = row.Scan(&session.ID, &session.UserID,
-					&session.Expiration, &session.CreationDate,
-					&session.UpdateDate, &session.DeletionDate,
-					&session.IsDeleted, &session.UserRole, &session.UserName)
+	err = row.Scan(
+		&session.ID, &session.UserID, &session.Expiration,
+		&session.CreationDate, &session.UpdateDate, &session.DeletionDate,
+		&session.IsDeleted, &session.UserRole, &session.UserName,
+	)
 	if err == sql.ErrNoRows {
 		return nil, errors.New("session not found: no matching session in database")
 	}

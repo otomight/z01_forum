@@ -3,7 +3,7 @@ package config
 // TABLES DEFINITIONS
 type ClientsTableKeys struct {
 	Clients			string
-	ID			string
+	ID				string
 	LastName		string
 	FirstName		string
 	UserName		string
@@ -61,7 +61,7 @@ type PostsCategoriesTableKeys struct {
 
 type CommentsTableKeys struct {
 	Comments		string
-	ID		string
+	ID				string
 	PostID			string
 	UserID			string
 	Content			string
@@ -186,6 +186,6 @@ var CategoriesNames = []string{
 }
 
 const (
-	DbFilePath = "forum.db"
-	SqlTablesFilePath = "internal/database/create_table.sql"
+	DbFilePath			= "forum.db"
+	SqlTablesFilePath	= "internal/database/create_table.sql"
 )

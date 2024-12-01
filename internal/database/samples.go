@@ -34,17 +34,18 @@ func InsertSampleClient() {
 		}
 
 		// Insert the client with the hashed password
-		query := `
-			INSERT INTO `+c.Clients+` (
-				`+c.LastName+`, `+c.FirstName+`, `+c.UserName+`,
-				`+c.Email+`, `+c.Password+`, `+c.UserRole+`
-			)
-			VALUES (
-				'Doe', 'John', 'johndoe',
-				'sample@example.com', ?, 'administrator'
-			);
-		`
-		_, err = DB.Exec(query, hashedPassword)
+		_, err = inserInto(InsertIntoQuery{
+			Table:	c.Clients,
+			Keys: []string{
+				c.LastName, c.FirstName, c.UserName,
+				c.Email, c.Password, c.UserRole,
+			},
+			Values: [][]any{{
+				"Doe", "John", "johndoe",
+				"sample@example.com", hashedPassword, "administrator",
+			}},
+		})
+
 		if err != nil {
 			log.Printf("Failed to insert sample client: %v", err)
 		} else {
@@ -59,31 +60,19 @@ func InsertSampleClient() {
 func InsertSamplePost() {
 	// Check if any posts already exist
 	var	count	int
-	var	query	string
 	var	p		config.PostsTableKeys
 
 	p = config.TableKeys.Posts
-	query = `
-		SELECT COUNT(*) FROM `+p.Posts+`;
-	`
-	err := DB.QueryRow(query).Scan(&count)
-	if err != nil {
-		log.Printf("Failed to count posts: %v", err)
-		return
-	}
+	count = countRows(p.Posts)
 	// If no posts exist, insert the sample post
 	if count == 0 {
-		query = `
-			INSERT INTO `+p.Posts+` (
-				`+p.AuthorID+`, `+p.Title+`, `+p.Content+`,
-				`+p.CreationDate+`, `+p.UpdateDate+`, `+p.IsDeleted+`
-			)
-			VALUES (
-				1, 'Sample Post', 'This is a sample post content.', CURRENT_TIMESTAMP,
-				CURRENT_TIMESTAMP, 0
-			);
-		`
-		_, err := DB.Exec(query)
+		_, err := inserInto(InsertIntoQuery{
+			Table: p.Posts,
+			Keys: []string{p.AuthorID, p.Title, p.Content, p.IsDeleted},
+			Values: [][]any{{
+				1, "Sample Post", "This is a sample post content.", 0,
+			}},
+		})
 		if err != nil {
 			log.Printf("Failed to insert sample post: %v", err)
 		}

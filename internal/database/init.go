@@ -24,21 +24,10 @@ func getSqlTables() string {
 }
 
 func isThereAnyCategories() bool {
-	var	query	string
 	var	c		config.CategoriesTableKeys
-	var	count	int
-	var	err		error
 
 	c = config.TableKeys.Categories
-	query = `
-		SELECT COUNT(*) FROM `+c.Categories+`;
-	`
-	err = DB.QueryRow(query).Scan(&count)
-	if err != nil {
-		log.Printf("Error checking if there is any categorie in db: %v\n", err)
-		return true
-	}
-	if count > 0 {
+	if countRows(c.Categories) > 0 {
 		return true
 	}
 	return false

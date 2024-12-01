@@ -9,16 +9,21 @@ import (
 
 func AddLikeDislike(postId int, userId int, liked bool) error {
 	var	l	config.LikesDislikesTableKeys
+	var	err	error
 
 	l = config.TableKeys.LikesDislikes
-	query := `
-	INSERT INTO `+l.LikesDislikes+` (`+l.PostID+`, `+l.UserID+`, `+l.Liked+`)
-	VALUES(?, ?, ?)
-	ON CONFLICT(`+l.PostID+`, `+l.UserID+`) DO UPDATE
-	SET `+l.Liked+` = excluded.`+l.Liked+`,
-		`+l.UpdateDate+` = CURRENT_TIMESTAMP;
-	`
-	_, err := DB.Exec(query, postId, userId, liked)
+	_, err = inserInto(InsertIntoQuery{
+		Table:		l.LikesDislikes,
+		Keys: []string{l.PostID, l.UserID, l.Liked},
+		Values: [][]any{{
+			postId, userId, liked,
+		}},
+		Ending: `
+			ON CONFLICT(`+l.PostID+`, `+l.UserID+`) DO UPDATE
+			SET `+l.Liked+` = excluded.`+l.Liked+`,
+				`+l.UpdateDate+` = CURRENT_TIMESTAMP
+		`,
+	})
 	if err != nil {
 		log.Printf("Error adding like to post %d: %v", postId, err)
 		return fmt.Errorf("failed to add like: %w", err)

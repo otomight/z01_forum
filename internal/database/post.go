@@ -9,18 +9,18 @@ import (
 
 // Post CRUD operations
 func NewPost(post *Post, categoriesIDs []int) (int, error) {
-	var	query	string
 	var	p		config.PostsTableKeys
 
 	p = config.TableKeys.Posts
-	query = `
-		INSERT INTO `+p.Posts+` (
-			`+p.AuthorID+`, `+p.Title+`, `+p.Content+`,
-			`+p.CreationDate+`, `+p.UpdateDate+`, `+p.IsDeleted+`
-		)
-		VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)
-	`
-	result, err := DB.Exec(query, post.AuthorID, post.Title, post.Content)
+	result, err := inserInto(InsertIntoQuery{
+		Table:		p.Posts,
+		Keys: []string{
+			p.AuthorID, p.Title, p.Content, p.IsDeleted,
+		},
+		Values: [][]any{{
+			post.AuthorID, post.Title, post.Content, 0,
+		}},
+	})
 	if err != nil {
 		return 0, err
 	}

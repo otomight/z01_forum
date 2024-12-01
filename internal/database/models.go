@@ -70,3 +70,11 @@ type LikeDislike struct {
 	Liked		bool
 	UpdateDate	time.Time
 }
+
+// UTILS DB FUNCTIONS
+type InsertIntoQuery struct {
+	Table	string
+	Keys	[]string
+	Values	[][]any
+	Ending	string
+}
