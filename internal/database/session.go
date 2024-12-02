@@ -21,15 +21,13 @@ func CreateSession(session *UserSession) error {
 	}
 	log.Printf("Attempting to create session: sessionID=%s, userID=%d, expiration=%v, userRole=%s",
 		session.ID, session.UserID, session.Expiration, session.UserRole)
-	_, err := inserInto(InsertIntoQuery{
+	_, err := insertInto(InsertIntoQuery{
 		Table: s.Sessions,
 		Keys: []string{s.ID, s.UserID, s.Expiration, s.UserRole, s.UserName},
-		Values: [][]any{
-			{
-				session.ID, session.UserID, session.Expiration,
-				session.UserRole, session.UserName,
-			},
-		},
+		Values: [][]any{{
+			session.ID, session.UserID, session.Expiration,
+			session.UserRole, session.UserName,
+		}},
 	})
 	if err != nil {
 		log.Printf("Error creating session for user %d: %v", session.UserID, err)

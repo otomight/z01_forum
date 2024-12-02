@@ -12,7 +12,7 @@ func AddReaction(postId int, userId int, liked bool) error {
 	var	err	error
 
 	l = config.TableKeys.Reactions
-	_, err = inserInto(InsertIntoQuery{
+	_, err = insertInto(InsertIntoQuery{
 		Table:		l.Reactions,
 		Keys: []string{l.PostID, l.UserID, l.Liked},
 		Values: [][]any{{

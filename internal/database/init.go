@@ -2,8 +2,8 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"forum/internal/config"
+	"forum/internal/utils"
 	"log"
 	"os"
 
@@ -35,27 +35,18 @@ func isThereAnyCategories() bool {
 
 // called on db init
 func insertCategories() {
-	var	query		string
-	var	categories	string
 	var	err			error
 	var	c			config.CategoriesTableKeys
-	var	i			int
 
 	if isThereAnyCategories() {
 		return
 	}
-	for i = 0; i < len(config.CategoriesNames); i++ {
-		categories += fmt.Sprintf("('%s')", config.CategoriesNames[i])
-		if i + 1 != len(config.CategoriesNames) {
-			categories += " ,"
-		}
-	}
 	c = config.TableKeys.Categories
-	query = `
-		INSERT INTO `+c.Categories+` (`+c.Name+`)
-		VALUES `+categories+`;
-	`
-	_, err = DB.Exec(query)
+	_, err = insertInto(InsertIntoQuery{
+		Table: c.Categories,
+		Keys: []string{c.Name},
+		Values: utils.ToMatrix(config.CategoriesNames),
+	})
 	if err != nil {
 		log.Println("Categories not created:", err)
 	}

@@ -37,7 +37,7 @@ func	generatePlaceHolders(nb int) string {
 	return result
 }
 
-func	inserInto(data InsertIntoQuery) (sql.Result, error) {
+func	insertInto(data InsertIntoQuery) (sql.Result, error) {
 	var	query			string
 	var	values			[]any
 	var	placeHolders	[]string

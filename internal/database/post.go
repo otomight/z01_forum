@@ -12,7 +12,7 @@ func NewPost(post *Post, categoriesIDs []int) (int, error) {
 	var	p		config.PostsTableKeys
 
 	p = config.TableKeys.Posts
-	result, err := inserInto(InsertIntoQuery{
+	result, err := insertInto(InsertIntoQuery{
 		Table:		p.Posts,
 		Keys: []string{
 			p.AuthorID, p.Title, p.Content, p.IsDeleted,

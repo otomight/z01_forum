@@ -10,40 +10,40 @@ import (
 )
 
 // Client CRUD operations
-func CreateClient(client *Client) error {
-	var	c	config.ClientsTableKeys
+// func CreateClient(client *Client) error {
+// 	var	c	config.ClientsTableKeys
 
-	c = config.TableKeys.Clients
-	query := `
-		INSERT INTO `+c.Clients+` (
-			`+c.LastName+`, `+c.FirstName+`, `+c.UserName+`,
-			`+c.Email+`, `+c.Password+`,
-			`+c.Avatar+`, `+c.BirthDate+`, `+c.UserRole+`
-		)
-		VALUES 	(?, ?, ?, ?, ?, ?, ?)
-	`
-	_, err := DB.Exec(query, client.LastName, client.FirstName,
-			client.UserName, client.Email, client.Password,
-			client.Avatar, client.BirthDate, client.UserRole)
-	return err
-}
+// 	c = config.TableKeys.Clients
+// 	query := `
+// 		INSERT INTO `+c.Clients+` (
+// 			`+c.LastName+`, `+c.FirstName+`, `+c.UserName+`,
+// 			`+c.Email+`, `+c.Password+`,
+// 			`+c.Avatar+`, `+c.BirthDate+`, `+c.UserRole+`
+// 		)
+// 		VALUES 	(?, ?, ?, ?, ?, ?, ?)
+// 	`
+// 	_, err := DB.Exec(query, client.LastName, client.FirstName,
+// 			client.UserName, client.Email, client.Password,
+// 			client.Avatar, client.BirthDate, client.UserRole)
+// 	return err
+// }
 
-func GetClientByID(userID int) (*Client, error) {
-	var	c	config.ClientsTableKeys
+// func GetClientByID(userID int) (*Client, error) {
+// 	var	c	config.ClientsTableKeys
 
-	c = config.TableKeys.Clients
-	query := `
-		SELECT `+c.ID+`, `+c.LastName+`, `+c.FirstName+`, `+c.UserName+`,
-				`+c.Email+`, `+c.Avatar+`, `+c.BirthDate+`, `+c.UserRole+`,
-				`+c.CreationDate+`, `+c.UpdateDate+`, `+c.DeletionDate+`
-		FROM `+c.Clients+` WERE `+c.ID+` = ?
-	`
-	row := DB.QueryRow(query, userID)
-	var client Client
-	err := row.Scan(&client.ID, &client.LastName, &client.FirstName, &client.UserName, &client.Email,
-		&client.BirthDate, &client.UserRole, &client.CreationDate, &client.UpdateDate, &client.DeletionDate)
-	return &client, err
-}
+// 	c = config.TableKeys.Clients
+// 	query := `
+// 		SELECT `+c.ID+`, `+c.LastName+`, `+c.FirstName+`, `+c.UserName+`,
+// 				`+c.Email+`, `+c.Avatar+`, `+c.BirthDate+`, `+c.UserRole+`,
+// 				`+c.CreationDate+`, `+c.UpdateDate+`, `+c.DeletionDate+`
+// 		FROM `+c.Clients+` WERE `+c.ID+` = ?
+// 	`
+// 	row := DB.QueryRow(query, userID)
+// 	var client Client
+// 	err := row.Scan(&client.ID, &client.LastName, &client.FirstName, &client.UserName, &client.Email,
+// 		&client.BirthDate, &client.UserRole, &client.CreationDate, &client.UpdateDate, &client.DeletionDate)
+// 	return &client, err
+// }
 
 // Save new user to database
 func SaveUser(
@@ -53,14 +53,16 @@ func SaveUser(
 	var	c	config.ClientsTableKeys
 
 	c = config.TableKeys.Clients
-	query := `
-		INSERT INTO `+c.Clients+` (`+c.UserName+`, `+c.Email+`, `+c.Password+`,
-								`+c.FirstName+`, `+c.LastName+`, `+c.UserRole+`)
-		VALUES (?, ?, ?, ?, ?, ?)
-	`
-
-	result, err := DB.Exec(query, userName, email,
-							password, firstName, lastName, userRole)
+	result, err := insertInto(InsertIntoQuery{
+		Table: c.Clients,
+		Keys: []string{
+			c.UserName, c.Email, c.Password,
+			c.FirstName, c.LastName, c.UserRole,
+		},
+		Values: [][]any{{
+			userName, email, password, firstName, lastName, userRole,
+		}},
+	})
 	if err != nil {
 		return 0, fmt.Errorf("failed to insert user: %w", err)
 	}
@@ -74,65 +76,65 @@ func SaveUser(
 }
 
 // Retrieve client from database by their Email
-func GetClientByUsernameOrEmail(email string) (*Client, error) {
-	var	client	Client
-	var	c		config.ClientsTableKeys
+// func GetClientByUsernameOrEmail(email string) (*Client, error) {
+// 	var	client	Client
+// 	var	c		config.ClientsTableKeys
 
-	//Query to find user by Email
-	c = config.TableKeys.Clients
-	query := `
-		SELECT `+c.ID+`, `+c.LastName+`, `+c.FirstName+`, `+c.Email+`,
-				`+c.Password+`, `+c.Avatar+`, `+c.BirthDate+`, `+c.UserRole+`,
-				`+c.CreationDate+`, `+c.UpdateDate+`, `+c.DeletionDate+`
-		FROM `+c.Clients+`
-		WHERE `+c.UserName+` = ? OR `+c.Email+` = ?
-	`
+// 	//Query to find user by Email
+// 	c = config.TableKeys.Clients
+// 	query := `
+// 		SELECT `+c.ID+`, `+c.LastName+`, `+c.FirstName+`, `+c.Email+`,
+// 				`+c.Password+`, `+c.Avatar+`, `+c.BirthDate+`, `+c.UserRole+`,
+// 				`+c.CreationDate+`, `+c.UpdateDate+`, `+c.DeletionDate+`
+// 		FROM `+c.Clients+`
+// 		WHERE `+c.UserName+` = ? OR `+c.Email+` = ?
+// 	`
 
-	//Execute query
-	row := DB.QueryRow(query, email)
+// 	//Execute query
+// 	row := DB.QueryRow(query, email)
 
-	//Scan results into client struct
-	err := row.Scan(
-		&client.ID,
-		&client.LastName,
-		&client.FirstName,
-		&client.UserName,
-		&client.Email,
-		&client.Password,
-		&client.Avatar,
-		&client.BirthDate,
-		&client.BirthDate,
-		&client.UserRole,
-		&client.CreationDate,
-		&client.UpdateDate,
-		&client.DeletionDate,
-	)
+// 	//Scan results into client struct
+// 	err := row.Scan(
+// 		&client.ID,
+// 		&client.LastName,
+// 		&client.FirstName,
+// 		&client.UserName,
+// 		&client.Email,
+// 		&client.Password,
+// 		&client.Avatar,
+// 		&client.BirthDate,
+// 		&client.BirthDate,
+// 		&client.UserRole,
+// 		&client.CreationDate,
+// 		&client.UpdateDate,
+// 		&client.DeletionDate,
+// 	)
 
-	//Check if client was found
-	if err == sql.ErrNoRows {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
+// 	//Check if client was found
+// 	if err == sql.ErrNoRows {
+// 		return nil, nil
+// 	} else if err != nil {
+// 		return nil, err
+// 	}
 
-	return &client, nil
-}
+// 	return &client, nil
+// }
 
 // Setting user role
-func GetUserRole(userID int) (string, error) {
-	var role string
-	var	c	config.ClientsTableKeys
+// func GetUserRole(userID int) (string, error) {
+// 	var role string
+// 	var	c	config.ClientsTableKeys
 
-	c = config.TableKeys.Clients
-	query := `
-		SELECT `+c.UserRole+` FROM `+c.Clients+` WHERE `+c.UserName+` = ?
-	`
-	err := DB.QueryRow(query, userID).Scan(&role)
-	if err != nil {
-		return "", err
-	}
-	return role, nil
-}
+// 	c = config.TableKeys.Clients
+// 	query := `
+// 		SELECT `+c.UserRole+` FROM `+c.Clients+` WHERE `+c.UserName+` = ?
+// 	`
+// 	err := DB.QueryRow(query, userID).Scan(&role)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	return role, nil
+// }
 
 // Validate User credentials
 func ValidateUserCredentials(username, password string) (Client, error) {

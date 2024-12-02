@@ -34,7 +34,7 @@ func InsertSampleClient() {
 		}
 
 		// Insert the client with the hashed password
-		_, err = inserInto(InsertIntoQuery{
+		_, err = insertInto(InsertIntoQuery{
 			Table:	c.Clients,
 			Keys: []string{
 				c.LastName, c.FirstName, c.UserName,
@@ -66,7 +66,7 @@ func InsertSamplePost() {
 	count = countRows(p.Posts)
 	// If no posts exist, insert the sample post
 	if count == 0 {
-		_, err := inserInto(InsertIntoQuery{
+		_, err := insertInto(InsertIntoQuery{
 			Table: p.Posts,
 			Keys: []string{p.AuthorID, p.Title, p.Content, p.IsDeleted},
 			Values: [][]any{{
