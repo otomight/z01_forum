@@ -11,23 +11,29 @@ import (
 	"strings"
 )
 
-func fillPostsInCategoriesPageData(
+func fillListPostsPageData(
 	r *http.Request,
 	categoryID int,
-) (*models.PostsInCategoriesPageData, error) {
+) (*models.ListPostsPageData, error) {
 	var	session		*db.UserSession
-	var	data		*models.PostsInCategoriesPageData
+	var	data		*models.ListPostsPageData
+	var	userID		int
 	var	category	*db.Category
 	var	posts		[]*db.Post
 	var	err			error
 
-	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
 	category, err = db.GetGlobalCategoryByID(categoryID)
 	if err != nil {
 		return nil, err
 	}
-	posts, err = db.GetPostsByCategoryID(categoryID)
-	data = &models.PostsInCategoriesPageData{
+	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
+	if session == nil {
+		userID = 0
+	} else {
+		userID = session.UserID
+	}
+	posts, err = db.GetPostsByCategoryID(userID, categoryID)
+	data = &models.ListPostsPageData{
 		Session: session,
 		Category: category,
 		Posts: posts,
@@ -39,7 +45,7 @@ func PostsInCategoriesPageHandler(w http.ResponseWriter, r *http.Request) {
 	var	idStr	string
 	var	id		int
 	var	err		error
-	var	data	*models.PostsInCategoriesPageData
+	var	data	*models.ListPostsPageData
 
 	if r.Method != http.MethodGet {
 		http.Error(w, "", http.StatusMethodNotAllowed)
@@ -55,7 +61,7 @@ func PostsInCategoriesPageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid category ID", http.StatusBadRequest)
 		return
 	}
-	data, err = fillPostsInCategoriesPageData(r, id)
+	data, err = fillListPostsPageData(r, id)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(

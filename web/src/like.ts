@@ -2,37 +2,37 @@ import { extractAttributes } from "./tools/attribute.js";
 import { addToElemNumber } from "./tools/math.js";
 
 // match with LikeDislikePostRequestAjax struct in server
-interface LikeRequest {
+interface ReactionRequest {
 	post_id:	number;
 	user_id:	number;
 }
 
 // match with LikeRequest and HTML
-interface LikeAttributeMap {
+interface ReactionAttributeMap {
 	post_id:	string
 	user_id:	string
 }
 
 // match with LikeDislikePostResponseAjax struct in server
-interface LikeResponse {
+interface ReactionResponse {
 	added:		boolean;
 	deleted:	boolean;
 	replaced:	boolean;
 }
 
-const	LIKE_DISLIKE_POST_ATTRIBUTE_MAP: LikeAttributeMap = {
+const	REACTION_POST_ATTRIBUTE_MAP: ReactionAttributeMap = {
 	post_id:	'data-post-id',
 	user_id:	'data-user-id'
 }
 
-function buildRequest(button: HTMLElement): LikeRequest | null {
-	const	data:		LikeAttributeMap | null = (
-		extractAttributes<LikeAttributeMap>(
+function buildRequest(button: HTMLElement): ReactionRequest | null {
+	const	data:		ReactionAttributeMap | null = (
+		extractAttributes<ReactionAttributeMap>(
 			button,
-			LIKE_DISLIKE_POST_ATTRIBUTE_MAP
+			REACTION_POST_ATTRIBUTE_MAP
 		)
 	);
-	let		request:	LikeRequest;
+	let		request:	ReactionRequest;
 
 	if (!data)
 		return null
@@ -45,7 +45,7 @@ function buildRequest(button: HTMLElement): LikeRequest | null {
 
 async function fetchRequest(
 	action:		string,
-	request:	LikeRequest
+	request:	ReactionRequest
 ): Promise<Response | null> {
 	let		response:	Response
 
@@ -64,12 +64,12 @@ async function fetchRequest(
 	return response
 }
 
-async function sendLikeDislikeRequest(
+async function sendReactionRequest(
 	button:	HTMLElement,
 	action:	string
-): Promise<LikeResponse | null> {
+): Promise<ReactionResponse | null> {
 
-	const	request:	LikeRequest | null = (
+	const	request:	ReactionRequest | null = (
 		buildRequest(button)
 	);
 	let		response:	Response | null
@@ -90,17 +90,17 @@ async function sendLikeDislikeRequest(
 
 function addToButtonValue(button: HTMLButtonElement, nb: number) {
 	const	buttonCount:	HTMLElement | null = (
-		button.querySelector('.like-dislike-count') as HTMLElement | null
+		button.querySelector('.reaction-count') as HTMLElement | null
 	);
 
 	if (!buttonCount) {
-		console.error("Element with class like-dislike-count not found")
+		console.error("Element with class reaction-count not found")
 		return
 	}
 	addToElemNumber(buttonCount, nb)
 }
 
-async function handleLikeDislikeButton(
+async function handleReactionButton(
 	event:			Event,
 	action:			string,
 	oppositeButton:	HTMLButtonElement
@@ -108,11 +108,11 @@ async function handleLikeDislikeButton(
 	const	button:		HTMLButtonElement | null = (
 		event.currentTarget as HTMLButtonElement | null
 	);
-	let		response:	LikeResponse | null
+	let		response:	ReactionResponse | null
 
 	if (!button)
 		return
-	response = await sendLikeDislikeRequest(button, action)
+	response = await sendReactionRequest(button, action)
 	if (response == null)
 		return
 	if (response.added) {
@@ -137,9 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	);
 
 	likeButton.addEventListener('click',
-		(event) => handleLikeDislikeButton(event, "/post/like", dislikeButton)
+		(event) => handleReactionButton(event, "/post/like", dislikeButton)
 	);
 	dislikeButton.addEventListener('click',
-		(event) => handleLikeDislikeButton(event, "/post/dislike", likeButton)
+		(event) => handleReactionButton(event, "/post/dislike", likeButton)
 	);
 });

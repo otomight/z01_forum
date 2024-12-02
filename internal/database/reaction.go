@@ -7,13 +7,13 @@ import (
 	"log"
 )
 
-func AddLikeDislike(postId int, userId int, liked bool) error {
-	var	l	config.LikesDislikesTableKeys
+func AddReaction(postId int, userId int, liked bool) error {
+	var	l	config.ReactionsTableKeys
 	var	err	error
 
-	l = config.TableKeys.LikesDislikes
+	l = config.TableKeys.Reactions
 	_, err = inserInto(InsertIntoQuery{
-		Table:		l.LikesDislikes,
+		Table:		l.Reactions,
 		Keys: []string{l.PostID, l.UserID, l.Liked},
 		Values: [][]any{{
 			postId, userId, liked,
@@ -31,30 +31,30 @@ func AddLikeDislike(postId int, userId int, liked bool) error {
 	return nil
 }
 
-func GetLikeDislikeByUser(postId int, userId int) (*LikeDislike, error) {
+func GetReactionByUser(postId int, userId int) (*Reaction, error) {
 	var	query	string
-	var	l		config.LikesDislikesTableKeys
+	var	l		config.ReactionsTableKeys
 	var	rows	*sql.Rows
 	var	err		error
-	var	ldl		LikeDislike
+	var	ldl		Reaction
 
-	l = config.TableKeys.LikesDislikes
+	l = config.TableKeys.Reactions
 	query = `
 		SELECT `+l.ID+`, `+l.PostID+`,
 				`+l.UserID+`, `+l.Liked+`, `+l.UpdateDate+`
-		FROM `+l.LikesDislikes+`
+		FROM `+l.Reactions+`
 		WHERE `+l.PostID+` = ? AND `+l.UserID+` = ?;
 	`
 	rows, err = DB.Query(query, postId, userId)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch LikeDislike: %w", err)
+		return nil, fmt.Errorf("failed to fetch Reaction: %w", err)
 	}
 	defer rows.Close()
 	if rows.Next() {
 		err = rows.Scan(&ldl.ID, &ldl.PostID,
 			&ldl.UserID, &ldl.Liked, &ldl.UpdateDate)
 		if err != nil {
-			return nil, fmt.Errorf("error scanning LikeDislike: %w", err)
+			return nil, fmt.Errorf("error scanning Reaction: %w", err)
 		}
 		return &ldl, nil
 	} else {
@@ -62,19 +62,20 @@ func GetLikeDislikeByUser(postId int, userId int) (*LikeDislike, error) {
 	}
 }
 
-func GetLikeDislikeCounts(postId int) (int, int, error) {
+// return like and dislike counts
+func GetReactionsCounts(postId int) (int, int, error) {
 	var	query			string
-	var	l				config.LikesDislikesTableKeys
+	var	l				config.ReactionsTableKeys
 	var	likesCount		int
 	var	dislikesCount	int
 	var	err				error
 
-	l = config.TableKeys.LikesDislikes
+	l = config.TableKeys.Reactions
 	query = `
 		SELECT
 			COUNT(CASE WHEN `+l.Liked+` = 1 THEN 1 END) AS likes_count,
 			COUNT(CASE WHEN `+l.Liked+` = 0 THEN 1 END) AS dislikes_count
-		FROM `+l.LikesDislikes+`
+		FROM `+l.Reactions+`
 		WHERE `+l.PostID+` = ?;
 	`
 	err = DB.QueryRow(query, postId).Scan(&likesCount, &dislikesCount)
@@ -84,19 +85,19 @@ func GetLikeDislikeCounts(postId int) (int, int, error) {
 	return likesCount, dislikesCount, nil
 }
 
-func DeleteLikeDislike(postId int, userId int) error {
+func DeleteReaction(postId int, userId int) error {
 	var	query	string
-	var	l		config.LikesDislikesTableKeys
+	var	l		config.ReactionsTableKeys
 
-	l = config.TableKeys.LikesDislikes
+	l = config.TableKeys.Reactions
 	query = `
-		DELETE FROM `+l.LikesDislikes+`
+		DELETE FROM `+l.Reactions+`
 		WHERE `+l.PostID+` = ? AND `+l.UserID+` = ?;
 	`
 	_, err := DB.Exec(query, postId, userId)
 	if err != nil {
-		log.Printf("Error deleting like-dislike of post %d: %v", postId, err)
-		return fmt.Errorf("failed to delete like-dislike: %w", err)
+		log.Printf("Error deleting reaction of post %d: %v", postId, err)
+		return fmt.Errorf("failed to delete reaction: %w", err)
 	}
 	return nil
 }

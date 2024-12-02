@@ -38,6 +38,11 @@ type Category struct {
 	Name	string
 }
 
+type UserConfig struct {
+	IsLiked		bool
+	IsDisliked	bool
+}
+
 type Post struct {
 	ID				int			`json:"id"`
 	AuthorID		int			`json:"author_id"`
@@ -52,6 +57,7 @@ type Post struct {
 	Dislikes		int
 	Categories		[]*Category
 	Comments		[]Comment	`json:"comments"`
+	UserConfig		*UserConfig
 }
 
 type Comment struct {
@@ -63,7 +69,7 @@ type Comment struct {
 	CreationDate	time.Time `json:"creation_date"`
 }
 
-type LikeDislike struct {
+type Reaction struct {
 	ID			int
 	PostID		int
 	UserID		int

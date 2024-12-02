@@ -1,6 +1,6 @@
 package models
 
-type LikeDislikePostResponseAjax struct {
+type ReactionPostResponseAjax struct {
 	Added		bool	`json:"added"`
 	Deleted		bool	`json:"deleted"`
 	Replaced	bool	`json:"replaced"`

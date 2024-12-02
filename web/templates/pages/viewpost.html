@@ -3,14 +3,12 @@
 	<body>
 		<main>
 			{{ template "header" . }}
-			{{ with .PostWithUserConfig }}
-				<h3>{{ .Post.Title }}</h3>
-				<p>{{ .Post.Content }}</p>
-				<p>By: {{ .Post.UserName }}</p>
-				<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
-				{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
-				{{ template "post_comments" (addToStruct . "Session" $.Session) }}
-			{{ end }}
+			<h3>{{ .Post.Title }}</h3>
+			<p>{{ .Post.Content }}</p>
+			<p>By: {{ .Post.UserName }}</p>
+			<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
+			{{ template "post_buttons" (addToStruct .Post "Session" .Session) }}
+			{{ template "post_comments" (addToStruct .Post "Session" .Session) }}
 			{{ template "footer" . }}
 		</main>
 	</body>

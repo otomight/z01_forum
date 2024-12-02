@@ -9,26 +9,26 @@ import (
 	"net/http"
 )
 
-func updateLikeDislikeInDb(
-	received	models.LikeDislikePostRequestAjax,
+func updateReactionInDb(
+	received	models.ReactionPostRequestAjax,
 	liked		bool,
-) (*models.LikeDislikePostResponseAjax, error) {
-	var	ldl			*db.LikeDislike
-	var	response	models.LikeDislikePostResponseAjax
+) (*models.ReactionPostResponseAjax, error) {
+	var	ldl			*db.Reaction
+	var	response	models.ReactionPostResponseAjax
 	var	err			error
 
-	ldl, err = db.GetLikeDislikeByUser(received.PostID, received.UserID)
+	ldl, err = db.GetReactionByUser(received.PostID, received.UserID)
 	if err != nil {
 		return nil, err
 	}
 	if ldl != nil && ldl.Liked == liked {
-		err = db.DeleteLikeDislike(received.PostID, received.UserID)
+		err = db.DeleteReaction(received.PostID, received.UserID)
 		if err != nil {
 			return nil, err
 		}
 		response.Deleted = true
 	} else {
-		err = db.AddLikeDislike(received.PostID, received.UserID, liked)
+		err = db.AddReaction(received.PostID, received.UserID, liked)
 		if err != nil {
 			return nil, err
 		}
@@ -37,17 +37,17 @@ func updateLikeDislikeInDb(
 			response.Replaced = true
 		}
 	}
-	err = db.UpdatePostLikesDislikesCount(received.PostID)
+	err = db.UpdatePostReactionsCount(received.PostID)
 	return &response, nil
 }
 
-func LikeDislikePostHandler(
+func ReactionPostHandler(
 	w		http.ResponseWriter,
 	r		*http.Request,
 	liked	bool,
 ) {
-	var	received	models.LikeDislikePostRequestAjax
-	var	response	*models.LikeDislikePostResponseAjax
+	var	received	models.ReactionPostRequestAjax
+	var	response	*models.ReactionPostResponseAjax
 	var	ok			bool
 	var	err			error
 
@@ -66,7 +66,7 @@ func LikeDislikePostHandler(
 		return
 	}
 	// write data in db
-	if response, err = updateLikeDislikeInDb(received, liked); err != nil {
+	if response, err = updateReactionInDb(received, liked); err != nil {
 		fmt.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -78,9 +78,9 @@ func LikeDislikePostHandler(
 }
 
 func LikePostHandler(w http.ResponseWriter, r *http.Request) {
-	LikeDislikePostHandler(w, r, true)
+	ReactionPostHandler(w, r, true)
 }
 
 func DisLikePostHandler(w http.ResponseWriter, r *http.Request) {
-	LikeDislikePostHandler(w, r, false)
+	ReactionPostHandler(w, r, false)
 }

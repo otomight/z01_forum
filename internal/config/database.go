@@ -68,8 +68,8 @@ type CommentsTableKeys struct {
 	CreationDate	string
 }
 
-type LikesDislikesTableKeys struct {
-	LikesDislikes	string
+type ReactionsTableKeys struct {
+	Reactions	string
 	ID				string
 	PostID			string
 	UserID			string
@@ -85,7 +85,7 @@ type StructTablesKeys struct {
 	Posts			PostsTableKeys
 	PostsCategories	PostsCategoriesTableKeys
 	Comments		CommentsTableKeys
-	LikesDislikes	LikesDislikesTableKeys
+	Reactions	ReactionsTableKeys
 }
 
 
@@ -157,8 +157,8 @@ var comments = CommentsTableKeys{
 	CreationDate:	"creation_date",
 }
 
-var likesDislikes = LikesDislikesTableKeys{
-	LikesDislikes:	"likes_dislikes",
+var reactions = ReactionsTableKeys{
+	Reactions:		"reactions",
 	ID:				"id",
 	PostID:			"post_id",
 	UserID:			"user_id",
@@ -174,7 +174,7 @@ var TableKeys = StructTablesKeys{
 	Posts:				posts,
 	PostsCategories:	postsCategories,
 	Comments:			comments,
-	LikesDislikes:		likesDislikes,
+	Reactions:			reactions,
 }
 
 

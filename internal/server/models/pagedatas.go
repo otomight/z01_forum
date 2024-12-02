@@ -3,8 +3,8 @@ package models
 import db "forum/internal/database"
 
 type ViewPostPageData struct {
-	Session				*db.UserSession
-	PostWithUserConfig	*PostWithUserConfig
+	Session		*db.UserSession
+	Post		*db.Post
 }
 
 type CreatePostPageData struct {
@@ -12,7 +12,7 @@ type CreatePostPageData struct {
 	Categories	[]*db.Category
 }
 
-type PostsInCategoriesPageData struct {
+type ListPostsPageData struct {
 	Session		*db.UserSession
 	Category	*db.Category
 	Posts		[]*db.Post
@@ -25,5 +25,5 @@ type CategoriesPageData struct {
 
 type HomePageData struct {
 	Session		*db.UserSession
-	Posts		[]*PostWithUserConfig
+	Posts		[]*db.Post
 }

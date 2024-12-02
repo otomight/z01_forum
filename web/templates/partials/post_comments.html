@@ -2,18 +2,18 @@
 	<div class="comments">
 		<h4>Comments</h4>
 		{{ if .Session }}
-			<form action="/post/comment/{{ .Post.ID }}"
+			<form action="/post/comment/{{ .ID }}"
 				method="POST" class="comment-form">
 				<textarea
 					name="content"
 					placeholder="Write your comment here..."
 					required>
 				</textarea>
-				<input type="hidden" name="postID" value="{{ .Post.ID }}">
+				<input type="hidden" name="postID" value="{{ .ID }}">
 				<button type="submit">Comment</button>
 			</form>
 		{{ end }}
-		{{ range .Post.Comments }}
+		{{ range .Comments }}
 			<div class="comment">
 				<p><strong>{{ .UserName }}</strong>: {{ .Content }}</p>
 				<p><em>Posted on: {{ .CreationDate }}</em></p>
