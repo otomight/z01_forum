@@ -3,7 +3,7 @@
 	<body>
 		{{ template "header" . }}
 		<main>
-			<div id="buttons-container">
+			<div id="react-buttons-container"> <!-- must contains post-->
 				<div class="post" post-id="{{ .Post.ID }}"
 				current-user-id="{{ if .Session }}{{ .Session.UserID }}{{ else }}0{{ end }}">
 					<h3>{{ .Post.Title }}</h3>

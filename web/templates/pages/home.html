@@ -13,7 +13,7 @@
 		{{ end }}
 		<h2>Latest Posts</h2>
 		<div id="posts">
-			<div id="buttons-container">
+			<div id="react-buttons-container"> <!-- must contains all posts-->
 				{{ range .Posts }}
 					<div class="post" post-id="{{ .ID }}"
 					current-user-id="{{ if $.Session }}{{ $.Session.UserID }}{{ else }}0{{ end }}">

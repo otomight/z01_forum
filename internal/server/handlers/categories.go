@@ -14,9 +14,9 @@ import (
 func fillListPostsPageData(
 	r *http.Request,
 	categoryID int,
-) (*models.ListPostsPageData, error) {
+) (*models.CategoryPostsPageData, error) {
 	var	session		*db.UserSession
-	var	data		*models.ListPostsPageData
+	var	data		*models.CategoryPostsPageData
 	var	userID		int
 	var	category	*db.Category
 	var	posts		[]*db.Post
@@ -33,7 +33,7 @@ func fillListPostsPageData(
 		userID = session.UserID
 	}
 	posts, err = db.GetPostsByCategoryID(userID, categoryID)
-	data = &models.ListPostsPageData{
+	data = &models.CategoryPostsPageData{
 		Session: session,
 		Category: category,
 		Posts: posts,
@@ -41,11 +41,11 @@ func fillListPostsPageData(
 	return data, nil
 }
 
-func PostsInCategoriesPageHandler(w http.ResponseWriter, r *http.Request) {
+func CategoryPostsPageHandler(w http.ResponseWriter, r *http.Request) {
 	var	idStr	string
 	var	id		int
 	var	err		error
-	var	data	*models.ListPostsPageData
+	var	data	*models.CategoryPostsPageData
 
 	if r.Method != http.MethodGet {
 		http.Error(w, "", http.StatusMethodNotAllowed)
@@ -69,7 +69,7 @@ func PostsInCategoriesPageHandler(w http.ResponseWriter, r *http.Request) {
 			http.StatusInternalServerError,
 		)
 	}
-	templates.RenderTemplate(w, config.ListPosts, data)
+	templates.RenderTemplate(w, config.CategoryPostsTmpl, data)
 }
 
 func CategoriesPageHandler(w http.ResponseWriter, r *http.Request) {

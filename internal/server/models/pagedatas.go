@@ -12,7 +12,12 @@ type CreatePostPageData struct {
 	Categories	[]*db.Category
 }
 
-type ListPostsPageData struct {
+type HistoryPageData struct {
+	Session		*db.UserSession
+	Posts		[]*db.Post
+}
+
+type CategoryPostsPageData struct {
 	Session		*db.UserSession
 	Category	*db.Category
 	Posts		[]*db.Post

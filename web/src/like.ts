@@ -20,6 +20,7 @@ interface ReactionResponse {
 	replaced:	boolean;
 };
 
+const	REACTIONS_CONTAINER = "react-buttons-container"
 const	REACTION_POST_ATTRIBUTE_MAP: PostAttributeMap = {
 	post_id:	'post-id',
 	user_id:	'current-user-id'
@@ -161,7 +162,7 @@ function handleReactionButton(event: Event) {
 
 document.addEventListener('DOMContentLoaded', () => {
 	const	buttonsContainer:	HTMLElement | null = (
-		document.getElementById('buttons-container')
+		document.getElementById(REACTIONS_CONTAINER)
 	);
 	if (!buttonsContainer) {
 		console.error("No div buttons-container found.");

@@ -150,6 +150,17 @@ func GetPostByID(userID int, id int) (*Post, error) {
 	return posts[0], err
 }
 
+func GetPostsRelatedToCurUser(userID int) ([]*Post, error) {
+	var	condition	string
+	var	p			config.PostsTableKeys
+	var	r			config.ReactionsTableKeys
+
+	p = config.TableKeys.Posts
+	r = config.TableKeys.Reactions
+	condition = `p.`+p.AuthorID+` = ? OR `+r.UserID+` = ?`
+	return getPostsWithCondition(userID, condition, userID, userID)
+}
+
 func GetPostsByCategoryID(userID int, categoryID int) ([]*Post, error) {
 	var	condition	string
 	var	pc			config.PostsCategoriesTableKeys
