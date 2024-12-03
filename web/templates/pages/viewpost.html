@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 	<body>
+		{{ template "header" . }}
 		<main>
-			{{ template "header" . }}
-			<h3>{{ .Post.Title }}</h3>
-			<p>{{ .Post.Content }}</p>
-			<p>By: {{ .Post.UserName }}</p>
-			<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
-			{{ template "post_buttons" (addToStruct .Post "Session" .Session) }}
-			{{ template "post_comments" (addToStruct .Post "Session" .Session) }}
-			{{ template "footer" . }}
+			<div id="buttons-container">
+				<div class="post" post-id="{{ .Post.ID }}"
+				current-user-id="{{ if .Session }}{{ .Session.UserID }}{{ else }}0{{ end }}">
+					<h3>{{ .Post.Title }}</h3>
+					<p>{{ .Post.Content }}</p>
+					<p>By: {{ .Post.UserName }}</p>
+					<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
+					{{ template "post_buttons" (addToStruct .Post "Session" .Session) }}
+					{{ template "post_comments" (addToStruct .Post "Session" .Session) }}
+				</div>
+			</div>
 		</main>
+		{{ template "footer" . }}
+		<script type="module" src="/static/scripts/like.js"></script>
 	</body>
 </html>

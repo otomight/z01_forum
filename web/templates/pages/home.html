@@ -13,21 +13,25 @@
 		{{ end }}
 		<h2>Latest Posts</h2>
 		<div id="posts">
-			{{ range .Posts }}
-				<div class="post">
-					<a href="/post/view/{{ .ID }}"><h3>{{ .Title }}</h3></a>
-					<p>By: {{ .UserName }}</p>
-					<p>{{ .Content }}</p>
-					{{ range .Categories }}
-						<p>{{ .Name }}</p>
-					{{ end }}
-					<p><em>Posted on: {{ .CreationDate }}</em></p>
-					{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
-					{{ template "post_comments" (addToStruct . "Session" $.Session) }}
-				</div>
-			{{end}}
+			<div id="buttons-container">
+				{{ range .Posts }}
+					<div class="post" post-id="{{ .ID }}"
+					current-user-id="{{ if $.Session }}{{ $.Session.UserID }}{{ else }}0{{ end }}">
+						<a href="/post/view/{{ .ID }}"><h3>{{ .Title }}</h3></a>
+						<p>By: {{ .UserName }}</p>
+						<p>{{ .Content }}</p>
+						{{ range .Categories }}
+							<p>{{ .Name }}</p>
+						{{ end }}
+						<p><em>Posted on: {{ .CreationDate }}</em></p>
+						{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
+						{{ template "post_comments" (addToStruct . "Session" $.Session) }}
+					</div>
+				{{end}}
+			</div>
 		</div>
 	</main>
 	{{ template "footer" . }}
+	<script type="module" src="/static/scripts/like.js"></script>
 </body>
 </html>
