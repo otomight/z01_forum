@@ -17,6 +17,9 @@
 			<div class="comment">
 				<p><strong>{{ .UserName }}</strong>: {{ .Content }}</p>
 				<p><em>Posted on: {{ .CreationDate }}</em></p>
+				{{ if $.Session }}
+					{{ template "reactions" . }}
+				{{ end }}
 			</div>
 		{{ end }}
 	</div>

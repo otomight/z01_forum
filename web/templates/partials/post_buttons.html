@@ -1,14 +1,5 @@
 {{ define "post_buttons" }}
-	<div class="reaction-section">
-		<button class="like-button {{ if .UserConfig.IsLiked }}active{{ end }}">
-			<span class="reaction-icon">👍</span>
-			<span class="reaction-count">{{ .Likes }}</span>
-		</button>
-		<button class="dislike-button {{ if .UserConfig.IsDisliked }}active{{ end }}">
-			<span class="reaction-icon">👎</span>
-			<span class="reaction-count">{{ .Dislikes }}</span>
-		</button>
-	</div>
+	{{ template "reactions" . }}
 
 	<!-- Additional features for user/admin/moderator -->
 	{{ if .Session }}

@@ -8,12 +8,12 @@ import (
 )
 
 func AddReaction(postId int, userId int, liked bool) error {
-	var	l	config.ReactionsTableKeys
+	var	l	config.PostsReactionsTableKeys
 	var	err	error
 
-	l = config.TableKeys.Reactions
+	l = config.TableKeys.PostsReactions
 	_, err = insertInto(InsertIntoQuery{
-		Table:		l.Reactions,
+		Table:		l.PostsReactions,
 		Keys: []string{l.PostID, l.UserID, l.Liked},
 		Values: [][]any{{
 			postId, userId, liked,
@@ -33,16 +33,16 @@ func AddReaction(postId int, userId int, liked bool) error {
 
 func GetReactionByUser(postId int, userId int) (*Reaction, error) {
 	var	query	string
-	var	l		config.ReactionsTableKeys
+	var	l		config.PostsReactionsTableKeys
 	var	rows	*sql.Rows
 	var	err		error
 	var	ldl		Reaction
 
-	l = config.TableKeys.Reactions
+	l = config.TableKeys.PostsReactions
 	query = `
 		SELECT `+l.ID+`, `+l.PostID+`,
 				`+l.UserID+`, `+l.Liked+`, `+l.UpdateDate+`
-		FROM `+l.Reactions+`
+		FROM `+l.PostsReactions+`
 		WHERE `+l.PostID+` = ? AND `+l.UserID+` = ?;
 	`
 	rows, err = DB.Query(query, postId, userId)
@@ -65,17 +65,17 @@ func GetReactionByUser(postId int, userId int) (*Reaction, error) {
 // return like and dislike counts
 func GetReactionsCounts(postId int) (int, int, error) {
 	var	query			string
-	var	l				config.ReactionsTableKeys
+	var	l				config.PostsReactionsTableKeys
 	var	likesCount		int
 	var	dislikesCount	int
 	var	err				error
 
-	l = config.TableKeys.Reactions
+	l = config.TableKeys.PostsReactions
 	query = `
 		SELECT
 			COUNT(CASE WHEN `+l.Liked+` = 1 THEN 1 END) AS likes_count,
 			COUNT(CASE WHEN `+l.Liked+` = 0 THEN 1 END) AS dislikes_count
-		FROM `+l.Reactions+`
+		FROM `+l.PostsReactions+`
 		WHERE `+l.PostID+` = ?;
 	`
 	err = DB.QueryRow(query, postId).Scan(&likesCount, &dislikesCount)
@@ -87,11 +87,11 @@ func GetReactionsCounts(postId int) (int, int, error) {
 
 func DeleteReaction(postId int, userId int) error {
 	var	query	string
-	var	l		config.ReactionsTableKeys
+	var	l		config.PostsReactionsTableKeys
 
-	l = config.TableKeys.Reactions
+	l = config.TableKeys.PostsReactions
 	query = `
-		DELETE FROM `+l.Reactions+`
+		DELETE FROM `+l.PostsReactions+`
 		WHERE `+l.PostID+` = ? AND `+l.UserID+` = ?;
 	`
 	_, err := DB.Exec(query, postId, userId)

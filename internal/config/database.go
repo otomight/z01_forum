@@ -66,10 +66,12 @@ type CommentsTableKeys struct {
 	UserID			string
 	Content			string
 	CreationDate	string
+	Likes			string
+	Dislikes		string
 }
 
-type ReactionsTableKeys struct {
-	Reactions	string
+type PostsReactionsTableKeys struct {
+	PostsReactions	string
 	ID				string
 	PostID			string
 	UserID			string
@@ -77,15 +79,25 @@ type ReactionsTableKeys struct {
 	UpdateDate		string
 }
 
+type CommentsReactionsTableKeys struct {
+	CommentsReactions	string
+	ID					string
+	CommentID			string
+	UserID				string
+	Liked				string
+	UpdateDate			string
+}
+
 // TABLES IN STRUCT DEFINITION
 type StructTablesKeys struct {
-	Clients			ClientsTableKeys
-	Sessions		SessionsTableKeys
-	Categories		CategoriesTableKeys
-	Posts			PostsTableKeys
-	PostsCategories	PostsCategoriesTableKeys
-	Comments		CommentsTableKeys
-	Reactions	ReactionsTableKeys
+	Clients				ClientsTableKeys
+	Sessions			SessionsTableKeys
+	Categories			CategoriesTableKeys
+	Posts				PostsTableKeys
+	PostsCategories		PostsCategoriesTableKeys
+	Comments			CommentsTableKeys
+	PostsReactions		PostsReactionsTableKeys
+	CommentsReactions	CommentsReactionsTableKeys
 }
 
 
@@ -155,15 +167,26 @@ var comments = CommentsTableKeys{
 	UserID:			"user_id",
 	Content:		"content",
 	CreationDate:	"creation_date",
+	Likes:			"likes",
+	Dislikes:		"dislikes",
 }
 
-var reactions = ReactionsTableKeys{
-	Reactions:		"reactions",
+var postsReactions = PostsReactionsTableKeys{
+	PostsReactions:	"posts_reactions",
 	ID:				"id",
 	PostID:			"post_id",
 	UserID:			"user_id",
 	Liked:			"liked",
 	UpdateDate:		"update_date",
+}
+
+var commentsReactions = CommentsReactionsTableKeys{
+	CommentsReactions:	"comments_reactions",
+	ID:					"id",
+	CommentID:			"comment_id",
+	UserID:				"user_id",
+	Liked:				"liked",
+	UpdateDate:			"update_date",
 }
 
 // TABLES IN STRUCT
@@ -174,7 +197,8 @@ var TableKeys = StructTablesKeys{
 	Posts:				posts,
 	PostsCategories:	postsCategories,
 	Comments:			comments,
-	Reactions:			reactions,
+	PostsReactions:		postsReactions,
+	CommentsReactions:	commentsReactions,
 }
 
 

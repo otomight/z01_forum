@@ -62,3 +62,19 @@ func	insertInto(data InsertIntoQuery) (sql.Result, error) {
 	`
 	return DB.Exec(query, values...)
 }
+
+// Used to configure both post and comment user config
+func getUserConfig(userLiked *bool) *UserConfig {
+	var	userConfig	UserConfig
+
+	if userLiked == nil {
+		return &userConfig
+	}
+	if *userLiked == true {
+		userConfig.IsLiked = true
+		return &userConfig
+	} else {
+		userConfig.IsDisliked = true
+		return &userConfig
+	}
+}
