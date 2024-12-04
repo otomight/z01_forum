@@ -9,7 +9,11 @@ import (
 	"net/http"
 )
 
-func HistoryPageHandler(w http.ResponseWriter, r *http.Request) {
+func historyPageHandler(
+	w http.ResponseWriter,
+	r *http.Request,
+	GetPostsRelatedToCurUser func(int, int) ([]*db.Post, error),
+) {
 	var	session	*db.UserSession
 	var	posts	[]*db.Post
 	var	userID	int
@@ -21,7 +25,7 @@ func HistoryPageHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		userID = session.UserID
 	}
-	posts, err = db.GetPostsRelatedToCurUser(userID)
+	posts, err = GetPostsRelatedToCurUser(userID, userID)
 	if err != nil {
 		log.Printf("Failed to retrieve posts: %v", err)
 		http.Error(w, "Failed to retrieve posts", http.StatusInternalServerError)
@@ -32,4 +36,12 @@ func HistoryPageHandler(w http.ResponseWriter, r *http.Request) {
 		Posts:		posts,
 	}
 	templates.RenderTemplate(w, config.HistoryTmpl, data)
+}
+
+func HistoryCreatedPageHandler(w http.ResponseWriter, r *http.Request) {
+	historyPageHandler(w, r, db.GetPostsCreatedByUser)
+}
+
+func HistoryLikedPageHandler(w http.ResponseWriter, r *http.Request) {
+	historyPageHandler(w, r, db.GetPostsLikedByUser)
 }

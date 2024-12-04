@@ -150,6 +150,24 @@ func GetPostByID(userID int, id int) (*Post, error) {
 	return posts[0], err
 }
 
+func GetPostsCreatedByUser(curUserID int, userID int) ([]*Post, error) {
+	var	condition	string
+	var	p			config.PostsTableKeys
+
+	p = config.TableKeys.Posts
+	condition = `p.`+p.AuthorID+` = ?`
+	return getPostsWithCondition(curUserID, condition, userID)
+}
+
+func GetPostsLikedByUser(curUserID int, userID int) ([]*Post, error) {
+	var	condition	string
+	var	r			config.ReactionsTableKeys
+
+	r = config.TableKeys.Reactions
+	condition = ``+r.UserID+` = ?`
+	return getPostsWithCondition(curUserID, condition, userID)
+}
+
 func GetPostsRelatedToCurUser(userID int) ([]*Post, error) {
 	var	condition	string
 	var	p			config.PostsTableKeys
