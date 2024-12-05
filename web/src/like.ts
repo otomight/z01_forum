@@ -1,16 +1,9 @@
-import { extractAttributes } from "./tools/attribute.js";
 import { addToElemNumber } from "./tools/math.js";
 
 // match with LikeDislikePostRequestAjax struct in server
 interface ReactionRequest {
-	post_id:	number;
+	elem_id:	number;
 	user_id:	number;
-};
-
-// match with LikeRequest and HTML
-interface PostAttributeMap {
-	post_id:	string
-	user_id:	string
 };
 
 // match with LikeDislikePostResponseAjax struct in server
@@ -20,29 +13,12 @@ interface ReactionResponse {
 	replaced:	boolean;
 };
 
-const	REACTIONS_CONTAINER = "react-buttons-container"
-const	REACTION_POST_ATTRIBUTE_MAP: PostAttributeMap = {
-	post_id:	'post-id',
-	user_id:	'current-user-id'
+// match with LikeRequest and HTML
+interface ReactionDataSet {
+	type:			'post' | 'comment';
+	id:				string;
+	currentUserId:	string;
 };
-
-function buildRequest(post: HTMLElement): ReactionRequest | null {
-	const	data:		PostAttributeMap | null = (
-		extractAttributes<PostAttributeMap>(
-			post,
-			REACTION_POST_ATTRIBUTE_MAP
-		)
-	);
-	let		request:	ReactionRequest;
-
-	if (!data)
-		return null;
-	request = {
-		post_id: parseInt(data.post_id, 10),
-		user_id: parseInt(data.user_id, 10)
-	};
-	return request;
-}
 
 async function fetchRequest(
 	action:		string,
@@ -66,17 +42,15 @@ async function fetchRequest(
 }
 
 async function sendReactionRequest(
-	post:	HTMLElement,
-	action:	string
+	dataset:	ReactionDataSet,
+	action:		string
 ): Promise<ReactionResponse | null> {
-
-	const	request:	ReactionRequest | null = (
-		buildRequest(post)
-	);
+	const	request:	ReactionRequest = ({
+		elem_id: parseInt(dataset.id, 10),
+		user_id: parseInt(dataset.currentUserId, 10)
+	});
 	let		response:	Response | null
 
-	if (request == null)
-		return null;
 	try {
 		response = await fetchRequest(action, request);
 		if (!response)
@@ -102,13 +76,13 @@ function addToButtonValue(button: HTMLButtonElement, nb: number) {
 }
 
 async function sendReaction(
-	post:			HTMLElement,
+	dataset:		ReactionDataSet,
 	action:			string,
 	button:			HTMLButtonElement,
 	oppositeButton:	HTMLButtonElement
 ) {
 	const		response:	ReactionResponse | null = (
-		await sendReactionRequest(post, action)
+		await sendReactionRequest(dataset, action)
 	);
 
 	if (response == null)
@@ -126,48 +100,52 @@ async function sendReaction(
 	}
 }
 
+function getAction(dataset: ReactionDataSet, liked: boolean): string {
+	let	action:	string
+
+	if (liked)
+		action = "/" + dataset.type + "/like"
+	else
+		action = "/" + dataset.type + "/dislike"
+	return action
+}
+
 function handleReactionButton(event: Event) {
-	const	target:			HTMLElement | null = (
+	const	target:				HTMLElement | null = (
 		event.target as HTMLElement | null
 	);
-	let		button:			HTMLButtonElement | null;
-	let		post:			HTMLElement | null;
-	let		oppositeButton:	HTMLButtonElement | null;
-	let		action:			string;
+	let		button:				HTMLButtonElement | null;
+	let		oppositeButton:		HTMLButtonElement | null;
+	let		reactionSection:	HTMLElement | null;
+	let		action:				string;
+	let		dataset:			ReactionDataSet;
 
 	button = target?.closest('button') as HTMLButtonElement | null
 	if (!button)
+		return
+	reactionSection = button.closest('.reaction-section');
+	if (!reactionSection)
 		return;
-	if (button.classList.contains('like-button') ||
-								button.classList.contains('dislike-button')) {
-		post = button.closest('.post');
-		if (!post) {
-			console.error("ReactionButton: element 'post' not found.");
-			return;
-		}
-		if (button.classList.contains('like-button')) {
-			action = "/post/like";
-			oppositeButton = post.querySelector('.dislike-button');
-		} else {
-			action = "/post/dislike";
-			oppositeButton = post.querySelector('.like-button');
-		}
-		if (!oppositeButton) {
-			console.error("ReactionButton: element 'opposite-button' not found.");
-			return;
-		}
-		sendReaction(post, action, button, oppositeButton);
+	dataset = reactionSection.dataset as unknown as ReactionDataSet
+	if (button.classList.contains('like-button')) {
+		action = getAction(dataset, true);
+		oppositeButton = reactionSection.querySelector('.dislike-button');
 	}
+	else {
+		action = getAction(dataset, false);
+		oppositeButton = reactionSection.querySelector('.like-button');
+	}
+	if (!oppositeButton)
+		return
+	sendReaction(dataset, action, button, oppositeButton);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	const	buttonsContainer:	HTMLElement | null = (
-		document.getElementById(REACTIONS_CONTAINER)
-	);
-	if (!buttonsContainer) {
-		console.error("No div buttons-container found.");
-		return;
-	}
-	buttonsContainer?.addEventListener('click',
-		(event) => handleReactionButton(event))
+	const	buttons:	NodeListOf<HTMLElement> = (
+		document.querySelectorAll('.like-button, .dislike-button')
+	)
+
+	buttons.forEach(button => {
+		button.addEventListener('click', handleReactionButton);
+	});
 });

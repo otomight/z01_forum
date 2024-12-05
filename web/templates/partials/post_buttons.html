@@ -1,5 +1,5 @@
 {{ define "post_buttons" }}
-	{{ template "reactions" . }}
+	{{ template "reactions" (addToStruct . "Type" "post") }}
 
 	<!-- Additional features for user/admin/moderator -->
 	{{ if .Session }}

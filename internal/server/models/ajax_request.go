@@ -1,6 +1,6 @@
 package models
 
-type ReactionPostRequestAjax struct {
-	PostID	int	`json:"post_id"`
+type ReactionRequestAjax struct {
+	ElemID	int	`json:"elem_id"`
 	UserID	int	`json:"user_id"`
 }

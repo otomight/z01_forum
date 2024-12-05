@@ -1,6 +1,7 @@
 {{ define "reactions" }}
 	{{ if .UserConfig }}
-		<div class="reaction-section">
+		<div class="reaction-section" data-type="{{ .Type }}" data-id="{{ .ID }}"
+		data-current-user-id="{{ if .Session }}{{ .Session.UserID }}{{ else }}0{{ end }}">
 			<button class="like-button {{ if .UserConfig.IsLiked }}active{{ end }}">
 				<span class="reaction-icon">👍</span>
 				<span class="reaction-count">{{ .Likes }}</span>

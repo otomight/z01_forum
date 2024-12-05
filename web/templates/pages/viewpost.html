@@ -3,16 +3,13 @@
 	<body>
 		{{ template "header" . }}
 		<main>
-			<div id="react-buttons-container"> <!-- must contains post-->
-				<div class="post" post-id="{{ .Post.ID }}"
-				current-user-id="{{ if .Session }}{{ .Session.UserID }}{{ else }}0{{ end }}">
-					<h3>{{ .Post.Title }}</h3>
-					<p>{{ .Post.Content }}</p>
-					<p>By: {{ .Post.UserName }}</p>
-					<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
-					{{ template "post_buttons" (addToStruct .Post "Session" .Session) }}
-					{{ template "post_comments" (addToStruct .Post "Session" .Session) }}
-				</div>
+			<div class="post">
+				<h3>{{ .Post.Title }}</h3>
+				<p>{{ .Post.Content }}</p>
+				<p>By: {{ .Post.UserName }}</p>
+				<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
+				{{ template "post_buttons" (addToStruct .Post "Session" .Session) }}
+				{{ template "post_comments" (addToStruct .Post "Session" .Session) }}
 			</div>
 		</main>
 		{{ template "footer" . }}

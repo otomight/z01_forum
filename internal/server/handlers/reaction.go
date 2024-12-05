@@ -10,25 +10,25 @@ import (
 )
 
 func updateReactionInDb(
-	received	models.ReactionPostRequestAjax,
+	received	models.ReactionRequestAjax,
 	liked		bool,
 ) (*models.ReactionPostResponseAjax, error) {
 	var	ldl			*db.Reaction
 	var	response	models.ReactionPostResponseAjax
 	var	err			error
 
-	ldl, err = db.GetReactionByUser(received.PostID, received.UserID)
+	ldl, err = db.GetReactionByUser(received.ElemID, received.UserID)
 	if err != nil {
 		return nil, err
 	}
 	if ldl != nil && ldl.Liked == liked {
-		err = db.DeleteReaction(received.PostID, received.UserID)
+		err = db.DeleteReaction(received.ElemID, received.UserID)
 		if err != nil {
 			return nil, err
 		}
 		response.Deleted = true
 	} else {
-		err = db.AddReaction(received.PostID, received.UserID, liked)
+		err = db.AddReaction(received.ElemID, received.UserID, liked)
 		if err != nil {
 			return nil, err
 		}
@@ -37,7 +37,7 @@ func updateReactionInDb(
 			response.Replaced = true
 		}
 	}
-	err = db.UpdatePostReactionsCount(received.PostID)
+	err = db.UpdatePostReactionsCount(received.ElemID)
 	return &response, nil
 }
 
@@ -46,7 +46,7 @@ func ReactionPostHandler(
 	r		*http.Request,
 	liked	bool,
 ) {
-	var	received	models.ReactionPostRequestAjax
+	var	received	models.ReactionRequestAjax
 	var	response	*models.ReactionPostResponseAjax
 	var	ok			bool
 	var	err			error

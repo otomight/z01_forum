@@ -11,16 +11,20 @@ func StructToMap(data interface{}) (map[string]interface{}, error) {
 	var	field		reflect.Value
 	var	fieldName	string
 	var	i			int
+	var	ok			bool
 	var	result		map[string]interface{}
 
+	if result, ok = data.(map[string]interface{}); ok {
+		return result, nil
+	}
 	value = reflect.ValueOf(data)
 	if value.Kind() == reflect.Ptr {
 		value = value.Elem()
 	}
-	result = make(map[string]interface{})
 	if value.Kind() != reflect.Struct {
 		return nil, fmt.Errorf("data is not a struct")
 	}
+	result = make(map[string]interface{})
 	for i = 0; i < value.NumField(); i++ {
 		field = value.Field(i)
 		fieldName = value.Type().Field(i).Name
