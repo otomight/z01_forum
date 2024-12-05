@@ -1,8 +1,7 @@
 {{ define "post_buttons" }}
-	{{ template "reactions" (addToStruct . "Type" "post") }}
-
-	<!-- Additional features for user/admin/moderator -->
 	{{ if .Session }}
+		{{ template "reactions" (addToStruct . "Type" "post") }}
+		<!-- Additional features for user/admin/moderator -->
 		{{ if or (eq .AuthorID .Session.UserID)
 				(doesStrMatchAny .Session.UserRole "moderator" "administrator") }}
 			<form action="/post/delete" method="POST" class="post-controls"

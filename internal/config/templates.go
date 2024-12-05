@@ -3,7 +3,7 @@ package config
 const	TemplatesDir	= "web/templates/"
 
 // need to match with the templates file names
-const	Settings			= "settings"
+const	SettingsTmpl		= "settings"
 const	CreatePostTmpl		= "createpost"
 const	EditPostTmpl		= "editpost"
 const	LoginTmpl			= "login"

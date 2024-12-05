@@ -11,24 +11,25 @@ import (
 
 func updateReactionInDb(
 	received	models.ReactionRequestAjax,
+	elemType	config.ReactionElemType,
 	liked		bool,
-) (*models.ReactionPostResponseAjax, error) {
+) (*models.ReactionResponseAjax, error) {
 	var	ldl			*db.Reaction
-	var	response	models.ReactionPostResponseAjax
+	var	response	models.ReactionResponseAjax
 	var	err			error
 
-	ldl, err = db.GetReactionByUser(received.ElemID, received.UserID)
+	ldl, err = db.GetReactionByUser(elemType, received.ElemID, received.UserID)
 	if err != nil {
 		return nil, err
 	}
 	if ldl != nil && ldl.Liked == liked {
-		err = db.DeleteReaction(received.ElemID, received.UserID)
+		err = db.DeleteReaction(elemType, received.ElemID, received.UserID)
 		if err != nil {
 			return nil, err
 		}
 		response.Deleted = true
 	} else {
-		err = db.AddReaction(received.ElemID, received.UserID, liked)
+		err = db.AddReaction(elemType, received.ElemID, received.UserID, liked)
 		if err != nil {
 			return nil, err
 		}
@@ -37,17 +38,22 @@ func updateReactionInDb(
 			response.Replaced = true
 		}
 	}
-	err = db.UpdatePostReactionsCount(received.ElemID)
+	if elemType == config.ReactElemType.Post {
+		err = db.UpdateCommentReactionsCount(received.ElemID)
+	} else if elemType == config.ReactElemType.Comment {
+		err = db.UpdateCommentReactionsCount(received.ElemID)
+	}
 	return &response, nil
 }
 
-func ReactionPostHandler(
-	w		http.ResponseWriter,
-	r		*http.Request,
-	liked	bool,
+func ReactionHandler(
+	w			http.ResponseWriter,
+	r			*http.Request,
+	elemType	config.ReactionElemType,
+	liked		bool,
 ) {
 	var	received	models.ReactionRequestAjax
-	var	response	*models.ReactionPostResponseAjax
+	var	response	*models.ReactionResponseAjax
 	var	ok			bool
 	var	err			error
 
@@ -66,7 +72,7 @@ func ReactionPostHandler(
 		return
 	}
 	// write data in db
-	if response, err = updateReactionInDb(received, liked); err != nil {
+	if response, err = updateReactionInDb(received, elemType, liked); err != nil {
 		fmt.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -77,10 +83,18 @@ func ReactionPostHandler(
 	}
 }
 
-func LikePostHandler(w http.ResponseWriter, r *http.Request) {
-	ReactionPostHandler(w, r, true)
+func PostLikeHandler(w http.ResponseWriter, r *http.Request) {
+	ReactionHandler(w, r, config.ReactElemType.Post, true)
 }
 
-func DisLikePostHandler(w http.ResponseWriter, r *http.Request) {
-	ReactionPostHandler(w, r, false)
+func PostDisLikeHandler(w http.ResponseWriter, r *http.Request) {
+	ReactionHandler(w, r, config.ReactElemType.Post, false)
+}
+
+func CommentLikeHandler(w http.ResponseWriter, r *http.Request) {
+	ReactionHandler(w, r, config.ReactElemType.Comment, true)
+}
+
+func CommentDislikeHandler(w http.ResponseWriter, r *http.Request) {
+	ReactionHandler(w, r, config.ReactElemType.Comment, false)
 }

@@ -74,7 +74,7 @@ type Comment struct {
 
 type Reaction struct {
 	ID			int
-	PostID		int
+	ElemID		int
 	UserID		int
 	Liked		bool
 	UpdateDate	time.Time

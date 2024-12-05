@@ -214,7 +214,8 @@ func UpdatePostReactionsCount(postID int) error {
 	var	err					error
 
 	p = config.TableKeys.Posts
-	newLikesCount, newDislikesCount, err = GetReactionsCounts(postID)
+	newLikesCount, newDislikesCount, err =
+			GetReactionsCounts(config.ReactElemType.Post, postID)
 	if err != nil {
 		return fmt.Errorf("failed to fetch likes and dislikes counts: %v", err)
 	}

@@ -36,8 +36,10 @@ func SetupRoutes() http.Handler {
 	//Add comment
 	mux.Handle("/post/comment/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.AddCommentHandler)))
 
-	mux.Handle("/post/like", middleware.SessionMiddleWare(http.HandlerFunc(handlers.LikePostHandler)))
-	mux.Handle("/post/dislike", middleware.SessionMiddleWare(http.HandlerFunc(handlers.DisLikePostHandler)))
+	mux.Handle("/post/like", middleware.SessionMiddleWare(http.HandlerFunc(handlers.PostLikeHandler)))
+	mux.Handle("/post/dislike", middleware.SessionMiddleWare(http.HandlerFunc(handlers.PostDisLikeHandler)))
+	mux.Handle("/comment/like", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CommentLikeHandler)))
+	mux.Handle("/comment/dislike", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CommentDislikeHandler)))
 
 	// Google log
 	mux.Handle("/auth/google/login", middleware.SessionMiddleWare(http.HandlerFunc(handlers.GoogleLoginHandler)))
