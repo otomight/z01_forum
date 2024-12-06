@@ -17,4 +17,13 @@ var ReactElemType = ReactElemTypeStruct{
 	Comment:	comment,
 }
 
-
+func (ret ReactionElemType) String() string {
+	switch (ret) {
+	case ReactElemType.Post:
+		return "post"
+	case ReactElemType.Comment:
+		return "comment"
+	default:
+		return ""
+	}
+}

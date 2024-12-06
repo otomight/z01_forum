@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
 	"forum/internal/config"
 	"log"
@@ -65,37 +64,4 @@ func GetCommentsByPostID(curUserID int, postID int) ([]Comment, error) {
 		comments = append(comments, comment)
 	}
 	return comments, nil
-}
-
-func UpdateCommentReactionsCount(commentID int) error {
-	var	query				string
-	var	c					config.CommentsTableKeys
-	var	result				sql.Result
-	var	newLikesCount		int
-	var	newDislikesCount	int
-	var	err					error
-
-	c = config.TableKeys.Comments
-	newLikesCount, newDislikesCount, err =
-			GetReactionsCounts(config.ReactElemType.Comment, commentID)
-	if err != nil {
-		return fmt.Errorf("failed to fetch likes and dislikes counts: %v", err)
-	}
-	query = `
-		UPDATE `+c.Comments+`
-		SET `+c.Likes+` = ?, `+c.Dislikes+` = ?
-		WHERE `+c.ID+` = ?;
-	`
-	result, err = DB.Exec(query, newLikesCount, newDislikesCount, commentID)
-	if err != nil {
-		return fmt.Errorf("failed to update like-dislike on comment: %w", err)
-	}
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("no row edited: %w", err)
-	}
-	if rowsAffected == 0 {
-		return fmt.Errorf("Post %d not found", commentID)
-	}
-	return nil
 }

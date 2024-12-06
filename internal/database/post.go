@@ -204,36 +204,3 @@ func DeletePost(postID int) error {
 
 	return nil
 }
-
-func UpdatePostReactionsCount(postID int) error {
-	var	query				string
-	var	p					config.PostsTableKeys
-	var	result				sql.Result
-	var	newLikesCount		int
-	var	newDislikesCount	int
-	var	err					error
-
-	p = config.TableKeys.Posts
-	newLikesCount, newDislikesCount, err =
-			GetReactionsCounts(config.ReactElemType.Post, postID)
-	if err != nil {
-		return fmt.Errorf("failed to fetch likes and dislikes counts: %v", err)
-	}
-	query = `
-		UPDATE `+p.Posts+`
-		SET `+p.Likes+` = ?, `+p.Dislikes+` = ?
-		WHERE `+p.ID+` = ?;
-	`
-	result, err = DB.Exec(query, newLikesCount, newDislikesCount, postID)
-	if err != nil {
-		return fmt.Errorf("failed to update like-dislike on post: %w", err)
-	}
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("no row edited: %w", err)
-	}
-	if rowsAffected == 0 {
-		return fmt.Errorf("Post %d not found", postID)
-	}
-	return nil
-}

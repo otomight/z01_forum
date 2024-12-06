@@ -7,97 +7,90 @@ import (
 	"log"
 )
 
-func addReactionToPost(elemID int, userID int, liked bool) error {
-	var	pr			config.PostsReactionsTableKeys
-	var	err			error
+func insertReactionInto(
+	tableKey string, elemIDKey string, userIDKey string, likedKey string,
+	updateDateKey string, elemID int, userID int, liked bool,
+) error {
+	var	err	error
 
-	pr = config.TableKeys.PostsReactions
 	_, err = insertInto(InsertIntoQuery{
-		Table:		pr.PostsReactions,
-		Keys: 		[]string{pr.PostID, pr.UserID, pr.Liked},
+		Table:		tableKey,
+		Keys: 		[]string{elemIDKey, userIDKey, likedKey},
 		Values:		[][]any{{elemID, userID, liked}},
 		Ending: `
-			ON CONFLICT(`+pr.PostID+`, `+pr.UserID+`) DO UPDATE
-			SET `+pr.Liked+` = excluded.`+pr.Liked+`,
-				`+pr.UpdateDate+` = CURRENT_TIMESTAMP
+			ON CONFLICT(`+elemIDKey+`, `+userIDKey+`) DO UPDATE
+			SET `+likedKey+` = excluded.`+likedKey+`,
+				`+updateDateKey+` = CURRENT_TIMESTAMP
 		`,
 	})
-	if err != nil {
-		log.Printf("Error adding like to post %d: %v", elemID, err)
-		return fmt.Errorf("failed to add like: %w", err)
-	}
-	return nil
-}
-
-func addReactionToComment(elemID int, userID int, liked bool) error {
-	var	cr			config.CommentsReactionsTableKeys
-	var	err			error
-
-	cr = config.TableKeys.CommentsReactions
-	_, err = insertInto(InsertIntoQuery{
-		Table:		cr.CommentsReactions,
-		Keys: 		[]string{cr.CommentID, cr.UserID, cr.Liked},
-		Values:		[][]any{{elemID, userID, liked}},
-		Ending: `
-			ON CONFLICT(`+cr.CommentID+`, `+cr.UserID+`) DO UPDATE
-			SET `+cr.Liked+` = excluded.`+cr.Liked+`,
-				`+cr.UpdateDate+` = CURRENT_TIMESTAMP
-		`,
-	})
-	if err != nil {
-		log.Printf("Error adding like to comment %d: %v", elemID, err)
-		return fmt.Errorf("failed to add like: %w", err)
-	}
-	return nil
+	return err
 }
 
 func AddReaction(
 	elemType config.ReactionElemType,
 	elemID int, userID int, liked bool,
 ) error {
-	if elemType == config.ReactElemType.Post {
-		return addReactionToPost(elemID, userID, liked)
-	} else if elemType == config.ReactElemType.Comment {
-		return addReactionToComment(elemID, userID, liked)
-	}
-	return fmt.Errorf("Unexpected error")
-}
-
-func getReactionByUserQuery(elemType config.ReactionElemType) string {
-	var	query	string
-	var	pr		config.PostsReactionsTableKeys
-	var	cr		config.CommentsReactionsTableKeys
+	var	err	error
+	var	pr	config.PostsReactionsTableKeys
+	var	cr	config.CommentsReactionsTableKeys
 
 	if elemType == config.ReactElemType.Post {
 		pr = config.TableKeys.PostsReactions
-		query = `
-			SELECT `+pr.ID+`, `+pr.PostID+`,
-					`+pr.UserID+`, `+pr.Liked+`, `+pr.UpdateDate+`
-			FROM `+pr.PostsReactions+`
-			WHERE `+pr.PostID+` = ? AND `+pr.UserID+` = ?;
-		`
+		err = insertReactionInto(
+			pr.PostsReactions, pr.PostID, pr.UserID,
+			pr.Liked, pr.UpdateDate, elemID, userID, liked,
+		)
 	} else if elemType == config.ReactElemType.Comment {
 		cr = config.TableKeys.CommentsReactions
-		query = `
-			SELECT `+cr.ID+`, `+cr.CommentID+`,
-					`+cr.UserID+`, `+cr.Liked+`, `+cr.UpdateDate+`
-			FROM `+cr.CommentsReactions+`
-			WHERE `+cr.CommentID+` = ? AND `+cr.UserID+` = ?;
-		`
+		err = insertReactionInto(
+			cr.CommentsReactions, cr.CommentID, cr.UserID,
+			cr.Liked, cr.UpdateDate, elemID, userID, liked,
+		)
 	}
-	return query
+	if err != nil {
+		log.Printf(
+			"Error adding like to %s %d: %v", elemType.String(), elemID, err,
+		)
+		return fmt.Errorf("failed to add like: %w", err)
+	}
+	return nil
+}
+
+func getReactionByUserQuery(
+	idKey string, elemIDKey string, userIDKey string,
+	likedKey string, updateDateKey string, tableKey string,
+) string {
+	return `
+		SELECT `+idKey+`, `+elemIDKey+`,
+				`+userIDKey+`, `+likedKey+`, `+updateDateKey+`
+		FROM `+tableKey+`
+		WHERE `+elemIDKey+` = ? AND `+userIDKey+` = ?;
+	`
 }
 
 func GetReactionByUser(
-	elemType config.ReactionElemType,
-	elemID int, userID int,
+	elemType config.ReactionElemType, elemID int, userID int,
 ) (*Reaction, error) {
+	var	pr		config.PostsReactionsTableKeys
+	var	cr		config.CommentsReactionsTableKeys
 	var	query	string
 	var	rows	*sql.Rows
 	var	err		error
 	var	ldl		Reaction
 
-	query = getReactionByUserQuery(elemType)
+	if elemType == config.ReactElemType.Post {
+		pr = config.TableKeys.PostsReactions
+		query = getReactionByUserQuery(
+			pr.ID, pr.PostID, pr.UserID,
+			pr.Liked, pr.UpdateDate, pr.PostsReactions,
+		)
+	} else if elemType == config.ReactElemType.Comment {
+		cr = config.TableKeys.CommentsReactions
+		query = getReactionByUserQuery(
+			cr.ID, cr.CommentID, cr.UserID,
+			cr.Liked, cr.UpdateDate, cr.CommentsReactions,
+		)
+	}
 	rows, err = DB.Query(query, elemID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch Reaction: %w", err)
@@ -115,35 +108,47 @@ func GetReactionByUser(
 	}
 }
 
+func updateReactionsCountQuery(
+	tableKey string, likesKey string, dislikesKey string, idKey string,
+) string {
+	return `
+		UPDATE `+tableKey+`
+		SET `+likesKey+` = ?, `+dislikesKey+` = ?
+		WHERE `+idKey+` = ?;
+	`
+}
+
+func getReactionCountsQuery(
+	likedKey string, tableKey string, elemIDKey string,
+) string {
+	return `
+		SELECT
+			COUNT(CASE WHEN `+likedKey+` = 1 THEN 1 END) AS likes_count,
+			COUNT(CASE WHEN `+likedKey+` = 0 THEN 1 END) AS dislikes_count
+		FROM `+tableKey+`
+		WHERE `+elemIDKey+` = ?;
+	`
+}
+
 // return like and dislike counts
-func GetReactionsCounts(
+func getReactionsCounts(
 	elemType config.ReactionElemType, elemID int,
 ) (int, int, error) {
-	var	query			string
 	var	pr				config.PostsReactionsTableKeys
 	var	cr				config.CommentsReactionsTableKeys
+	var	query			string
 	var	likesCount		int
 	var	dislikesCount	int
 	var	err				error
 
 	if elemType == config.ReactElemType.Post {
 		pr = config.TableKeys.PostsReactions
-		query = `
-			SELECT
-				COUNT(CASE WHEN `+pr.Liked+` = 1 THEN 1 END) AS likes_count,
-				COUNT(CASE WHEN `+pr.Liked+` = 0 THEN 1 END) AS dislikes_count
-			FROM `+pr.PostsReactions+`
-			WHERE `+pr.PostID+` = ?;
-		`
+		query = getReactionCountsQuery(pr.Liked, pr.PostsReactions, pr.PostID)
 	} else if elemType == config.ReactElemType.Comment {
 		cr = config.TableKeys.CommentsReactions
-		query = `
-			SELECT
-				COUNT(CASE WHEN `+cr.Liked+` = 1 THEN 1 END) AS likes_count,
-				COUNT(CASE WHEN `+cr.Liked+` = 0 THEN 1 END) AS dislikes_count
-			FROM `+cr.CommentsReactions+`
-			WHERE `+cr.CommentID+` = ?;
-		`
+		query = getReactionCountsQuery(
+			cr.Liked, cr.CommentsReactions, cr.CommentID,
+		)
 	}
 	err = DB.QueryRow(query, elemID).Scan(&likesCount, &dislikesCount)
 	if err != nil {
@@ -152,9 +157,55 @@ func GetReactionsCounts(
 	return likesCount, dislikesCount, nil
 }
 
+func UpdateReactionsCount(
+	elemType config.ReactionElemType, elemID int,
+) error {
+	var	p					config.PostsTableKeys
+	var	c					config.CommentsTableKeys
+	var	query				string
+	var	result				sql.Result
+	var	newLikesCount		int
+	var	newDislikesCount	int
+	var	err					error
+
+	if elemType == config.ReactElemType.Post {
+		p = config.TableKeys.Posts
+		query = updateReactionsCountQuery(p.Posts, p.Likes, p.Dislikes, p.ID)
+	} else if elemType == config.ReactElemType.Comment {
+		c = config.TableKeys.Comments
+		query = updateReactionsCountQuery(c.Comments, c.Likes, c.Dislikes, c.ID)
+	}
+	newLikesCount, newDislikesCount, err = getReactionsCounts(elemType, elemID)
+	if err != nil {
+		return fmt.Errorf("failed to fetch likes and dislikes counts: %v", err)
+	}
+	result, err = DB.Exec(query, newLikesCount, newDislikesCount, elemID)
+	if err != nil {
+		return fmt.Errorf(
+			"failed to update reactions on %s: %w", elemType.String(), err,
+		)
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("no row edited: %w", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("%s %d not found", elemType.String(), elemID)
+	}
+	return nil
+}
+
+func deleteReactionQuery(
+	tableKey string, elemIDKey string, UserIDKey string,
+) string {
+	return `
+		DELETE FROM `+tableKey+`
+		WHERE `+elemIDKey+` = ? AND `+UserIDKey+` = ?;
+	`
+}
+
 func DeleteReaction(
-	elemType config.ReactionElemType,
-	postId int, userId int,
+	elemType config.ReactionElemType, postId int, userId int,
 ) error {
 	var	query	string
 	var	pr		config.PostsReactionsTableKeys
@@ -162,21 +213,22 @@ func DeleteReaction(
 
 	if elemType == config.ReactElemType.Post {
 		pr = config.TableKeys.PostsReactions
-		query = `
-			DELETE FROM `+pr.PostsReactions+`
-			WHERE `+pr.PostID+` = ? AND `+pr.UserID+` = ?;
-		`
+		query = deleteReactionQuery(pr.PostsReactions, pr.PostID, pr.UserID)
 	} else if elemType == config.ReactElemType.Comment {
 		cr = config.TableKeys.CommentsReactions
-		query = `
-			DELETE FROM `+cr.CommentsReactions+`
-			WHERE `+cr.CommentID+` = ? AND `+cr.UserID+` = ?;
-		`
+		query = deleteReactionQuery(
+			cr.CommentsReactions, cr.CommentID, cr.UserID,
+		)
 	}
 	_, err := DB.Exec(query, postId, userId)
 	if err != nil {
-		log.Printf("Error deleting reaction of post %d: %v", postId, err)
-		return fmt.Errorf("failed to delete reaction: %w", err)
+		log.Printf(
+			"Error deleting reaction of %s %d: %v",
+			elemType.String(), postId, err,
+		)
+		return fmt.Errorf(
+			"failed to delete reaction of %s: %w", elemType.String(), err,
+		)
 	}
 	return nil
 }

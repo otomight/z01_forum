@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"forum/internal/config"
 	db "forum/internal/database"
 	"forum/internal/server/models"
+	"log"
 	"net/http"
 )
 
@@ -38,19 +38,15 @@ func updateReactionInDb(
 			response.Replaced = true
 		}
 	}
-	if elemType == config.ReactElemType.Post {
-		err = db.UpdateCommentReactionsCount(received.ElemID)
-	} else if elemType == config.ReactElemType.Comment {
-		err = db.UpdateCommentReactionsCount(received.ElemID)
+	if err = db.UpdateReactionsCount(elemType, received.ElemID); err != nil {
+		return nil, err
 	}
 	return &response, nil
 }
 
 func ReactionHandler(
-	w			http.ResponseWriter,
-	r			*http.Request,
-	elemType	config.ReactionElemType,
-	liked		bool,
+	w http.ResponseWriter, r *http.Request,
+	elemType config.ReactionElemType, liked bool,
 ) {
 	var	received	models.ReactionRequestAjax
 	var	response	*models.ReactionResponseAjax
@@ -73,7 +69,7 @@ func ReactionHandler(
 	}
 	// write data in db
 	if response, err = updateReactionInDb(received, elemType, liked); err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
