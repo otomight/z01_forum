@@ -30,8 +30,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Validate input
-	if form.UserName == "" || form.Email == "" || form.Password == "" ||
-		form.FirstName == "" || form.LastName == "" {
+	if form.UserName == "" || form.Email == "" || form.Password == "" {
 		http.Error(w, "All fields are required", http.StatusBadRequest)
 		return
 	}
@@ -50,8 +49,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Save user to database
 	userID, err := database.SaveUser(form.UserName, form.Email,
-		string(hashedPassword), form.FirstName,
-		form.LastName, userRole)
+		string(hashedPassword), userRole)
 	if err != nil {
 		log.Printf("Error saving user to database: %v", err)
 		http.Error(w, "Unable to register user", http.StatusInternalServerError)

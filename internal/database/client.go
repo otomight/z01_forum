@@ -47,8 +47,7 @@ import (
 
 // Save new user to database
 func SaveUser(
-	userName, email, password string,
-	firstName, lastName, userRole string,
+	userName string, email string, password string, userRole string,
 ) (int, error) {
 	var	c	config.ClientsTableKeys
 
@@ -56,11 +55,10 @@ func SaveUser(
 	result, err := insertInto(InsertIntoQuery{
 		Table: c.Clients,
 		Keys: []string{
-			c.UserName, c.Email, c.Password,
-			c.FirstName, c.LastName, c.UserRole,
+			c.UserName, c.Email, c.Password, c.UserRole,
 		},
 		Values: [][]any{{
-			userName, email, password, firstName, lastName, userRole,
+			userName, email, password, userRole,
 		}},
 	})
 	if err != nil {
