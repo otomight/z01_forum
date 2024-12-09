@@ -5,6 +5,7 @@ PORT=8081
 all: build run
 
 build:
+	npx tsc
 	sudo docker build -t $(IMAGE_NAME) .
 
 run:
