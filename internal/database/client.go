@@ -142,16 +142,17 @@ func ValidateUserCredentials(username, password string) (Client, error) {
 	c = config.TableKeys.Clients
 	//Get user by username/email
 	query := `
-		SELECT `+c.ID+`, `+c.FirstName+`, `+c.LastName+`,
-				`+c.UserName+`, `+c.Email+`, `+c.Password+`, `+c.UserRole+`
-		FROM `+c.Clients+` WHERE `+c.UserName+` = ? OR `+c.Email+` = ?
+		SELECT `+c.ID+`, `+c.UserName+`, `+c.Email+`,
+				`+c.Password+`, `+c.UserRole+`
+		FROM `+c.Clients+` WHERE `+c.UserName+` = ? OR `+c.Email+` = ?;
 	`
 
 	row := DB.QueryRow(query, username, username)
 
 	//Scan results into user struct
-	err := row.Scan(&user.ID, &user.FirstName, &user.LastName,
-					&user.UserName, &user.Email, &user.Password, &user.UserRole)
+	err := row.Scan(
+		&user.ID, &user.UserName, &user.Email, &user.Password, &user.UserRole,
+	)
 	if err == sql.ErrNoRows {
 		return user, fmt.Errorf("user not found")
 	} else if err != nil {
