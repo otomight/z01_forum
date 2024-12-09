@@ -1,34 +1,37 @@
 ## Dependencies
 
-- nodejs and npm<br>
-First download nodejs from the [ official website](https://nodejs.org/en/download/prebuilt-binaries).
-```sh
-# make sure that the location is right
-# --------------------------------------------------------------- #
-DOWNLOADED_FILE=$(echo ~/Downloads/node-v*-linux-x64.tar.xz)
-# --------------------------------------------------------------- #
+### nodejs and npm
+1. First download nodejs from the [ official website](https://nodejs.org/en/download/prebuilt-binaries).
 
-# extract the file
+2. Install nodejs
+```sh
 rm -rf ~/.local/share/Trash/nodejs
 [ -d /usr/local/nodejs ] && sudo mv /usr/local/nodejs ~/.local/share/Trash
-sudo tar -C /usr/local -xJf $DOWNLOADED_FILE
+sudo tar -C /usr/local -xJf ~/Downloads/node-v*-linux-x64.tar.xz
+# MAKE SUR THAT THE LOCATION IS RIGHT ^^^^^^^^^^^^^^^^^^^^^^^^^^
 sudo mv /usr/local/node-v*-linux-x64 /usr/local/nodejs
-
-# add the binaries to your path if necessary
-echo '
-# includes nodejs
-PATH="/usr/local/nodejs/bin:$PATH"' >> ~/.profile
-source ~/.profile
 ```
 
-- typescript
+3. Add the binaries in your path.
 ```sh
-# install typescripts locally in the project
+sudo nano /etc/environment
+```
+
+4. Add ":/usr/local/nodejs/bin" at the end of the path.
+
+5. And then update your path.
+```sh
+source /etc/environment
+```
+
+
+### typescript
+```sh
 npm install typescript
 ```
 
-### Windows
-- [tdm-gcc](https://jmeubank.github.io/tdm-gcc/download/)
+## Additionnal Windows dependecies
+1. [tdm-gcc](https://jmeubank.github.io/tdm-gcc/download/)
 Include the bin folder into your path.
 
 
