@@ -196,16 +196,47 @@ func UpdateReactionsCount(
 }
 
 func deleteReactionQuery(
-	tableKey string, elemIDKey string, UserIDKey string,
+	tableKey string, elemIDKey string, userIDKey *string,
 ) string {
-	return `
+	var	query	string
+
+	query = `
 		DELETE FROM `+tableKey+`
-		WHERE `+elemIDKey+` = ? AND `+UserIDKey+` = ?;
+		WHERE `+elemIDKey+` = ?
 	`
+	if userIDKey != nil {
+		query += `AND `+*userIDKey+` = ?`
+	}
+	return query + ";"
 }
 
-func DeleteReaction(
-	elemType config.ReactionElemType, postId int, userId int,
+func DeleteReactions(elemType config.ReactionElemType, postID int) error {
+	var	query	string
+	var	pr		config.PostsReactionsTableKeys
+	var	cr		config.CommentsReactionsTableKeys
+
+	if elemType == config.ReactElemType.Post {
+		pr = config.TableKeys.PostsReactions
+		query = deleteReactionQuery(pr.PostsReactions, pr.PostID, nil)
+	} else if elemType == config.ReactElemType.Comment {
+		cr = config.TableKeys.CommentsReactions
+		query = deleteReactionQuery(cr.CommentsReactions, cr.CommentID, nil)
+	}
+	_, err := DB.Exec(query, postID)
+	if err != nil {
+		log.Printf(
+			"Error deleting reactions of %s %d: %v",
+			elemType.String(), postID, err,
+		)
+		return fmt.Errorf(
+			"failed to delete reactions of %s: %w", elemType.String(), err,
+		)
+	}
+	return nil
+}
+
+func DeleteReactionFromUser(
+	elemType config.ReactionElemType, postID int, userID int,
 ) error {
 	var	query	string
 	var	pr		config.PostsReactionsTableKeys
@@ -213,18 +244,18 @@ func DeleteReaction(
 
 	if elemType == config.ReactElemType.Post {
 		pr = config.TableKeys.PostsReactions
-		query = deleteReactionQuery(pr.PostsReactions, pr.PostID, pr.UserID)
+		query = deleteReactionQuery(pr.PostsReactions, pr.PostID, &pr.UserID)
 	} else if elemType == config.ReactElemType.Comment {
 		cr = config.TableKeys.CommentsReactions
 		query = deleteReactionQuery(
-			cr.CommentsReactions, cr.CommentID, cr.UserID,
+			cr.CommentsReactions, cr.CommentID, &cr.UserID,
 		)
 	}
-	_, err := DB.Exec(query, postId, userId)
+	_, err := DB.Exec(query, postID, userID)
 	if err != nil {
 		log.Printf(
 			"Error deleting reaction of %s %d: %v",
-			elemType.String(), postId, err,
+			elemType.String(), postID, err,
 		)
 		return fmt.Errorf(
 			"failed to delete reaction of %s: %w", elemType.String(), err,

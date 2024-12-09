@@ -22,4 +22,6 @@ rmi:
 
 clean: stop rm rmi
 
-.PHONY: all build run stop rm rmi clean
+re: clean all
+
+.PHONY: all build run stop rm rmi clean re

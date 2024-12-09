@@ -23,7 +23,9 @@ func updateReactionInDb(
 		return nil, err
 	}
 	if ldl != nil && ldl.Liked == liked {
-		err = db.DeleteReaction(elemType, received.ElemID, received.UserID)
+		err = db.DeleteReactionFromUser(
+			elemType, received.ElemID, received.UserID,
+		)
 		if err != nil {
 			return nil, err
 		}

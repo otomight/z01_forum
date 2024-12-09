@@ -180,6 +180,7 @@ func GetAllPosts(curUserID int) ([]*Post, error) {
 
 func DeletePost(postID int) error {
 	var	p	config.PostsTableKeys
+	var	err	error
 
 	p = config.TableKeys.Posts
 	query := `
@@ -192,15 +193,15 @@ func DeletePost(postID int) error {
 		log.Printf("Error deleting post %d: %v", postID, err)
 		return fmt.Errorf("failed to delete post: %w", err)
 	}
-
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		return fmt.Errorf("failed to retreieve affected row: %w", err)
 	}
-
 	if rowsAffected == 0 {
 		return fmt.Errorf("no post found with ID %d", postID)
 	}
-
+	if err = DeleteReactions(config.ReactElemType.Post, postID); err != nil {
+		log.Println("Failed to remove reactions at post deleted")
+	}
 	return nil
 }
