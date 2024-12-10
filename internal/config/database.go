@@ -203,5 +203,5 @@ var CategoriesNames = []string{
 
 const (
 	DbFilePath			= "forum.db"
-	SqlTablesFilePath	= "internal/database/create_table.sql"
+	SqlTablesFilePath	= "forum.sql"
 )

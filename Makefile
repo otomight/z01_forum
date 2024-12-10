@@ -1,5 +1,5 @@
-IMAGE_NAME=forum
-CONTAINER_NAME=forum_container
+IMAGE_NAME=forum_i
+CONTAINER_NAME=forum_c
 PORT=8081
 
 all: build run
