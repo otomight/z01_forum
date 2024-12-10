@@ -4,10 +4,12 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/static/style/main.css">
+	<link rel="stylesheet" href="/static/style/pages/category.css">
 </head>
 <body>
 	{{ template "header" . }}
 	<main>
+		<h1>Categories :</h1>
 		{{ range .Categories }}
 			<a href="/categories/{{ .ID }}">{{ .Name }}</a>
 		{{ end }}

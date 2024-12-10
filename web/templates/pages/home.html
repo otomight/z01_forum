@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/static/style/main.css">
+	<link rel="stylesheet" href="/static/style/pages/home.css">
 </head>
 <body>
 	{{ template "header" . }}
@@ -11,19 +12,22 @@
 		{{ if .Session }}
 			<a href="/post/create">Create post</a>
 		{{ end }}
-		<h2>Latest Posts</h2>
 		<div id="posts">
+			<h2>Latest Posts</h2>
 			{{ range .Posts }}
 				<div class="post">
 					<a href="/post/view/{{ .ID }}"><h3>{{ .Title }}</h3></a>
 					<p>By: {{ .UserName }}</p>
-					<p>{{ .Content }}</p>
+					<p class="post-content">{{ .Content }}</p>
 					{{ range .Categories }}
 						<p>{{ .Name }}</p>
 					{{ end }}
 					<p><em>Posted on: {{ .CreationDate }}</em></p>
-					{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
+					<div class="post-buttons">
+						{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
+					</div>
 					{{ template "post_comments" (addToStruct . "Session" $.Session) }}
+
 				</div>
 			{{end}}
 		</div>

@@ -1,0 +1,39 @@
+header {
+	background-color: #8c7ae6;
+	padding: 1rem 4rem;
+	color: white;
+	display: flex;
+	gap: 1rem;
+	display: flex;
+	justify-content: space-between; 
+	align-items: center;
+}
+
+.header-content a {
+	text-decoration: none;
+	color: white;
+}
+
+.header-content {
+	display: flex;
+	gap: 1rem;
+}
+
+.header-logo {
+	flex: 0 0 auto;
+}
+
+.header-buttons {
+	flex: 0 0 auto;
+	display: flex;
+	gap: 10px;
+}
+.header-buttons a {
+	text-decoration: none;
+	background-color: white;
+	color: #8c7ae6;
+	padding: 10px;
+	border-radius: 10px;
+	font-weight:400;
+	width: 100%;
+}
