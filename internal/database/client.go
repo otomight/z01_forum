@@ -62,14 +62,12 @@ func SaveUser(
 		}},
 	})
 	if err != nil {
-		return 0, fmt.Errorf("failed to insert user: %w", err)
+		return 0, err
 	}
-
 	userID, err := result.LastInsertId()
 	if err != nil {
-		return 0, fmt.Errorf("failed to retrieve last insert ID: %w", err)
+		return 0, err
 	}
-
 	return int(userID), nil
 }
 
