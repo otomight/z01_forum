@@ -65,3 +65,33 @@ func GetCommentsByPostID(curUserID int, postID int) ([]Comment, error) {
 	}
 	return comments, nil
 }
+
+func deleteCommentWithCondition(condition string, args ...any) error {
+	var	query	string
+	var	c		config.CommentsTableKeys
+	var	err		error
+
+	c = config.TableKeys.Comments
+	query = `
+		DELETE FROM `+c.Comments+`
+	`
+	if condition != "" {
+		query += ` WHERE `+condition+``
+	}
+	query += ";"
+	_, err = DB.Exec(query, args...)
+	if err != nil {
+		log.Println("Error deleting comment")
+		return err
+	}
+	return nil
+}
+
+// func DeleteComment(commentID int) {
+// 	var	c			config.CommentsTableKeys
+// 	var	condition	string
+
+// 	c = config.TableKeys.Comments
+// 	condition = ``+c.ID+` = ?`
+// 	deleteCommentWithCondition(condition, commentID)
+// }

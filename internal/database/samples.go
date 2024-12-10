@@ -27,7 +27,9 @@ func InsertSampleClient() {
 	if !exists {
 		// Hash the password
 		password := "securepassword"
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		hashedPassword, err := bcrypt.GenerateFromPassword(
+			[]byte(password), bcrypt.DefaultCost,
+		)
 		if err != nil {
 			log.Printf("Error hashing password: %v", err)
 			return
@@ -68,9 +70,9 @@ func InsertSamplePost() {
 	if count == 0 {
 		_, err := insertInto(InsertIntoQuery{
 			Table: p.Posts,
-			Keys: []string{p.AuthorID, p.Title, p.Content, p.IsDeleted},
+			Keys: []string{p.AuthorID, p.Title, p.Content},
 			Values: [][]any{{
-				1, "Sample Post", "This is a sample post content.", 0,
+				1, "Sample Post", "This is a sample post content.",
 			}},
 		})
 		if err != nil {

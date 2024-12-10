@@ -45,17 +45,16 @@ func GetSessionWithKey(key string, value any) (*UserSession, error) {
 
 	s = config.TableKeys.Sessions
 	query = `
-		SELECT `+s.ID+`, `+s.UserID+`, `+s.Expiration+`,
-				`+s.CreationDate+`, `+s.UpdateDate+`, `+s.DeletionDate+`,
-				`+s.IsDeleted+`, `+s.UserRole+`, `+s.UserName+`
+		SELECT `+s.ID+`, `+s.UserID+`, `+s.Expiration+`, `+s.CreationDate+`,
+			`+s.UpdateDate+`, `+s.UserRole+`, `+s.UserName+`
 		FROM `+s.Sessions+`
 		WHERE `+key+` = ?
 	`
 	row = DB.QueryRow(query, value)
 	err = row.Scan(
 		&session.ID, &session.UserID, &session.Expiration,
-		&session.CreationDate, &session.UpdateDate, &session.DeletionDate,
-		&session.IsDeleted, &session.UserRole, &session.UserName,
+		&session.CreationDate, &session.UpdateDate,
+		&session.UserRole, &session.UserName,
 	)
 	if err == sql.ErrNoRows {
 		return nil, errors.New("session not found: no matching session in database")
@@ -63,8 +62,8 @@ func GetSessionWithKey(key string, value any) (*UserSession, error) {
 	if err != nil {
 		return nil, err // Return any other unexpected errors
 	}
-	if session.IsDeleted || session.Expiration.Before(time.Now()) {
-		return nil, errors.New("session invalid: expired or marked as deleted")
+	if session.Expiration.Before(time.Now()) {
+		return nil, errors.New("session expired")
 	}
 	return &session, nil
 }

@@ -108,16 +108,6 @@ func GetReactionByUser(
 	}
 }
 
-func updateReactionsCountQuery(
-	tableKey string, likesKey string, dislikesKey string, idKey string,
-) string {
-	return `
-		UPDATE `+tableKey+`
-		SET `+likesKey+` = ?, `+dislikesKey+` = ?
-		WHERE `+idKey+` = ?;
-	`
-}
-
 func getReactionCountsQuery(
 	likedKey string, tableKey string, elemIDKey string,
 ) string {
@@ -155,6 +145,16 @@ func getReactionsCounts(
 		return 0, 0, err
 	}
 	return likesCount, dislikesCount, nil
+}
+
+func updateReactionsCountQuery(
+	tableKey string, likesKey string, dislikesKey string, idKey string,
+) string {
+	return `
+		UPDATE `+tableKey+`
+		SET `+likesKey+` = ?, `+dislikesKey+` = ?
+		WHERE `+idKey+` = ?;
+	`
 }
 
 func UpdateReactionsCount(
@@ -195,71 +195,43 @@ func UpdateReactionsCount(
 	return nil
 }
 
-func deleteReactionQuery(
-	tableKey string, elemIDKey string, userIDKey *string,
-) string {
+func deleteReactionsWithCondition(
+	tableKey string, condition string, args ...any,
+) error {
 	var	query	string
+	var	err		error
 
 	query = `
 		DELETE FROM `+tableKey+`
-		WHERE `+elemIDKey+` = ?
 	`
-	if userIDKey != nil {
-		query += `AND `+*userIDKey+` = ?`
+	if condition != "" {
+		query += ` WHERE `+condition+``
 	}
-	return query + ";"
-}
-
-func DeleteReactions(elemType config.ReactionElemType, postID int) error {
-	var	query	string
-	var	pr		config.PostsReactionsTableKeys
-	var	cr		config.CommentsReactionsTableKeys
-
-	if elemType == config.ReactElemType.Post {
-		pr = config.TableKeys.PostsReactions
-		query = deleteReactionQuery(pr.PostsReactions, pr.PostID, nil)
-	} else if elemType == config.ReactElemType.Comment {
-		cr = config.TableKeys.CommentsReactions
-		query = deleteReactionQuery(cr.CommentsReactions, cr.CommentID, nil)
-	}
-	_, err := DB.Exec(query, postID)
+	query += ";"
+	_, err = DB.Exec(query, args...)
 	if err != nil {
-		log.Printf(
-			"Error deleting reactions of %s %d: %v",
-			elemType.String(), postID, err,
-		)
-		return fmt.Errorf(
-			"failed to delete reactions of %s: %w", elemType.String(), err,
-		)
+		log.Printf("Error deleting reaction of table %s\n", tableKey)
+		return err
 	}
 	return nil
 }
 
-func DeleteReactionFromUser(
-	elemType config.ReactionElemType, postID int, userID int,
+func DeleteUserReaction(
+	elemType config.ReactionElemType, elemID int, userID int,
 ) error {
-	var	query	string
-	var	pr		config.PostsReactionsTableKeys
-	var	cr		config.CommentsReactionsTableKeys
+	var	pr			config.PostsReactionsTableKeys
+	var	cr			config.CommentsReactionsTableKeys
+	var	tableKey	string
+	var	condition	string
 
 	if elemType == config.ReactElemType.Post {
 		pr = config.TableKeys.PostsReactions
-		query = deleteReactionQuery(pr.PostsReactions, pr.PostID, &pr.UserID)
+		tableKey = pr.PostsReactions
+		condition = ``+pr.PostID+` = ? AND `+pr.UserID+` = ?`
 	} else if elemType == config.ReactElemType.Comment {
 		cr = config.TableKeys.CommentsReactions
-		query = deleteReactionQuery(
-			cr.CommentsReactions, cr.CommentID, &cr.UserID,
-		)
+		tableKey = cr.CommentsReactions
+		condition = ``+cr.CommentID+` = ? AND `+cr.UserID+` = ?`
 	}
-	_, err := DB.Exec(query, postID, userID)
-	if err != nil {
-		log.Printf(
-			"Error deleting reaction of %s %d: %v",
-			elemType.String(), postID, err,
-		)
-		return fmt.Errorf(
-			"failed to delete reaction of %s: %w", elemType.String(), err,
-		)
-	}
-	return nil
+	return deleteReactionsWithCondition(tableKey, condition, elemID, userID)
 }

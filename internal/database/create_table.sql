@@ -23,9 +23,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 	expiration		TIMESTAMP,
 	creation_date	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	update_date		TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	deletion_date	TIMESTAMP,
-	is_deleted		BOOLEAN DEFAULT FALSE,
-	FOREIGN KEY(user_id) REFERENCES clients(id)
+	FOREIGN KEY(user_id) REFERENCES clients(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS categories (
@@ -40,8 +38,6 @@ CREATE TABLE IF NOT EXISTS posts (
 	content			TEXT,
 	creation_date	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	update_date		TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	deletion_date	TIMESTAMP,
-	is_deleted		BOOLEAN DEFAULT FALSE,
 	likes			INTEGER DEFAULT 0,
 	dislikes		INTEGER DEFAULT 0,
 	FOREIGN KEY(author_id) REFERENCES clients(id) ON DELETE CASCADE
@@ -51,7 +47,7 @@ CREATE TABLE IF NOT EXISTS posts_categories (
 	id				INTEGER PRIMARY KEY AUTOINCREMENT,
 	category_id		INTEGER,
 	post_id			INTEGER,
-	FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+	FOREIGN KEY (category_id) REFERENCES categories(id),
 	FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
 	UNIQUE(category_id, post_id)
 );

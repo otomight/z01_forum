@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"forum/internal/config"
 	"log"
 )
@@ -14,12 +13,8 @@ func NewPost(post *Post, categoriesIDs []int) (int, error) {
 	p = config.TableKeys.Posts
 	result, err := insertInto(InsertIntoQuery{
 		Table:		p.Posts,
-		Keys: []string{
-			p.AuthorID, p.Title, p.Content, p.IsDeleted,
-		},
-		Values: [][]any{{
-			post.AuthorID, post.Title, post.Content, 0,
-		}},
+		Keys: []string{p.AuthorID, p.Title, p.Content},
+		Values: [][]any{{post.AuthorID, post.Title, post.Content}},
 	})
 	if err != nil {
 		return 0, err
@@ -43,30 +38,26 @@ func getPostsWithConditionQueryResult(
 	var	pr			config.PostsReactionsTableKeys
 	var	query		string
 	var	rows		*sql.Rows
-	var	conditions	string
 	var err			error
 
 	p = config.TableKeys.Posts
 	cl = config.TableKeys.Clients
 	pc = config.TableKeys.PostsCategories
 	pr = config.TableKeys.PostsReactions
-	if condition != "" {
-		conditions = `(`+condition+`) AND p.`+p.IsDeleted+` = FALSE`
-	} else {
-		conditions = `p.`+p.IsDeleted+` = FALSE`
-	}
 	query = `
 		SELECT DISTINCT p.`+p.ID+`, p.`+p.AuthorID+`, cl.`+cl.UserName+`,
 			p.`+p.Title+`, p.`+p.Content+`, p.`+p.CreationDate+`,
-			p.`+p.UpdateDate+`, p.`+p.DeletionDate+`, p.`+p.IsDeleted+`,
-			p.`+p.Likes+`, p.`+p.Dislikes+`, pr.`+pr.Liked+`
+			p.`+p.UpdateDate+`, p.`+p.Likes+`, p.`+p.Dislikes+`, pr.`+pr.Liked+`
 		FROM `+p.Posts+` p
 		JOIN `+cl.Clients+` cl ON p.`+p.AuthorID+` = cl.`+cl.ID+`
 		LEFT JOIN `+pc.PostsCategories+` pc ON pc.`+pc.PostID+` = p.`+p.ID+`
 		LEFT JOIN `+pr.PostsReactions+` pr
 		ON pr.`+pr.PostID+` = p.`+p.ID+` AND pr.`+pr.UserID+` = ?
-		WHERE `+conditions+`;
 	`
+	if condition != "" {
+		query += ` WHERE `+condition+``
+	}
+	query += ";"
 	rows, err = DB.Query(query, append([]any{userID}, args...)...)
 	return rows, err
 }
@@ -103,7 +94,6 @@ func getPostsWithCondition(curUserID int, condition string, args ...any) ([]*Pos
 		err = rows.Scan(
 			&post.ID, &post.AuthorID, &post.UserName, &post.Title,
 			&post.Content, &post.CreationDate, &post.UpdateDate,
-			&post.DeletionDate, &post.IsDeleted,
 			&post.Likes, &post.Dislikes, &userLiked,
 		)
 		if err != nil {
@@ -178,30 +168,32 @@ func GetAllPosts(curUserID int) ([]*Post, error) {
 	return getPostsWithCondition(curUserID, "")
 }
 
-func DeletePost(postID int) error {
-	var	p	config.PostsTableKeys
-	var	err	error
+func deletePostWithCondition(condition string, args ...any) error {
+	var	query	string
+	var	p		config.PostsTableKeys
+	var	err		error
 
 	p = config.TableKeys.Posts
-	query := `
-		UPDATE `+p.Posts+`
-		SET `+p.IsDeleted+` = 1, `+p.DeletionDate+` = CURRENT_TIMESTAMP
-		WHERE `+p.ID+` = ?
+	query = `
+		DELETE FROM `+p.Posts+`
 	`
-	result, err := DB.Exec(query, postID)
+	if condition != "" {
+		query += ` WHERE `+condition+``
+	}
+	query += ";"
+	_, err = DB.Exec(query, args...)
 	if err != nil {
-		log.Printf("Error deleting post %d: %v", postID, err)
-		return fmt.Errorf("failed to delete post: %w", err)
-	}
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("failed to retreieve affected row: %w", err)
-	}
-	if rowsAffected == 0 {
-		return fmt.Errorf("no post found with ID %d", postID)
-	}
-	if err = DeleteReactions(config.ReactElemType.Post, postID); err != nil {
-		log.Println("Failed to remove reactions at post deleted")
+		log.Println("Error deleting post")
+		return err
 	}
 	return nil
+}
+
+func DeletePost(postID int) error {
+	var	p			config.PostsTableKeys
+	var	condition	string
+
+	p = config.TableKeys.Posts
+	condition = ``+p.ID+` = ?`
+	return deletePostWithCondition(condition, postID)
 }

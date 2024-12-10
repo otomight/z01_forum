@@ -30,7 +30,7 @@ func SessionMiddleWare(next http.Handler) http.Handler {
 		}
 		//Get session data from database
 		session, err := database.GetSessionByID(cookie.Value)
-		if err != nil || session.IsDeleted || time.Now().After(session.Expiration) {
+		if err != nil || time.Now().After(session.Expiration) {
 			next.ServeHTTP(w, r)
 			return
 		}

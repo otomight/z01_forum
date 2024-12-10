@@ -28,8 +28,6 @@ type SessionsTableKeys struct {
 	Expiration		string
 	CreationDate	string
 	UpdateDate		string
-	DeletionDate	string
-	IsDeleted		string
 }
 
 type CategoriesTableKeys struct {
@@ -46,8 +44,6 @@ type PostsTableKeys struct {
 	Content			string
 	CreationDate	string
 	UpdateDate		string
-	DeletionDate	string
-	IsDeleted		string
 	Likes			string
 	Dislikes		string
 }
@@ -129,8 +125,6 @@ var sessions = SessionsTableKeys{
 	Expiration:		"expiration",
 	CreationDate:	"creation_date",
 	UpdateDate:		"update_date",
-	DeletionDate:	"deletion_date",
-	IsDeleted:		"is_deleted",
 }
 
 var categories = CategoriesTableKeys{
@@ -147,8 +141,6 @@ var posts = PostsTableKeys{
 	Content:		"content",
 	CreationDate:	"creation_date",
 	UpdateDate:		"update_date",
-	DeletionDate:	"deletion_date",
-	IsDeleted:		"is_deleted",
 	Likes:			"likes",
 	Dislikes:		"dislikes",
 }

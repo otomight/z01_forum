@@ -22,7 +22,6 @@ func createPost(userID int, form models.CreatePostForm) (int, error) {
 		Content:		form.Content,
 		CreationDate:	time.Now(),
 		UpdateDate:		time.Now(),
-		IsDeleted:		false,
 	}
 	categoriesIDs, err = utils.StrSliceToIntSlice(form.Categories)
 	if err != nil {

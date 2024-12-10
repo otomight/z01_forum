@@ -29,8 +29,6 @@ type UserSession struct {
 	Expiration		time.Time  `json:"expiration"`
 	CreationDate	time.Time  `json:"creation_date"`
 	UpdateDate		time.Time  `json:"update_date"`
-	DeletionDate	*time.Time `json:"deletion_date"`
-	IsDeleted		bool       `json:"is_deleted"`
 }
 
 type Category struct {
@@ -51,8 +49,6 @@ type Post struct {
 	Content			string		`json:"content"`
 	CreationDate	time.Time	`json:"creation_date"`
 	UpdateDate		time.Time	`json:"update_date"`
-	DeletionDate	*time.Time	`json:"deletion_date"`
-	IsDeleted		bool		`json:"is_deleted"`
 	Likes			int
 	Dislikes		int
 	Categories		[]*Category
