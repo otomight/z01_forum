@@ -8,7 +8,8 @@
 	<link rel="stylesheet" href="/static/style/pages/login.css">
 </head>
 <body>
-	{{ template "navbar" . }}
+	<div class="layout">
+		{{ template "navbar" . }}
 	<main>
 		<div class="login">
 			<form method="post" action="/login">
@@ -46,5 +47,6 @@
 			</div>
 		</div>
 	</main>
+	</div>
 </body>
 </html>

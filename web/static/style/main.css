@@ -17,3 +17,17 @@ body{
 	background-size: 200% 100%;
 	transition: all .2s ease-in; */
 }
+
+.wrapper {
+	width: 85%;
+	background-color: #f4f2ee;
+	padding: 1rem;
+	overflow-y: auto;
+	}
+
+	main {
+	padding: 1rem;
+	background: white;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	}
