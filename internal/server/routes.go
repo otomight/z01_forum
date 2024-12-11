@@ -16,9 +16,9 @@ func SetupRoutes() http.Handler {
 
 	//Routes
 	mux.Handle("/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.HomePageHandler)))
-	mux.HandleFunc("/login", handlers.LoginHandler)
-	mux.HandleFunc("/register", handlers.RegisterHandler)
-	mux.HandleFunc("/logout", handlers.LogOutHandler)
+	mux.Handle("/login", middleware.SessionMiddleWare(http.HandlerFunc(handlers.LoginHandler)))
+	mux.Handle("/register", middleware.SessionMiddleWare(http.HandlerFunc(handlers.RegisterHandler)))
+	mux.Handle("/logout", middleware.SessionMiddleWare(http.HandlerFunc(handlers.LogOutHandler)))
 
 	// Rendering post creation form
 	mux.Handle("/post/create", middleware.SessionMiddleWare(http.HandlerFunc(posthandlers.CreatePostHandler)))
