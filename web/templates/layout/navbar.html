@@ -3,7 +3,16 @@
 	<nav class="sidebar">
 		<ul class="nav-list">
 			<li><a href="/">Home</a></li>
-			<li><a href="/categories">Categories</a></li>
+			<li>
+				<details>
+					<summary>Categories</summary>
+					<div class="categories-menu-content">
+						{{ range .Categories }}
+							<a href="/categories/{{ .ID }}">{{ .Name }}</a>
+						{{ end }}
+					</div>
+				</details>
+			</li>
 			<li><a href="#">Tags</a></li>
 			{{ if .Session }}
 			<li><a href="#">Favs</a></li>
