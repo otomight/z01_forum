@@ -1,0 +1,22 @@
+{{ define "navbar" }}
+<div class="layout">
+	<nav class="sidebar">
+		<ul class="nav-list">
+			<li><a href="/">Home</a></li>
+			<li><a href="/categories">Categories</a></li>
+			<li><a href="#">Tags</a></li>
+			{{ if .Session }}
+			<li><a href="#">Favs</a></li>
+			<li><a href="#">New Post</a></li>
+			<li class="logout">
+				<a href="/logout">Logout</a>
+			{{ else }}
+			<li class="logout">
+				<a href="/login">Login</a>
+			{{ end }}
+			</li>
+		</ul>
+	</nav>
+	<div class="wrapper">
+		<main>
+{{ end }}

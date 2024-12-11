@@ -2,54 +2,13 @@
 	<header>
 		<link rel="stylesheet" href="/static/style/layout/header.css">
 		<div class="header-navbar">
-				<input type="text" name="search" id="search" placeholder="Search...">
-				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-search" viewBox="0 0 16 16">
-					<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-				  </svg>
-		</div>
-		<div class="side-header">
 			<div class="header-logo">
 				<h1>FORUM</h1>
 			</div>
-			<div class="side-header-content">
-				{{ if .Session }}
-					<a href="/post/create">
-						<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-pen" viewBox="0 0 16 16">
-							<path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
-						  </svg>
-					</a>
-				{{ end }}
-				<a href="/">
-					<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-house" viewBox="0 0 16 16">
-						<path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
-					  </svg>
-				</a>
-				<details>
-					<summary>Categories</summary>
-					<div class="categories-menu-content">
-						{{ range .Categories }}
-							<a href="/categories/{{ .ID }}">{{ .Name }}</a>
-						{{ end }}
-					</div>
-				</details>
-			</div>
-			<div class="side-header-buttons">
-				{{ if .Session }}
-					<a href="/history/created">
-						<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-person-circle" viewBox="0 0 16 16">
-							<path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-							<path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-						  </svg>
-					</a>
-					<a href="/logout" class="logout">
-						<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-door-open-fill" viewBox="0 0 16 16">
-							<path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
-						  </svg>
-					</a>
-				{{ else }}
-					<a href="/login">Login</a>
-				{{ end }}
-			</div>
+			<input type="text" name="search" id="search" placeholder="Search...">
+			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-search" viewBox="0 0 16 16">
+				<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+			</svg>
 		</div>
 	</header>
 {{ end }}
