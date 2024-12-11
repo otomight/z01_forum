@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/static/style/main.css">
-</head>
-<body>
-	{{ template "header" . }}
-	<main>
-		<a href="/history/created">Posts Created</a>
-		<a href="/history/liked">Posts Liked</a>
-		{{ template "listpost" . }}
-	</main>
-	{{ template "footer" . }}
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="/static/style/main.css">
+		<link rel="stylesheet" href="/static/style/layout/header.css">
+		<link rel="stylesheet" href="/static/style/layout/navbar.css">
+	</head>
+	<body>
+		{{ template "header" . }}
+		{{ template "navbar" . }}
+		<main>
+			<a href="/history/created">Posts Created</a>
+			<a href="/history/liked">Posts Liked</a>
+			{{ template "listpost" . }}
+		</main>
+	</body>
 </html>

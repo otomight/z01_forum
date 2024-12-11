@@ -4,16 +4,14 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/static/style/main.css">
+	<link rel="stylesheet" href="/static/style/layout/header.css">
+	<link rel="stylesheet" href="/static/style/layout/navbar.css">
 	<link rel="stylesheet" href="/static/style/pages/home.css">
-	<link rel="stylesheet" href="/static/style/navbar.css">
 </head>
 <body id="bd">
 	{{ template "header" . }}
 	{{ template "navbar" . }}
 	<main>
-		{{ if .Session }}
-			<a href="/post/create">Create post</a>
-		{{ end }}
 		<div id="posts">
 			<h2>Latest Posts</h2>
 			{{ range .Posts }}
@@ -32,7 +30,7 @@
 				</div>
 				<svg style="text-align: center;" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 					<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
-				  </svg>
+					</svg>
 			{{end}}
 		</div>
 	</main>
