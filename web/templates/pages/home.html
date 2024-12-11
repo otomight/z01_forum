@@ -6,8 +6,16 @@
 	<link rel="stylesheet" href="/static/style/main.css">
 	<link rel="stylesheet" href="/static/style/pages/home.css">
 </head>
-<body>
+<body id="bd">
 	{{ template "header" . }}
+	<div class="content">
+		<i class="fas fa-sun"></i>
+		&nbsp;&nbsp;&nbsp;
+		<input type="checkbox" id="tooglenight" class="cbx hidden"/>
+		<label for="tooglenight" class="switch"></label>
+		&nbsp;&nbsp;&nbsp;
+		<i class="fas fa-moon"></i>
+	</div>
 	<main>
 		{{ if .Session }}
 			<a href="/post/create">Create post</a>
@@ -30,7 +38,7 @@
 				</div>
 				<svg style="text-align: center;" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 					<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
-				  </svg>	
+				  </svg>
 			{{end}}
 		</div>
 	</main>
