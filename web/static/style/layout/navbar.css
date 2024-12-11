@@ -1,24 +1,4 @@
-
-*{
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-}
-
-	body {
-	font-family: Arial, sans-serif;
-	height: 100vh;
-	display: flex;
-	flex-direction: column;
-	}
-
-	.layout {
-	display: flex;
-	height: 85%;
-	}
-
-
-	.sidebar {
+.sidebar {
 	width: 15%;
 	height: 100%;
 	background-color: #ffffff;
@@ -26,31 +6,31 @@
 	flex-direction: column;
 	justify-content: space-between;
 	padding: 1rem 0;
-	}
+}
 
-	.nav-list {
+.nav-list {
 	list-style: none;
 	flex-grow: 1;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-evenly;
-	}
+}
 
-	.nav-list li a {
+.nav-list li a {
 	text-decoration: none;
 	color: black;
 	padding: 0.5rem 1rem;
 	border: 1;
 	display: block;
 	transition: background-color 0.3s;
-	}
+}
 
-	.nav-list li a:hover {
+.nav-list li a:hover {
 	background-color: #a7a7a7;
 	border-radius: 4px;
-	}
+}
 
-	.logout {
+.logout {
 	margin-top: auto; /* Pushes "Log Out" to the bottom */
-	}
+}
 
