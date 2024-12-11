@@ -10,14 +10,6 @@
 <body id="bd">
 	{{ template "header" . }}
 	{{ template "navbar" . }}
-	<div class="content">
-		<i class="fas fa-sun"></i>
-		&nbsp;&nbsp;&nbsp;
-		<input type="checkbox" id="tooglenight" class="cbx hidden"/>
-		<label for="tooglenight" class="switch"></label>
-		&nbsp;&nbsp;&nbsp;
-		<i class="fas fa-moon"></i>
-	</div>
 	<main>
 		{{ if .Session }}
 			<a href="/post/create">Create post</a>
@@ -44,7 +36,6 @@
 			{{end}}
 		</div>
 	</main>
-	{{ template "footer" . }}
 	<script type="module" src="/static/scripts/like.js"></script>
 </body>
 </html>
