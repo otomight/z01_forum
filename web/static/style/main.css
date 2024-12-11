@@ -26,10 +26,9 @@ main {
 	width: 85%;
 	background-color: #f4f2ee;
 	overflow-y: auto;
-	
 }
 
 .layout {
 	display: flex;
 	height: 85%;
-	}
+}

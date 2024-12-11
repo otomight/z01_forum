@@ -1,4 +1,4 @@
-package middleware
+package server
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 )
 
 // Log each request's method & path
-func LoggingMiddleware(next http.Handler) http.Handler {
+func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Received %s request for %s", r.Method, r.URL.Path)
 		next.ServeHTTP(w, r)
@@ -18,7 +18,7 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 }
 
 // Check session + set user role
-func SessionMiddleWare(next http.Handler) http.Handler {
+func sessionMiddleWare(next http.Handler) http.Handler {
 	var ctx context.Context
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

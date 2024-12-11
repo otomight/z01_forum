@@ -11,9 +11,6 @@
 	{{ template "header" . }}
 	{{ template "navbar" . }}
 	<main>
-		{{ if .Session }}
-			<a href="/post/create">Create post</a>
-		{{ end }}
 		{{ template "listpost" . }}
 	</main>
 </body>

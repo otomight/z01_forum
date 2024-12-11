@@ -3,7 +3,6 @@ package server
 import (
 	"forum/internal/server/handlers"
 	"forum/internal/server/handlers/posthandlers"
-	"forum/internal/server/middleware"
 	"net/http"
 )
 
@@ -15,45 +14,45 @@ func SetupRoutes() http.Handler {
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	//Routes
-	mux.Handle("/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.HomePageHandler)))
-	mux.Handle("/login", middleware.SessionMiddleWare(http.HandlerFunc(handlers.LoginHandler)))
-	mux.Handle("/register", middleware.SessionMiddleWare(http.HandlerFunc(handlers.RegisterHandler)))
-	mux.Handle("/logout", middleware.SessionMiddleWare(http.HandlerFunc(handlers.LogOutHandler)))
+	mux.Handle("/", sessionMiddleWare(http.HandlerFunc(handlers.HomePageHandler)))
+	mux.Handle("/login", sessionMiddleWare(http.HandlerFunc(handlers.LoginHandler)))
+	mux.Handle("/register", sessionMiddleWare(http.HandlerFunc(handlers.RegisterHandler)))
+	mux.Handle("/logout", sessionMiddleWare(http.HandlerFunc(handlers.LogOutHandler)))
 
 	// Rendering post creation form
-	mux.Handle("/post/create", middleware.SessionMiddleWare(http.HandlerFunc(posthandlers.CreatePostHandler)))
-	mux.Handle("/post/view/", middleware.SessionMiddleWare(http.HandlerFunc(posthandlers.ViewPostHandler)))
+	mux.Handle("/post/create", sessionMiddleWare(http.HandlerFunc(posthandlers.CreatePostHandler)))
+	mux.Handle("/post/view/", sessionMiddleWare(http.HandlerFunc(posthandlers.ViewPostHandler)))
 
-	mux.Handle("/categories/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CategoryPostsPageHandler)))
+	mux.Handle("/categories/", sessionMiddleWare(http.HandlerFunc(handlers.CategoryPostsPageHandler)))
 
-	mux.Handle("/history/created", middleware.SessionMiddleWare(http.HandlerFunc(handlers.HistoryCreatedPageHandler)))
-	mux.Handle("/history/liked", middleware.SessionMiddleWare(http.HandlerFunc(handlers.HistoryLikedPageHandler)))
+	mux.Handle("/history/created", sessionMiddleWare(http.HandlerFunc(handlers.HistoryCreatedPageHandler)))
+	mux.Handle("/history/liked", sessionMiddleWare(http.HandlerFunc(handlers.HistoryLikedPageHandler)))
 
 	//Protect route with session middelware
-	mux.Handle("/post/delete", middleware.SessionMiddleWare(http.HandlerFunc(posthandlers.DeletePostHandler)))
+	mux.Handle("/post/delete", sessionMiddleWare(http.HandlerFunc(posthandlers.DeletePostHandler)))
 
 	//Add comment
-	mux.Handle("/post/comment/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.AddCommentHandler)))
+	mux.Handle("/post/comment/", sessionMiddleWare(http.HandlerFunc(handlers.AddCommentHandler)))
 
-	mux.Handle("/post/like", middleware.SessionMiddleWare(http.HandlerFunc(handlers.PostLikeHandler)))
-	mux.Handle("/post/dislike", middleware.SessionMiddleWare(http.HandlerFunc(handlers.PostDisLikeHandler)))
-	mux.Handle("/comment/like", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CommentLikeHandler)))
-	mux.Handle("/comment/dislike", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CommentDislikeHandler)))
+	mux.Handle("/post/like", sessionMiddleWare(http.HandlerFunc(handlers.PostLikeHandler)))
+	mux.Handle("/post/dislike", sessionMiddleWare(http.HandlerFunc(handlers.PostDisLikeHandler)))
+	mux.Handle("/comment/like", sessionMiddleWare(http.HandlerFunc(handlers.CommentLikeHandler)))
+	mux.Handle("/comment/dislike", sessionMiddleWare(http.HandlerFunc(handlers.CommentDislikeHandler)))
 
 	// Google log
-	mux.Handle("/auth/google/login", middleware.SessionMiddleWare(http.HandlerFunc(handlers.GoogleLoginHandler)))
-	mux.Handle("/Auth/google/callback", middleware.SessionMiddleWare(http.HandlerFunc(handlers.GoogleCallBackHandler)))
+	mux.Handle("/auth/google/login", sessionMiddleWare(http.HandlerFunc(handlers.GoogleLoginHandler)))
+	mux.Handle("/Auth/google/callback", sessionMiddleWare(http.HandlerFunc(handlers.GoogleCallBackHandler)))
 
 	// Github log
-	mux.Handle("/auth/github/login", middleware.SessionMiddleWare(http.HandlerFunc(handlers.GithubLoginHandler)))
-	mux.Handle("/auth/github/callback", middleware.SessionMiddleWare(http.HandlerFunc(handlers.GithubCallBackHandler)))
+	mux.Handle("/auth/github/login", sessionMiddleWare(http.HandlerFunc(handlers.GithubLoginHandler)))
+	mux.Handle("/auth/github/callback", sessionMiddleWare(http.HandlerFunc(handlers.GithubCallBackHandler)))
 
 	// Facebook log
-	mux.Handle("/auth/facebook/login", middleware.SessionMiddleWare(http.HandlerFunc(handlers.FacebookLoginHandler)))
-	mux.Handle("/auth/facebook/callback", middleware.SessionMiddleWare(http.HandlerFunc(handlers.FacebookCallBackHandler)))
+	mux.Handle("/auth/facebook/login", sessionMiddleWare(http.HandlerFunc(handlers.FacebookLoginHandler)))
+	mux.Handle("/auth/facebook/callback", sessionMiddleWare(http.HandlerFunc(handlers.FacebookCallBackHandler)))
 
 	//Wrap mux with logging middleware
-	wrappedMux := middleware.LoggingMiddleware(mux)
+	wrappedMux := loggingMiddleware(mux)
 
 	return wrappedMux
 }
