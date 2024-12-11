@@ -12,7 +12,7 @@ main {
 	padding: 1rem;
 }
 
-.login {
+.login, .register {
 	width: 100%;
 	max-width: 400px;
 	background-color: #fff;
@@ -123,7 +123,7 @@ form button:hover {
 }
 
 @media (max-width: 600px) {
-	.login {
+	.login .register {
 		padding: 1rem;
 	}
 

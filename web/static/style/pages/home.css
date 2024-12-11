@@ -6,7 +6,6 @@
 }
 
 .post {
-	background-color: #f9f9f9;
 	padding: 15px;
 	margin: 10px 0;
 	border-radius: 8px;
@@ -25,6 +24,8 @@
 .post-buttons {
 	display: flex;
 	justify-content: end;
+	gap: 10px;
+	align-items: center;
 }
 
 .post a:hover {
