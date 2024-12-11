@@ -12,10 +12,10 @@ import (
 )
 
 func fillListPostsPageData(
-	r *http.Request,
-	categoryID int,
+	w http.ResponseWriter, r *http.Request, categoryID int,
 ) (*models.CategoryPostsPageData, error) {
 	var	session		*db.UserSession
+	var	categories	[]*db.Category
 	var	data		*models.CategoryPostsPageData
 	var	userID		int
 	var	category	*db.Category
@@ -32,11 +32,24 @@ func fillListPostsPageData(
 	} else {
 		userID = session.UserID
 	}
-	posts, err = db.GetPostsByCategoryID(userID, categoryID)
+	if categories, err = db.GetGlobalCategories(); err != nil {
+		http.Error(
+			w, "Error at fetching categories", http.StatusInternalServerError,
+		)
+		return nil, err
+	}
+	if posts, err = db.GetPostsByCategoryID(userID, categoryID); err != nil {
+		http.Error(
+			w, "Failed to fetch posts from category",
+			http.StatusInternalServerError,
+		)
+		return nil, err
+	}
 	data = &models.CategoryPostsPageData{
-		Session: session,
-		Category: category,
-		Posts: posts,
+		Session:	session,
+		Categories:	categories,
+		Category:	category,
+		Posts:		posts,
 	}
 	return data, nil
 }
@@ -61,35 +74,10 @@ func CategoryPostsPageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid category ID", http.StatusBadRequest)
 		return
 	}
-	data, err = fillListPostsPageData(r, id)
-	if err != nil {
+	if data, err = fillListPostsPageData(w, r, id); err != nil {
 		log.Println(err.Error())
-		http.Error(
-			w, "Failed to fetch posts from category",
-			http.StatusInternalServerError,
-		)
-	}
-	templates.RenderTemplate(w, config.CategoryPostsTmpl, data)
-}
-
-func CategoriesPageHandler(w http.ResponseWriter, r *http.Request) {
-	var	session		*db.UserSession
-	var	categories	[]*db.Category
-	var	err			error
-
-	if r.Method != http.MethodGet {
-		http.Error(w, "", http.StatusMethodNotAllowed)
 		return
 	}
-	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
-	categories, err = db.GetGlobalCategories()
-	if err != nil {
-		http.Error(w, "Error at fetching categories", http.StatusInternalServerError)
-	}
-	data := models.CategoriesPageData{
-		Session:	session,
-		Categories:	categories,
-	}
-	templates.RenderTemplate(w, config.CategoriesTmpl, data)
+	templates.RenderTemplate(w, config.CategoryPostsTmpl, data)
 }
 

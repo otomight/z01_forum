@@ -24,7 +24,6 @@ func SetupRoutes() http.Handler {
 	mux.Handle("/post/create", middleware.SessionMiddleWare(http.HandlerFunc(posthandlers.CreatePostHandler)))
 	mux.Handle("/post/view/", middleware.SessionMiddleWare(http.HandlerFunc(posthandlers.ViewPostHandler)))
 
-	mux.Handle("/categories", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CategoriesPageHandler)))
 	mux.Handle("/categories/", middleware.SessionMiddleWare(http.HandlerFunc(handlers.CategoryPostsPageHandler)))
 
 	mux.Handle("/history/created", middleware.SessionMiddleWare(http.HandlerFunc(handlers.HistoryCreatedPageHandler)))

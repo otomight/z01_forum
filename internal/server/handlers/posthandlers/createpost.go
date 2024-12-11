@@ -76,7 +76,12 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.Method == http.MethodGet {
 	// render the post creation page
-		categories, _ = db.GetGlobalCategories()
+		if categories, err = db.GetGlobalCategories(); err != nil {
+			http.Error(
+				w, "Error at fetching categories",
+				http.StatusInternalServerError,
+			)
+		}
 		data = models.CreatePostPageData{
 			Session: session,
 			Categories: categories,

@@ -3,6 +3,7 @@ package handlers
 import (
 	"forum/internal/config"
 	"forum/internal/database"
+	db "forum/internal/database"
 	"forum/internal/server/models"
 	"forum/internal/server/templates"
 	"forum/internal/utils"
@@ -83,10 +84,28 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var	form		models.RegisterForm
 	var	userID		int
 	var	userRole	string
+	var	session		*db.UserSession
+	var	categories	[]*db.Category
+	var	data		models.RegisterPageData
 	var	err			error
 
 	if r.Method != http.MethodPost {
-		templates.RenderTemplate(w, config.RegisterTmpl, nil)
+		session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
+		if session != nil {
+			http.Error(w, "You are already logged.", http.StatusBadRequest)
+			return
+		}
+		if categories, err = db.GetGlobalCategories(); err != nil {
+			http.Error(
+				w, "Error at fetching categories",
+				http.StatusInternalServerError,
+			)
+		}
+		data = models.RegisterPageData{
+			Session:	session,
+			Categories:	categories,
+		}
+		templates.RenderTemplate(w, config.RegisterTmpl, data)
 		return
 	}
 	if err := utils.ParseForm(r, &form); err != nil {
@@ -121,10 +140,31 @@ func removeExistingUserSession(user database.Client) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var form models.LoginForm
+	var	form		models.LoginForm
+	var	session		*database.UserSession
+	var	categories	[]*db.Category
+	var	data		models.LoginPageData
+	var	err			error
+
 	if r.Method != http.MethodPost {
 		// redirect to login page
-		templates.RenderTemplate(w, config.LoginTmpl, nil)
+		session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
+		if session != nil {
+			http.Error(w, "You are already logged.", http.StatusBadRequest)
+			return
+		}
+		if categories, err = db.GetGlobalCategories(); err != nil {
+			http.Error(
+				w, "Error at fetching categories",
+				http.StatusInternalServerError,
+			)
+			return
+		}
+		data = models.LoginPageData{
+			Session:	session,
+			Categories:	categories,
+		}
+		templates.RenderTemplate(w, config.LoginTmpl, data)
 		return
 	}
 	// store form

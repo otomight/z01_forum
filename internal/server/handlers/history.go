@@ -15,6 +15,7 @@ func historyPageHandler(
 	GetPostsRelatedToCurUser func(int, int) ([]*db.Post, error),
 ) {
 	var	session	*db.UserSession
+	var	categories	[]*db.Category
 	var	posts	[]*db.Post
 	var	userID	int
 	var	err		error
@@ -25,6 +26,10 @@ func historyPageHandler(
 	} else {
 		userID = session.UserID
 	}
+	categories, err = db.GetGlobalCategories()
+	if err != nil {
+		http.Error(w, "Error at fetching categories", http.StatusInternalServerError)
+	}
 	posts, err = GetPostsRelatedToCurUser(userID, userID)
 	if err != nil {
 		log.Printf("Failed to retrieve posts: %v", err)
@@ -33,6 +38,7 @@ func historyPageHandler(
 	}
 	data := models.HistoryPageData{
 		Session:	session,
+		Categories:	categories,
 		Posts:		posts,
 	}
 	templates.RenderTemplate(w, config.HistoryTmpl, data)

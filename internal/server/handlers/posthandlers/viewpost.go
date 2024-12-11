@@ -41,6 +41,7 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 	var	post				*db.Post
 	var	data				*models.ViewPostPageData
 	var	session				*db.UserSession
+	var	categories			[]*db.Category
 	var	userID				int
 	var	err					error
 
@@ -63,12 +64,18 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		userID = session.UserID
 	}
+	if categories, err = db.GetGlobalCategories(); err != nil {
+		http.Error(
+			w, "Error at fetching categories", http.StatusInternalServerError,
+		)
+	}
 	if post, err = db.GetPostByID(userID, postID); err != nil {
 		http.NotFound(w, r)
 		return
 	}
 	data = &models.ViewPostPageData{
 		Session:	session,
+		Categories:	categories,
 		Post:		post,
 	}
 	templates.RenderTemplate(w, config.ViewPostTmpl, data)

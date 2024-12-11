@@ -10,10 +10,11 @@ import (
 )
 
 func HomePageHandler(w http.ResponseWriter, r *http.Request) {
-	var	session	*db.UserSession
-	var	posts	[]*db.Post
-	var	userID	int
-	var	err		error
+	var	session		*db.UserSession
+	var	categories	[]*db.Category
+	var	posts		[]*db.Post
+	var	userID		int
+	var	err			error
 
 	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
 	if session == nil {
@@ -27,8 +28,13 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to retrieve posts", http.StatusInternalServerError)
 		return
 	}
+	categories, err = db.GetGlobalCategories()
+	if err != nil {
+		http.Error(w, "Error at fetching categories", http.StatusInternalServerError)
+	}
 	data := models.HomePageData{
 		Session:	session,
+		Categories:	categories,
 		Posts:		posts,
 	}
 	templates.RenderTemplate(w, config.HomeTmpl, data)
