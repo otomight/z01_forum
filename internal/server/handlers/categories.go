@@ -11,8 +11,8 @@ import (
 	"strings"
 )
 
-func fillListPostsPageData(
-	w http.ResponseWriter, r *http.Request, categoryID int,
+func fillCategoriesPostsPageData(
+	r *http.Request, categoryID int,
 ) (*models.CategoryPostsPageData, error) {
 	var	session		*db.UserSession
 	var	categories	[]*db.Category
@@ -22,8 +22,7 @@ func fillListPostsPageData(
 	var	posts		[]*db.Post
 	var	err			error
 
-	category, err = db.GetGlobalCategoryByID(categoryID)
-	if err != nil {
+	if category, err = db.GetGlobalCategoryByID(categoryID); err != nil {
 		return nil, err
 	}
 	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
@@ -33,16 +32,9 @@ func fillListPostsPageData(
 		userID = session.UserID
 	}
 	if categories, err = db.GetGlobalCategories(); err != nil {
-		http.Error(
-			w, "Error at fetching categories", http.StatusInternalServerError,
-		)
 		return nil, err
 	}
 	if posts, err = db.GetPostsByCategoryID(userID, categoryID); err != nil {
-		http.Error(
-			w, "Failed to fetch posts from category",
-			http.StatusInternalServerError,
-		)
 		return nil, err
 	}
 	data = &models.CategoryPostsPageData{
@@ -74,8 +66,9 @@ func CategoryPostsPageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid category ID", http.StatusBadRequest)
 		return
 	}
-	if data, err = fillListPostsPageData(w, r, id); err != nil {
+	if data, err = fillCategoriesPostsPageData(r, id); err != nil {
 		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	templates.RenderTemplate(w, config.CategoryPostsTmpl, data)

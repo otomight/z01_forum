@@ -22,15 +22,16 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		userID = session.UserID
 	}
+	if categories, err = db.GetGlobalCategories(); err != nil {
+		http.Error(
+			w, "Error at fetching categories", http.StatusInternalServerError,
+		)
+	}
 	posts, err = db.GetAllPosts(userID)
 	if err != nil {
 		log.Printf("Failed to retrieve posts: %v", err)
 		http.Error(w, "Failed to retrieve posts", http.StatusInternalServerError)
 		return
-	}
-	categories, err = db.GetGlobalCategories()
-	if err != nil {
-		http.Error(w, "Error at fetching categories", http.StatusInternalServerError)
 	}
 	data := models.HomePageData{
 		Session:	session,

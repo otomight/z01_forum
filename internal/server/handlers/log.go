@@ -46,26 +46,26 @@ func displayLoginPage(w http.ResponseWriter, r *http.Request) {
 	templates.RenderTemplate(w, config.LoginTmpl, data)
 }
 
-func createSessionOnLogged(w http.ResponseWriter, user *db.Client) error {
-	var	sessionID	string
+func logUser(w http.ResponseWriter, username string, password string) error {
+	var	user		db.Client
 	var	err			error
-	removeExistingUserSession(*user)
-	sessionID, err = db.CreateUserSession(user.ID, user.UserRole, user.UserName)
+
+	user, err = db.ValidateUserCredentials(username, password)
 	if err != nil {
-		http.Error(w, "Failed to create session", http.StatusInternalServerError)
+		if err.Error() == "user not found" || err.Error() == "invalid password" {
+			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+			return err
+		} else {
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return err
+		}
+	}
+	removeExistingUserSession(user)
+	err = createSession(w, user.ID, user.UserRole, user.UserName)
+	if err != nil {
 		return err
 	}
-
-	//Set sessionID in cookie
-	http.SetCookie(w, &http.Cookie{
-		Name:		"session_id",
-		Value:		sessionID,
-		Path:		"/",
-		Expires:	time.Now().Add(24 * time.Hour),
-		HttpOnly:	true,
-		Secure:		true,
-		SameSite:	http.SameSiteLaxMode,
-	})
+	log.Printf("User successfully logged in with role: %s", user.UserRole)
 	return nil
 }
 
@@ -81,34 +81,24 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	if err := utils.ParseForm(r, &form); err != nil {
+	if err = utils.ParseForm(r, &form); err != nil {
 		http.Error(
 			w, "Unable to parse form:"+err.Error(), http.StatusBadRequest,
 		)
 		return
 	}
 	log.Printf("Attempting to log in user: %s", form.Username)
-	user, err := db.ValidateUserCredentials(form.Username, form.Password)
-	if err != nil {
-		if err.Error() == "user not found" || err.Error() == "invalid password" {
-			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-			return
-		} else {
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-	}
-	if err = createSessionOnLogged(w, &user); err != nil {
+	if err = logUser(w, form.Username, form.Password); err != nil {
 		return
 	}
-	log.Printf("User successfully logged in with role: %s", user.UserRole)
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
 func LogOutHandler(w http.ResponseWriter, r *http.Request) {
-	// Retrieve session ID from cookie
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
+	var	cookie	*http.Cookie
+	var	err		error
+
+	if cookie, err = r.Cookie("session_id"); err != nil {
 		if err == http.ErrNoCookie {
 			http.Error(w, "No session found", http.StatusUnauthorized)
 			return
@@ -116,24 +106,20 @@ func LogOutHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error retrieving session", http.StatusInternalServerError)
 		return
 	}
-
-	err = db.DeleteSession(cookie.Value)
-	if err != nil {
+	if err = db.DeleteSession(cookie.Value); err != nil {
 		http.Error(w, "Failed to log out", http.StatusInternalServerError)
 		return
 	}
-
-	// Optionally, clear the session cookie
+	// delete the cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:     "session_id",
-		Value:    "",
-		Path:     "/",
-		Expires:  time.Now().Add(-1 * time.Hour), // Set an expiration in the past
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
+		Name:		"session_id",
+		Value:		"",
+		Path:		"/",
+		Expires:	time.Now().Add(-1 * time.Hour),
+		// Set an expiration in the past to delete the cookie
+		HttpOnly:	true,
+		Secure:		true,
+		SameSite:	http.SameSiteLaxMode,
 	})
-
-	// Redirect to unlogged home page after logout
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

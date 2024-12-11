@@ -192,16 +192,3 @@ var TableKeys = StructTablesKeys{
 	PostsReactions:		postsReactions,
 	CommentsReactions:	commentsReactions,
 }
-
-
-var CategoriesNames = []string{
-	"category1",
-	"category2",
-	"category3",
-	"category4",
-}
-
-const (
-	DbFilePath			= "forum.db"
-	SqlTablesFilePath	= "forum.sql"
-)

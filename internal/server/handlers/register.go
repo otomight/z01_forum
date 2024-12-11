@@ -15,6 +15,31 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func displayRegisterPage(w http.ResponseWriter, r *http.Request) {
+	var	session		*db.UserSession
+	var	categories	[]*db.Category
+	var	data		models.RegisterPageData
+	var	err			error
+
+	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
+	if session != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	if categories, err = db.GetGlobalCategories(); err != nil {
+		http.Error(
+			w, "Error at fetching categories",
+			http.StatusInternalServerError,
+		)
+		return
+	}
+	data = models.RegisterPageData{
+		Session:	nil,
+		Categories:	categories,
+	}
+	templates.RenderTemplate(w, config.RegisterTmpl, data)
+}
+
 func createUser(
 	w http.ResponseWriter, form models.RegisterForm, userRole string,
 ) (int, error) {
@@ -81,29 +106,14 @@ func createSession(
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var	form		models.RegisterForm
 	var	userID		int
-	var	userRole	string
-	var	session		*db.UserSession
-	var	categories	[]*db.Category
-	var	data		models.RegisterPageData
 	var	err			error
 
+	if r.Method == http.MethodGet {
+		displayRegisterPage(w, r)
+		return
+	}
 	if r.Method != http.MethodPost {
-		session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
-		if session != nil {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-			return
-		}
-		if categories, err = db.GetGlobalCategories(); err != nil {
-			http.Error(
-				w, "Error at fetching categories",
-				http.StatusInternalServerError,
-			)
-		}
-		data = models.RegisterPageData{
-			Session:	nil,
-			Categories:	categories,
-		}
-		templates.RenderTemplate(w, config.RegisterTmpl, data)
+		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 	if err := utils.ParseForm(r, &form); err != nil {
@@ -115,11 +125,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "All fields are required", http.StatusBadRequest)
 		return
 	}
-	userRole = "user"
-	if userID, err = createUser(w, form, userRole); err != nil {
+	if userID, err = createUser(w, form, config.UserRole.User); err != nil {
 		return
 	}
-	if err = createSession(w, userID, userRole, form.UserName); err != nil {
+	err = createSession(w, userID, config.UserRole.User, form.UserName)
+	if err != nil {
 		return
 	}
 	http.Redirect(w, r, "/home", http.StatusSeeOther)

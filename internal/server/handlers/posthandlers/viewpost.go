@@ -10,39 +10,44 @@ import (
 	"strings"
 )
 
-// func fillViewPostPageData(
-// 	post	*db.Post,
-// 	ctx		context.Context,
-// ) *models.ViewPostPageData {
-// 	var	session				*db.UserSession
-// 	var	data				models.ViewPostPageData
-// 	var	postWithUserConfig	models.PostWithUserConfig
-// 	var	isLikedByUser		bool
-// 	var	isDislikedByUser	bool
+func fillViewPostPageData(
+	w http.ResponseWriter, r *http.Request, postID int,
+) (*models.ViewPostPageData, error) {
+	var	session		*db.UserSession
+	var	categories	[]*db.Category
+	var	data		*models.ViewPostPageData
+	var	userID		int
+	var	post		*db.Post
+	var	err			error
 
-// 	session, _ = ctx.Value(config.SessionKey).(*db.UserSession)
-// 	isLikedByUser, isDislikedByUser =
-// 			services.GetUserLikesConfigsOfPost(session, post)
-// 	postWithUserConfig = models.PostWithUserConfig{
-// 		Post:				post,
-// 		IsLikedByUser:		isLikedByUser,
-// 		IsDislikedByUser:	isDislikedByUser,
-// 	}
-// 	data = models.ViewPostPageData{
-// 		PostWithUserConfig:	&postWithUserConfig,
-// 		Session:			session,
-// 	}
-// 	return &data
-// }
+	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
+	if session == nil {
+		userID = 0
+	} else {
+		userID = session.UserID
+	}
+	if categories, err = db.GetGlobalCategories(); err != nil {
+		http.Error(
+			w, "Error at fetching categories", http.StatusInternalServerError,
+		)
+		return nil, err
+	}
+	if post, err = db.GetPostByID(userID, postID); err != nil {
+		http.NotFound(w, r)
+		return nil, err
+	}
+	data = &models.ViewPostPageData{
+		Session:	session,
+		Categories:	categories,
+		Post:		post,
+	}
+	return data, nil
+}
 
 func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 	var	postIDStr			string
 	var	postID				int
-	var	post				*db.Post
 	var	data				*models.ViewPostPageData
-	var	session				*db.UserSession
-	var	categories			[]*db.Category
-	var	userID				int
 	var	err					error
 
 	if r.Method != http.MethodGet {
@@ -58,25 +63,8 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
-	if session == nil {
-		userID = 0
-	} else {
-		userID = session.UserID
-	}
-	if categories, err = db.GetGlobalCategories(); err != nil {
-		http.Error(
-			w, "Error at fetching categories", http.StatusInternalServerError,
-		)
-	}
-	if post, err = db.GetPostByID(userID, postID); err != nil {
-		http.NotFound(w, r)
+	if data, err = fillViewPostPageData(w, r, postID); err != nil {
 		return
-	}
-	data = &models.ViewPostPageData{
-		Session:	session,
-		Categories:	categories,
-		Post:		post,
 	}
 	templates.RenderTemplate(w, config.ViewPostTmpl, data)
 }

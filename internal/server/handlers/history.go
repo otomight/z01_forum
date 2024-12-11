@@ -26,12 +26,11 @@ func historyPageHandler(
 	} else {
 		userID = session.UserID
 	}
-	categories, err = db.GetGlobalCategories()
-	if err != nil {
+	if categories, err = db.GetGlobalCategories(); err != nil {
 		http.Error(w, "Error at fetching categories", http.StatusInternalServerError)
+		return
 	}
-	posts, err = GetPostsRelatedToCurUser(userID, userID)
-	if err != nil {
+	if posts, err = GetPostsRelatedToCurUser(userID, userID); err != nil {
 		log.Printf("Failed to retrieve posts: %v", err)
 		http.Error(w, "Failed to retrieve posts", http.StatusInternalServerError)
 		return

@@ -66,11 +66,10 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	var	session			*db.UserSession
 	var	categories		[]*db.Category
 	var	data			models.CreatePostPageData
-	var	ok				bool
 	var	err				error
 
-	session, ok = r.Context().Value(config.SessionKey).(*db.UserSession)
-	if !ok {
+	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
+	if session == nil {
 		http.Error(w, "User not logged", http.StatusUnauthorized)
 		return
 	}
