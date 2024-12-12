@@ -1,5 +1,8 @@
 .navbar {
     width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .logged-navbar{
@@ -18,21 +21,57 @@
     align-items: center;
 }
 
-.navbar button {
+.navbar button, .category-button {
     width: 90px;
     height: 45px;
     border-radius: 10px;
     background-color: white;
-}
-
-.category-dropdown {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    cursor: pointer;
 }
 
 .nav button:hover{
     background-color: rgba(235, 221, 221, 0.959);
+}
+
+.category-button {
+    position: relative;
+}
+
+.category-dropdown {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: absolute; 
+    top: 100%;
+    left: 0%;
+    background-color: rgba(236, 230, 240, 1);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add a shadow for visibility */
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 1;
+}
+
+.category-dropdown a {
+    text-decoration: none;
+    color: black;
+    padding: 5px 10px;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.category-dropdown a:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: black;
+}
+
+.category-button:hover .category-dropdown {
+    display: flex;
+}
+
+.logout-button{
+    display: flex;
+    justify-content: center;
 }
 
 .logout-button button{
@@ -48,3 +87,4 @@
     background-color: blueviolet;
     color: white;
 }
+
