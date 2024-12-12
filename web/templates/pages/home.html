@@ -48,10 +48,10 @@
 		<div id="posts">
 			{{ range .Posts }}
 				<div class="post">
-					<a href="/post/view/{{ .Post.PostID }}"><h3>{{ .Post.Title }}</h3></a>
-					<p>By: {{ .Post.UserName }}</p>
-					<p>{{ .Post.Content }}</p>
-					<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
+					<a href="/post/view/{{ .ID }}"><h3>{{ .Title }}</h3></a>
+					<p>By: {{ .UserName }}</p>
+					<p>{{ .Content }}</p>
+					<p><em>Posted on: {{ .CreationDate }}</em></p>
 					{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
 					{{ template "post_comments" (addToStruct . "Session" $.Session) }}
 				</div>
