@@ -44,11 +44,25 @@
 						<form method="post" action="/login" >
 							<div class="login-username-email">
 								<label class="login-username-email" for="username"></label>
-								<input type="text" id="username" name="username" placeholder="Username or Email" required>
+								<input type="text" id="username" name="username" {{ with .UserInput }}value="{{ .Username }}"{{ end }} placeholder="Username or Email" required>
+								{{ with .ErrorMsg }}
+									{{ if .UserNotFound }}
+										<div class="error-msg">
+											{{ .UserNotFound }}
+										</div>
+									{{ end }}
+								{{ end }}
 							</div>
 							<div class="login-password">
 								<label class="login-password" for="password"></label>
 								<input type="password" id="password" name="password" placeholder="Password" required>
+								{{ with .ErrorMsg }}
+									{{ if .IncorrectPassword }}
+										<div class="error-msg">
+											{{ .IncorrectPassword }}
+										</div>
+									{{ end }}
+								{{ end }}
 							</div>
 							<button class="login-button" type="submit">Login</button>
 						</form>

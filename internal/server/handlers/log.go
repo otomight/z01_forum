@@ -21,7 +21,10 @@ func removeExistingUserSession(user db.Client) {
 	db.DeleteSession(session.ID)
 }
 
-func displayLoginPage(w http.ResponseWriter, r *http.Request) {
+func displayLoginPage(
+	w http.ResponseWriter, r *http.Request,
+	userInput *models.LoginPageUserInput, errorMsg *models.LoginErrorMsg,
+) {
 	var	session		*db.UserSession
 	var	categories	[]*db.Category
 	var	data		models.LoginPageData
@@ -42,18 +45,34 @@ func displayLoginPage(w http.ResponseWriter, r *http.Request) {
 	data = models.LoginPageData{
 		Session:	nil,
 		Categories:	categories,
+		UserInput:	userInput,
+		ErrorMsg:	errorMsg,
 	}
 	templates.RenderTemplate(w, config.LoginTmpl, data)
 }
 
-func logUser(w http.ResponseWriter, username string, password string) error {
+func logUser(
+	w http.ResponseWriter, r *http.Request,
+	username string, password string,
+) error {
 	var	user		db.Client
 	var	err			error
 
 	user, err = db.ValidateUserCredentials(username, password)
 	if err != nil {
-		if err.Error() == "user not found" || err.Error() == "invalid password" {
-			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		if err.Error() == "user not found" {
+			displayLoginPage(w, r, &models.LoginPageUserInput{
+				Username: username,
+			}, &models.LoginErrorMsg{
+				UserNotFound: "User not found",
+			})
+			return err
+		} else if err.Error() == "invalid password" {
+			displayLoginPage(w, r, &models.LoginPageUserInput{
+				Username: username,
+			}, &models.LoginErrorMsg{
+				IncorrectPassword: "Invalid password",
+			})
 			return err
 		} else {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -74,7 +93,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var	err			error
 
 	if r.Method == http.MethodGet {
-		displayLoginPage(w, r)
+		displayLoginPage(w, r, nil, nil)
 		return
 	}
 	if r.Method != http.MethodPost {
@@ -88,7 +107,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("Attempting to log in user: %s", form.Username)
-	if err = logUser(w, form.Username, form.Password); err != nil {
+	if err = logUser(w, r, form.Username, form.Password); err != nil {
 		return
 	}
 	http.Redirect(w, r, "/home", http.StatusSeeOther)

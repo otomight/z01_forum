@@ -15,7 +15,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func displayRegisterPage(w http.ResponseWriter, r *http.Request) {
+func displayRegisterPage(
+	w http.ResponseWriter, r *http.Request,
+	userInput *models.RegisterPageUserInput, errorMsg *models.RegisterErrorMsg,
+) {
 	var	session		*db.UserSession
 	var	categories	[]*db.Category
 	var	data		models.RegisterPageData
@@ -36,23 +39,59 @@ func displayRegisterPage(w http.ResponseWriter, r *http.Request) {
 	data = models.RegisterPageData{
 		Session:	nil,
 		Categories:	categories,
+		UserInput:	userInput,
+		ErrorMsg:	errorMsg,
 	}
 	templates.RenderTemplate(w, config.RegisterTmpl, data)
 }
 
-func createUser(
-	w http.ResponseWriter, form models.RegisterForm, userRole string,
-) (int, error) {
-	var	hashedPassword	[]byte
-	var	userID			int
+func handlerRegisterError(
+	w http.ResponseWriter, r *http.Request,
+	err error, form models.RegisterForm,
+) {
 	var	sqliteErr		sqlite3.Error
 	var	tableName		string
 	var	columnName		string
 	var	cl				config.ClientsTableKeys
 	var	ok				bool
-	var	err				error
 
 	cl = config.TableKeys.Clients
+	if sqliteErr, ok = err.(sqlite3.Error); ok {
+		tableName, columnName = utils.GetSqlite3UniqueErrorInfos(sqliteErr)
+		if tableName == cl.Clients && columnName == cl.UserName {
+			displayRegisterPage(w, r,
+				&models.RegisterPageUserInput{
+					Username:	form.UserName,
+					Email:		form.Email,
+				}, &models.RegisterErrorMsg{
+					UsernameAlreadyTaken: "User name already taken",
+				},
+			)
+			return
+		} else if tableName == cl.Clients && columnName == cl.Email {
+			displayRegisterPage(w, r,
+				&models.RegisterPageUserInput{
+					Username:	form.UserName,
+					Email:		form.Email,
+				}, &models.RegisterErrorMsg{
+					EmailAlreadyTaken: "Email already taken",
+				},
+			)
+			return
+		}
+	}
+	log.Printf("Error saving user to database: %v", err)
+	http.Error(w, "Unable to register user", http.StatusInternalServerError)
+}
+
+func createUser(
+	w http.ResponseWriter, r *http.Request,
+	form models.RegisterForm, userRole string,
+) (int, error) {
+	var	hashedPassword	[]byte
+	var	userID			int
+	var	err				error
+
 	hashedPassword, err = bcrypt.GenerateFromPassword(
 		[]byte(form.Password), bcrypt.DefaultCost,
 	)
@@ -67,18 +106,7 @@ func createUser(
 	if err == nil {
 		return userID, nil
 	}
-	if sqliteErr, ok = err.(sqlite3.Error); ok {
-		tableName, columnName = utils.GetSqlite3UniqueErrorInfos(sqliteErr)
-		if tableName == cl.Clients && columnName == cl.UserName {
-			http.Error(w, "Username already taken", http.StatusBadRequest)
-			return 0, err
-		} else if tableName == cl.Clients && columnName == cl.Email {
-			http.Error(w, "Email already taken", http.StatusBadRequest)
-			return 0, err
-		}
-	}
-	log.Printf("Error saving user to database: %v", err)
-	http.Error(w, "Unable to register user", http.StatusInternalServerError)
+	handlerRegisterError(w, r, err, form)
 	return 0, err
 }
 
@@ -109,7 +137,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var	err			error
 
 	if r.Method == http.MethodGet {
-		displayRegisterPage(w, r)
+		displayRegisterPage(w, r, nil, nil)
 		return
 	}
 	if r.Method != http.MethodPost {
@@ -125,7 +153,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "All fields are required", http.StatusBadRequest)
 		return
 	}
-	if userID, err = createUser(w, form, config.UserRole.User); err != nil {
+	if userID, err = createUser(w, r, form, config.UserRole.User); err != nil {
 		return
 	}
 	err = createSession(w, userID, config.UserRole.User, form.UserName)

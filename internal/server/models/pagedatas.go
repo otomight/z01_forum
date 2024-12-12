@@ -11,11 +11,15 @@ type ViewPostPageData struct {
 type LoginPageData struct {
 	Session		*db.UserSession // | null
 	Categories	[]*db.Category
+	UserInput	*LoginPageUserInput // | null
+	ErrorMsg	*LoginErrorMsg // | null
 }
 
 type RegisterPageData struct {
 	Session		*db.UserSession // | null
 	Categories	[]*db.Category
+	UserInput	*RegisterPageUserInput // | null
+	ErrorMsg	*RegisterErrorMsg // | null
 }
 
 type CreatePostPageData struct {
