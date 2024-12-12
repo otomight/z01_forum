@@ -1,7 +1,10 @@
 {{ define "post_comments" }}
+	<label for="toggle-comments">Comments</label>
+	<input type="checkbox" id="toggle-comments" class="toggle-checkbox">
 	<div class="comments">
-		<h4>Comments</h4>
 		{{ if .Session }}
+			<label for="toggle-form">Comment</label>
+			<input type="checkbox" id="toggle-form" class="toggle-checkbox">
 			<form action="/post/comment/{{ .ID }}"
 				method="POST" class="comment-form">
 				<textarea name="content" placeholder="Write your comment here..." required></textarea>

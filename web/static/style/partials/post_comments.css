@@ -6,11 +6,13 @@
 	align-items:		center;
 	border-radius:		0.5rem;
 	padding:			0.7rem;
+	background-color:	rgb(255, 255, 255);
 }
 
 .comments form textarea {
 	width:				100%;
 	height:				5rem;
+	min-height:			5rem;
 	border:				0.15rem;
 	border-radius:		0.5rem;
 	resize:				vertical;
@@ -45,6 +47,7 @@
 	border-radius:		0.5rem;
 	padding:			0.7rem;
 	margin-top:			1.5rem;
+	background-color:	rgb(255, 255, 255);
 }
 
 .comments .comment .comment__head {
@@ -70,6 +73,7 @@
 	align-items:		center;
 }
 .comments .comment .comment__author {
+	margin-right:	1rem;
 	font-weight:	bold;
 	font-style:		oblique;
 }
@@ -82,4 +86,31 @@
 
 .comments .comment__content {
 	padding:	0.8rem;
+}
+
+/* TOGGLE ELEMENTS */
+.toggle-checkbox {
+	position: absolute;
+	opacity: 0%;
+	pointer-events: none;
+}
+
+.comments, .comment form {
+	display: none ;
+}
+
+#toggle-form, label[for="toggle-form"] {
+	display: none;
+}
+
+#toggle-comments:checked ~ .comments {
+	display: block;
+}
+
+#toggle-comments:checked ~ #toggle-form, #toggle-comments:checked ~ label[for="toggle-form"] {
+	display: inline-block ;
+}
+
+#toggle-form:checked ~ .comment-form {
+	display: flex;
 }

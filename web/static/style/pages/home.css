@@ -10,7 +10,17 @@
 }
 
 main {
-    background-color: rgba(244, 244, 244, 1);
+    background-color:rgba(244, 242, 238, 1);
     padding: 60px;
     flex-grow: 1;
+}
+
+.post {
+    display: flex;
+    flex-direction: column;
+}
+
+.title-date-options {
+    display: flex;
+    justify-content: space-between;
 }
