@@ -4,9 +4,11 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" href="/static/style/layout/header.css">
+		<link rel="stylesheet" href="/static/style/layout/navbar.css">
 	</head>
 	<body>
 		{{ template "header" . }}
+		{{ template "navbar" . }}
 		<main>
 			<div class="post">
 				<h3>{{ .Post.Title }}</h3>
@@ -17,6 +19,7 @@
 				{{ template "post_comments" (addToStruct .Post "Session" .Session) }}
 			</div>
 		</main>
+		{{ template "footer" . }}
 		<script type="module" src="/static/scripts/like.js"></script>
 	</body>
 </html>

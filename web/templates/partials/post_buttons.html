@@ -1,5 +1,4 @@
 {{ define "post_buttons" }}
-<link rel="stylesheet" href="/static/style/partials/post-buttons.css">
 	{{ template "reactions" (addToStruct . "Type" "post") }}
 	{{ if .Session }}
 		<!-- Additional features for user/admin/moderator -->

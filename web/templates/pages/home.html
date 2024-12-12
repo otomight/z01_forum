@@ -4,29 +4,30 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/static/style/layout/header.css">
+	<link rel="stylesheet" href="/static/style/layout/navbar.css">
 	<link rel="stylesheet" href="/static/style/pages/home.css">
 </head>
 <body>
 	{{ template "header" . }}
 	<div class="home-page">
 		{{ template "navbar" . }}
-		<h2>Latest Posts</h2>
-		<div id="posts">
-			{{ range .Posts }}
-				<div class="post">
-					<a href="/post/view/{{ .ID }}"><h3>{{ .Title }}</h3></a>
-					<p>By: {{ .UserName }}</p>
-					<p>{{ .Content }}</p>
-					<p><em>Posted on: {{ .CreationDate }}</em></p>
-					{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
-					{{ template "post_comments" (addToStruct . "Session" $.Session) }}
-				</div>
-			{{end}}
-		</div>
+		<main>
+			<h2>Latest Posts</h2>
+			<div id="posts">
+				{{ range .Posts }}
+					<div class="post">
+						<a href="/post/view/{{ .ID }}"><h3>{{ .Title }}</h3></a>
+						<p>By: {{ .UserName }}</p>
+						<p>{{ .Content }}</p>
+						<p><em>Posted on: {{ .CreationDate }}</em></p>
+						{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
+						{{ template "post_comments" (addToStruct . "Session" $.Session) }}
+					</div>
+				{{end}}
+			</div>
+		</main>
+		{{ template "footer" . }}
 	</div>
-	<footer>
-		<p>&copy; 2024 Forum. All rights reserved.</p>
-	</footer>
 	<script type="module" src="/static/scripts/like.js"></script>
 </body>
 </html>
