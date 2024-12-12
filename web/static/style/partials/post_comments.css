@@ -1,0 +1,85 @@
+/* COMMENT FORM */
+.comments form {
+	display:			flex;
+	width:				100%;
+	flex-direction:		column;
+	align-items:		center;
+	border-radius:		0.5rem;
+	padding:			0.7rem;
+}
+
+.comments form textarea {
+	width:				100%;
+	height:				5rem;
+	border:				0.15rem;
+	border-radius:		0.5rem;
+	resize:				vertical;
+	padding:			0.4rem;
+	background-color:	rgb(244, 242, 238);
+}
+
+.comments form button {
+	display:			flex;
+	justify-content:	center;
+	align-items:		center;
+	height:				1.8rem;
+	padding:			0.5rem;
+	margin-right:		1rem;
+	margin-top:			0.5rem;
+	background-color:	rgb(250, 250, 250);
+	font-weight:		bold;
+	border:				0.1rem solid black;
+	border-radius:		0.5rem;
+}
+
+.comments form button:hover {
+	background-color:	rgb(204, 202, 198);
+	cursor:				pointer;
+}
+
+/* COMMENTS */
+.comments .comment {
+	width:				100%;
+	display:			flex;
+	flex-direction:		column;
+	border-radius:		0.5rem;
+	padding:			0.7rem;
+	margin-top:			1.5rem;
+}
+
+.comments .comment .comment__head {
+	width:				100%;
+	display:			flex;
+	justify-content:	space-between;
+	align-items:		center;
+}
+
+/* Make the likes smaller */
+.comments .comment .reaction-section {
+	margin-top:	0 !important;
+}
+
+.comments .comment .reaction-section button {
+	padding:	0.2rem !important;
+}
+
+.comments .comment .comment__infos {
+	width:				40%;
+	display:			flex;
+	justify-content:	space-between;
+	align-items:		center;
+}
+.comments .comment .comment__author {
+	font-weight:	bold;
+	font-style:		oblique;
+}
+
+.comments .comment .comment__creation-date time {
+	color:		rgb(150, 150, 150);
+	font-size:	0.7rem;
+	font-style:	italic;
+}
+
+.comments .comment__content {
+	padding:	0.8rem;
+}

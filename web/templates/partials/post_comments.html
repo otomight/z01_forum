@@ -4,21 +4,24 @@
 		{{ if .Session }}
 			<form action="/post/comment/{{ .ID }}"
 				method="POST" class="comment-form">
-				<textarea
-					name="content"
-					placeholder="Write your comment here..."
-					required>
-				</textarea>
+				<textarea name="content" placeholder="Write your comment here..." required></textarea>
 				<input type="hidden" name="postID" value="{{ .ID }}">
 				<button type="submit">Comment</button>
 			</form>
 		{{ end }}
 		{{ range .Comments }}
-			<div class="comment">
-				<p><strong>{{ .UserName }}</strong>: {{ .Content }}</p>
-				<p><em>Posted on: {{ .CreationDate }}</em></p>
-				{{ template "reactions" (addToStruct . "Type" "comment" "Session" $.Session) }}
-			</div>
+			<article class="comment">
+				<div class="comment__head">
+					<div class="comment__infos">
+						<div class="comment__author">{{ .UserName }}</div>
+						<div class="comment__creation-date">
+							<time datetime="{{ .CreationDate }}">{{ .CreationDate }}</time>
+						</div>
+					</div>
+					{{ template "reactions" (addToStruct . "Type" "comment" "Session" $.Session) }}
+				</div>
+				<div class="comment__content">{{ .Content }}</div>
+			</article>
 		{{ end }}
 	</div>
 {{ end }}
