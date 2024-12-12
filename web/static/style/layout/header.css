@@ -44,3 +44,16 @@ header {
 .spyglass {
     background-color: rgba(236, 230, 240, 1);
 }
+
+.user-chat, .user-notifications {
+    width: 76px;
+    height: 61px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.user-chat:hover, .user-notifications:hover {
+    background-color: rgba(235, 221, 221, 0.959);
+}

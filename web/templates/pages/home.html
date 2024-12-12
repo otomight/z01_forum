@@ -11,26 +11,28 @@
 	<link rel="stylesheet" href="/static/style/components/reactions.css">
 </head>
 <body>
-	{{ template "header" . }}
-	<div class="home-page">
-		{{ template "navbar" . }}
-		<main>
-			<h2>Latest Posts</h2>
-			<div id="posts">
-				{{ range .Posts }}
-					<div class="post">
-						<a href="/post/view/{{ .ID }}"><h3>{{ .Title }}</h3></a>
-						<p>By: {{ .UserName }}</p>
-						<p>{{ .Content }}</p>
-						<p><em>Posted on: {{ .CreationDate }}</em></p>
-						{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
-						{{ template "post_comments" (addToStruct . "Session" $.Session) }}
-					</div>
-				{{end}}
-			</div>
-		</main>
+	<div class="bloc-page">
+		{{ template "header" . }}
+		<div class="home-page">
+			{{ template "navbar" . }}
+			<main>
+				<h2>Latest Posts</h2>
+				<div id="posts">
+					{{ range .Posts }}
+						<div class="post">
+							<a href="/post/view/{{ .ID }}"><h3>{{ .Title }}</h3></a>
+							<p>By: {{ .UserName }}</p>
+							<p>{{ .Content }}</p>
+							<p><em>Posted on: {{ .CreationDate }}</em></p>
+							{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
+							{{ template "post_comments" (addToStruct . "Session" $.Session) }}
+						</div>
+					{{end}}
+				</div>
+			</main>
+		</div>
+		{{ template "footer" . }}
 	</div>
-	{{ template "footer" . }}
 	<script type="module" src="/static/scripts/like.js"></script>
 </body>
 </html>
