@@ -25,24 +25,10 @@
     background-color: white;
 }
 
-details {
-    width: 90px;
-    height: 45px;
-    border-radius: 10px;
-    border-width: 2px;
-    background-color: white;
-    border: solid;
+.category-dropdown {
     display: flex;
-    justify-content: center;
-}
-
-details > summary {
-    list-style: none; 
-    align-self: center; 
-}
-
-details:hover {
-    background-color: rgba(235, 221, 221, 0.959);
+    flex-direction: column;
+    align-items: center;
 }
 
 .nav button:hover{

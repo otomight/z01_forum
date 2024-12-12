@@ -13,16 +13,16 @@
 				</a>
 			</div>
 			{{ end }} -->
-			<div class="navbar-button">
-				<details>
-					<summary>Categories</summary>
-					<div class="categories-menu-content">
-						{{ range .Categories }}
-							<a href="/categories/{{ .ID }}">{{ .Name }}</a>
-						{{ end }}
-					</div>
-				</details>
-			</div>
+			 <div class="navbar-button">
+				<button>
+					<span>Category</span>
+				</button>
+				<div class="category-dropdown">
+					{{ range .Categories }}
+						<a href="/categories/{{ .ID }}">{{ .Name }}</a>
+					{{ end }}
+				</div>
+			 </div>
 			{{ if .Session }}
 				<div class="navbar-button">
 					<a href="/post/create">
