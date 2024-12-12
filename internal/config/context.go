@@ -4,7 +4,7 @@ type contextKey string
 
 // Constants
 const (
-	SessionKey	contextKey = "session"
+	SessionKey contextKey = "session"
 )
 
 // Oauth 2.0 credentials/URLs
@@ -12,10 +12,10 @@ const (
 	//Google
 	GoogleClientID     = "336521994095-0f7tu06nm9juo9v0rfi08g6c6cdciu67.apps.googleusercontent.com"
 	GoogleClientSecret = "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"
-	GoogleRedirectURI  = "http://localhost:8081/auth/callback?provider=google"
+	GoogleRedirectURI  = "http://localhost:8081/auth/callback"
 	GoogleAuthURL      = "https://accounts.google.com/o/oauth2/v2/auth"
 	GoogleTokenURL     = "https://oauth2.googleapis.com/token"
-	GoogleUserInfoURL  = "https://www.googleapis.com/oauth2/v3/userinfo"
+	GoogleUserInfoURL  = "https://www.googleapis.com/oauth2/v2/userinfo"
 
 	//Github
 	GithubClientID     = "Iv23lixCMoiAieKSPEuk"

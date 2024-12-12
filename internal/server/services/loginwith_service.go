@@ -115,6 +115,7 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 	// Safely extract fields from userInfo
 	oauthID, err := getStringField(userInfo, "id")
 	if err != nil {
+		fmt.Print("tg")
 		log.Printf("Invalid user info: %v", err)
 		http.Error(w, "Invalid user info: "+err.Error(), http.StatusInternalServerError)
 		return

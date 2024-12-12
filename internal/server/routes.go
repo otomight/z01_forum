@@ -40,8 +40,9 @@ func SetupRoutes() http.Handler {
 	mux.Handle("/comment/dislike", sessionMiddleWare(http.HandlerFunc(handlers.CommentDislikeHandler)))
 
 	// Google log
+
 	mux.Handle("/auth/google/login", sessionMiddleWare(http.HandlerFunc(handlers.GoogleLoginHandler)))
-	mux.Handle("/Auth/google/callback", sessionMiddleWare(http.HandlerFunc(handlers.GoogleCallBackHandler)))
+	mux.Handle("/auth/callback", sessionMiddleWare(http.HandlerFunc(handlers.GoogleCallBackHandler)))
 
 	// Github log
 	mux.Handle("/auth/github/login", sessionMiddleWare(http.HandlerFunc(handlers.GithubLoginHandler)))
