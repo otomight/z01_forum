@@ -2,6 +2,20 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border-bottom: 1px solid #00000021;
+}
+
+.forum-logo {
+    width: 200px;
+    height: 125px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.forum-logo img {
+    width: 113px;
+    height: 86px;
 }
 
 .whole-header {
@@ -12,18 +26,11 @@ header {
     padding-left: 50px;
 }
 
-.header-options {
-    display: flex;
-    flex-grow: 0.5;
-    align-items: center;
-    justify-content: space-around;
-}
-
 .searchbar {
     display: flex;
-    flex-grow: 0.5;
+    flex-grow: 0.8;
     text-align: center;
-    height: 25px;
+    height: 35px;
     border: solid;
     border-width: 3px;
     border-radius: 12px;
@@ -45,6 +52,14 @@ header {
     background-color: rgba(236, 230, 240, 1);
 }
 
+/* Logged user */
+.header-options {
+    display: flex;
+    flex-grow: 0.5;
+    align-items: center;
+    justify-content: space-around;
+}
+
 .user-chat, .user-notifications {
     width: 76px;
     height: 61px;
@@ -56,4 +71,38 @@ header {
 
 .user-chat:hover, .user-notifications:hover {
     background-color: rgba(235, 221, 221, 0.959);
+}
+
+/* Unlogged user */
+.unlogged-header {
+    display: flex;
+    justify-content: space-evenly;
+    flex-grow: 0.2;
+}
+
+.unlogged-header button {
+    width: 90px;
+    height: 30px;
+    border-radius: 25px;
+    border-width: 1px;
+}
+
+.login-button {
+    border-color: blueviolet;
+    background-color: white;
+    color: blueviolet;
+}
+
+.login-button:hover {
+    background-color: blueviolet;
+    color: white;
+}
+
+.register-button {
+    background-color: rgba(44, 44, 44, 1);
+    color: white;
+}
+
+.register-button:hover {
+    background-color: black;
 }

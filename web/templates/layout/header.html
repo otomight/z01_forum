@@ -28,12 +28,14 @@
 					</div>
 				</div>
 			{{ else }}
-				<a href="/login">
-					<button>Login</button>
-				</a>
-				<a href="/register">
-					<button>Register</button>
-				</a>
+				<div class="unlogged-header">
+						<a href="/login">
+							<button class="login-button">Login</button>
+						</a>
+						<a href="/register">
+							<button class="register-button">Register</button>
+						</a>
+				</div>
 			{{ end }}
 		</div>
 	</header>
