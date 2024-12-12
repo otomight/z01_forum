@@ -3,15 +3,11 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/static/style/main.css">
-	<link rel="stylesheet" href="/static/style/layout/header.css">
-	<link rel="stylesheet" href="/static/style/layout/navbar.css">
-	<link rel="stylesheet" href="/static/style/pages/create_post.css">
+	<link rel="stylesheet" href="/static/style/create_post.css">
 	<title>Create Post</title>
 </head>
 <body>
 	{{ template "header" . }}
-	{{ template "navbar" . }}
 	<main>
 		<h1>Create a New Post</h1>
 		<section>
@@ -25,14 +21,17 @@
 					<label for="content">Content</label>
 					<textarea id="content" name="content" required placeholder="Write your post here..."></textarea>
 				</div>
-				<div>
-					<label for="categories">Choose categories:</label>
-					<select name="categories" id="categories" multiple>
-						{{ range .Categories }}
-							<option value="{{ .ID }}">{{ .Name }}</option>
-						{{ end }}
-					</select>
+
+				<div class="form-group">
+					<label for="category">Category</label>
+					<input type="text" id="category" name="category" placeholder="Enter category, separated by commas">
 				</div>
+
+				<div class="form-group">
+					<label for="tags">Tags</label>
+					<input type="text" id="tags" name="tags" placeholder="Enter tags, separated by commas">
+				</div>
+
 				<div class="form-group">
 					<button type="submit">Create Post</button>
 				</div>
@@ -42,5 +41,9 @@
 			</form>
 		</section>
 	</main>
+
+	<footer>
+		<p>&copy; 2024 Forum. All rights reserved.</p>
+	</footer>
 </body>
 </html>

@@ -3,29 +3,76 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/static/style/main.css">
-	<link rel="stylesheet" href="/static/style/navbar.css">
-	<link rel="stylesheet" href="/static/style/pages/login.css">
+	<link rel="stylesheet" href="/static/style/register.css">
 </head>
 <body>
-	{{ template "navbar" . }}
-	<main>
-		<div class="register">
-			<h1>Register</h1>
-			<form action="/register" method="post">
-				<label for="username">Username</label>
-				<input type="text" id="user_name" name="user_name" placeholder="Username" required>
-
-				<label for="email">Email</label>
-				<input type="email" id="email" name="email" placeholder="Email" required>
-
-				<label for="password">Password</label>
-				<input type="password" id="password" name="password" placeholder="Password" required>
-
-				<button type="submit">Register</button>
-			</form>
-			<p class="helper">Already have an account? <a href="/login">Login</a></p>
+	<div class="register-page">
+		<div class="global-register">
+			<div class="forum-logo">
+				<img src="/static/image/logo0.png" alt="">
+			</div>
+			<div class="all-register">
+				<div class="login-with">
+					<div class="social-login">
+						<div class="login-with-facebook">
+							<img class="facebook-login-logo" src="/static/image/facebook1.svg" alt="">
+							<button class="login-with-button"> Log In With Facebook</button>
+						</div>
+					</div>
+					<div class="social-login">
+						<div class="login-with-google">
+							<img class="google-login-logo" src="/static/image/google3.svg" alt="">
+							<button class="login-with-button"> Log In With Google</button>
+						</div>
+					</div>
+					<div class="social-login">
+						<div class="login-with-instagram">
+							<img class="instagram-login-logo" src="/static/image/instagram1.svg" alt="">
+							<button class="login-with-button"> Log In With Instagram</button>
+						</div>
+					</div>
+					<div class="social-login">
+						<div class="login-with-github">
+							<img class="github-login-logo" src="/static/image/github-10.png" alt="">
+							<button class="login-with-button"> Log In With Github</button>
+						</div>
+					</div>
+				</div>
+				<div class="register">
+					<div class="register-form-field">
+						<form action="/register" method="post">
+							<div class="register-input">
+								<label for="first_name"></label>
+								<input type="text" id="first_name" name="first_name" placeholder="First Name" required>
+							</div>
+							<div class="register-input">
+								<label for="last_name"></label>
+								<input type="text" id="last_name" name="last_name" placeholder="Last Name" required>
+							</div>
+							<div class="register-input">
+								<label for="username"></label>
+								<input type="text" id="user_name" name="user_name" placeholder="Username" required>
+							</div>
+							<div class="register-input">
+								<label for="email"></label>
+								<input type="email" id="email" name="email" placeholder="Email" required>
+							</div>
+							<div class="register-input">
+								<label for="password"></label>
+								<input type="password" id="password" name="password" placeholder="Password" required>
+							</div>
+							<button class="register-button" type="submit">Register</button>
+						</form>
+						<div class="register-login">
+							<p>Already have an account? <a href="/login">Login</a></p>
+						</div>
+					</div>
+				</div>
+	 		</div>
 		</div>
-	</main>
+		<footer>
+			<p>&copy; 2024 Forum. All rights reserved.</p>
+		</footer>
+	</div>
 </body>
 </html>

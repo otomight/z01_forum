@@ -1,13 +1,43 @@
 {{ define "header" }}
 	<header>
-		<div class="header-navbar">
-			<div class="header-logo">
-				<h1>FORUM</h1>
+		<a class="forum-logo" href="/">
+			<img src="/static/image/logo0.png" alt="Forum logo">
+		</a>
+		{{ if .Session }}
+			<div class="whole-header">
+				<div class="logged-searchbar">
+					<img class="burgermenu" src="/static/image/burgermenu.svg" alt="">
+					<input type="text" placeholder="Search...">
+					<img class="spyglass" src="/static/image/spyglass.svg" alt="search">
+				</div>
+				<div class="header-options">
+					<div class="user-picture">
+						<a href="">
+							<img src="/static/image/darkvador-1.png" alt="Profile picture">
+						</a>
+					</div>
+					<div class="chat">
+						<a href="">
+							<img src="/static/image/chat.svg" alt="chat">
+						</a>
+					</div>
+					<div class="notifications">
+						<a href="">
+							<img src="/static/image/notifications.svg" alt="notifs">
+						</a>
+					</div>
+				</div>
 			</div>
-			<input type="text" name="search" id="search" placeholder="Search...">
-			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-search" viewBox="0 0 16 16">
-				<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-			</svg>
-		</div>
+		{{ else }}
+			<div class="unlogged-searchbar">
+				<input type="text" placeholder="Search...">
+			</div>
+			<a href="/login">
+				<button>Login</button>
+			</a>
+			<a href="/register">
+				<button>Register</button>
+			</a>
+	{{ end }}
 	</header>
 {{ end }}

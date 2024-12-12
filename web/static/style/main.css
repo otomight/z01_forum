@@ -1,34 +1,91 @@
-*{
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-body{
-	/* margin: 0%;
-	padding: 0%; */
-	font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	/* background-image: linear-gradient(to right,
-	                                  #303030,
-	                                  #303030 50%,
-	                                  #FAFAFA 50%,
-	                                  #FAFAFA);
-	background-position: 100% 0;
-	background-size: 200% 100%;
-	transition: all .2s ease-in; */
+.whole-header {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 50px;
 }
 
-main {
-	padding: 1rem;
-	background: white;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
-	width: 85%;
-	background-color: #f4f2ee;
-	overflow-y: auto;
+.logged-searchbar {
+    display: flex;
+    flex-grow: 0.5;
+    text-align: center;
+    height: 25px;
+    border: solid;
+    border-width: 3px;
+    border-radius: 12px;
+    border-color: rgba(236, 230, 240, 1);
+    background-color: rgba(236, 230, 240, 1);
 }
 
-.layout {
-	display: flex;
-	height: 85%;
+.burgermenu {
+    background-color: rgba(236, 230, 240, 1);
+}
+
+.logged-searchbar input {
+    width: -webkit-fill-available;
+    background-color: rgba(236, 230, 240, 1);
+    border: none;
+}
+
+.spyglass {
+    background-color: rgba(236, 230, 240, 1);
+}
+
+.header-options {
+    display: flex;
+    flex-grow: 0.5;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.home-page {
+    display: flex;
+}
+
+.logged-navbar{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    width: 300px;
+}
+
+.nav {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.nav button {
+    width: 90px;
+    height: 45px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.nav button:hover{
+    background-color: rgba(235, 221, 221, 0.959);
+}
+
+.logout-button button{
+    width: 90px;
+    height: 45px;
+    border-radius: 10px;
+    border-color: blueviolet;
+    background-color: white;
+    color: blueviolet;
+}
+
+.logout-button button:hover {
+    background-color: blueviolet;
+    color: white;
 }

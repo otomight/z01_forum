@@ -4,38 +4,62 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/static/style/main.css">
-	<link rel="stylesheet" href="/static/style/layout/header.css">
-	<link rel="stylesheet" href="/static/style/layout/navbar.css">
-	<link rel="stylesheet" href="/static/style/pages/home.css">
 </head>
-<body id="bd">
+<body>
 	{{ template "header" . }}
-	<div class="layout">
-		{{ template "navbar" . }}
-		<main>
-			<div id="posts">
-				<h2>Latest Posts</h2>
-				{{ range .Posts }}
-					<div class="post">
-						<a href="/post/view/{{ .ID }}"><h3>{{ .Title }}</h3></a>
-						<p>By: {{ .UserName }}</p>
-						<p class="post-content">{{ .Content }}</p>
-						{{ range .Categories }}
-							<p>{{ .Name }}</p>
-						{{ end }}
-						<p><em>Posted on: {{ .CreationDate }}</em></p>
-						<div class="post-buttons">
-							{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
-						</div>
-						{{ template "post_comments" (addToStruct . "Session" $.Session) }}
-					</div>
-					<svg style="text-align: center;" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-						<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
-						</svg>
-				{{end}}
+	<div class="home-page">
+		{{ if .Session }}
+		<div class="logged-navbar">
+			<div class="nav">
+				<div class="navbar-button">
+					<a href="">
+						<button>Home</button>
+					</a>
+				</div>
+				<div class="navbar-button">
+					<a href="">
+						<button>Favs</button>
+					</a>
+				</div>
+				<div class="navbar-button">
+					<a href="">
+						<button>Category</button>
+					</a>
+				</div>
+				<div class="navbar-button">
+					<a href="">
+						<button>Tags</button>
+					</a>
+				</div>
+				<div class="navbar-button">
+					<a href="/post/create">
+						<button>Create Post</button>
+					</a>
+				</div>
 			</div>
-		</main>
+			<div class="logout-button">
+				<a href="/logout">
+					<button>Log out</button>
+				</a>
+			</div>
+		</div>
+		{{ end }}
+		<h2>Latest Posts</h2>
+		<div id="posts">
+			{{ range .Posts }}
+				<div class="post">
+					<a href="/post/view/{{ .Post.PostID }}"><h3>{{ .Post.Title }}</h3></a>
+					<p>By: {{ .Post.UserName }}</p>
+					<p>{{ .Post.Content }}</p>
+					<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
+					{{ template "post_buttons" (addToStruct . "Session" $.Session) }}
+					{{ template "post_comments" (addToStruct . "Session" $.Session) }}
+				</div>
+			{{end}}
+		</div>
 	</div>
-	<script type="module" src="/static/scripts/like.js"></script>
+	<footer>
+		<p>&copy; 2024 Forum. All rights reserved.</p>
+	</footer>
 </body>
 </html>
