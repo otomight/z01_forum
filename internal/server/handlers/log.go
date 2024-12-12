@@ -51,6 +51,28 @@ func displayLoginPage(
 	templates.RenderTemplate(w, config.LoginTmpl, data)
 }
 
+func handleLogError(
+	w http.ResponseWriter, r *http.Request,
+	err error, username string,
+) {
+	var	userInput	*models.LoginPageUserInput
+
+	userInput = &models.LoginPageUserInput{
+		Username:	username,
+	}
+	if err.Error() == "user not found" {
+		displayLoginPage(w, r, userInput, &models.LoginErrorMsg{
+			UserNotFound: "User not found",
+		})
+	} else if err.Error() == "invalid password" {
+		displayLoginPage(w, r, userInput, &models.LoginErrorMsg{
+			IncorrectPassword: "Invalid password",
+		})
+	} else {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+	}
+}
+
 func logUser(
 	w http.ResponseWriter, r *http.Request,
 	username string, password string,
@@ -60,24 +82,8 @@ func logUser(
 
 	user, err = db.ValidateUserCredentials(username, password)
 	if err != nil {
-		if err.Error() == "user not found" {
-			displayLoginPage(w, r, &models.LoginPageUserInput{
-				Username: username,
-			}, &models.LoginErrorMsg{
-				UserNotFound: "User not found",
-			})
-			return err
-		} else if err.Error() == "invalid password" {
-			displayLoginPage(w, r, &models.LoginPageUserInput{
-				Username: username,
-			}, &models.LoginErrorMsg{
-				IncorrectPassword: "Invalid password",
-			})
-			return err
-		} else {
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return err
-		}
+		handleLogError(w, r, err, username)
+		return err
 	}
 	removeExistingUserSession(user)
 	err = createSession(w, user.ID, user.UserRole, user.UserName)

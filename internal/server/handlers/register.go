@@ -53,30 +53,25 @@ func handlerRegisterError(
 	var	tableName		string
 	var	columnName		string
 	var	cl				config.ClientsTableKeys
+	var	userInput		*models.RegisterPageUserInput
 	var	ok				bool
 
 	cl = config.TableKeys.Clients
 	if sqliteErr, ok = err.(sqlite3.Error); ok {
 		tableName, columnName = utils.GetSqlite3UniqueErrorInfos(sqliteErr)
+		userInput = &models.RegisterPageUserInput{
+			Username:	form.UserName,
+			Email:		form.Email,
+		}
 		if tableName == cl.Clients && columnName == cl.UserName {
-			displayRegisterPage(w, r,
-				&models.RegisterPageUserInput{
-					Username:	form.UserName,
-					Email:		form.Email,
-				}, &models.RegisterErrorMsg{
-					UsernameAlreadyTaken: "User name already taken",
-				},
-			)
+			displayRegisterPage(w, r, userInput, &models.RegisterErrorMsg{
+				UsernameAlreadyTaken: "User name already taken",
+			})
 			return
 		} else if tableName == cl.Clients && columnName == cl.Email {
-			displayRegisterPage(w, r,
-				&models.RegisterPageUserInput{
-					Username:	form.UserName,
-					Email:		form.Email,
-				}, &models.RegisterErrorMsg{
-					EmailAlreadyTaken: "Email already taken",
-				},
-			)
+			displayRegisterPage(w, r, userInput, &models.RegisterErrorMsg{
+				EmailAlreadyTaken: "Email already taken",
+			})
 			return
 		}
 	}
