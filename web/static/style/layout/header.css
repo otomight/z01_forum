@@ -19,7 +19,7 @@ header {
     justify-content: space-around;
 }
 
-.logged-searchbar {
+.searchbar {
     display: flex;
     flex-grow: 0.5;
     text-align: center;
@@ -31,7 +31,7 @@ header {
     background-color: rgba(236, 230, 240, 1);
 }
 
-.logged-searchbar input {
+.searchbar input {
     width: -webkit-fill-available;
     background-color: rgba(236, 230, 240, 1);
     border: none;
