@@ -1,0 +1,42 @@
+{{ define "navbar" }}
+<div class="navbar">
+	<div class="nav">
+		<div class="navbar-button">
+			<a href="/">
+				<button>Home</button>
+			</a>
+		</div>
+		<!-- {{ if .Session }}
+		<div class="navbar-button">
+			<a href="">
+				<button>Favs</button>
+			</a>
+		</div>
+		{{ end }} -->
+		<div class="navbar-button">
+			<details>
+				<summary>Categories</summary>
+				<div class="categories-menu-content">
+				{{ range .Categories }}
+					<a href="/categories/{{ .ID }}">{{ .Name }}</a>
+				{{ end }}
+				</div>
+			</details>
+		</div>
+		{{ if .Session }}
+		<div class="navbar-button">
+			<a href="/post/create">
+				<button>Create Post</button>
+			</a>
+		</div>
+		{{ end }}
+	</div>
+	{{ if .Session }}
+	<div class="logout-button">
+		<a href="/logout">
+			<button>Log out</button>
+		</a>
+	</div>
+	{{ end }}
+</div>
+{{ end }}

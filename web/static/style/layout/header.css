@@ -1,0 +1,38 @@
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.whole-header {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 50px;
+}
+
+.header-options {
+    display: flex;
+    flex-grow: 0.5;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.logged-searchbar {
+    display: flex;
+    flex-grow: 0.5;
+    text-align: center;
+    height: 25px;
+    border: solid;
+    border-width: 3px;
+    border-radius: 12px;
+    border-color: rgba(236, 230, 240, 1);
+    background-color: rgba(236, 230, 240, 1);
+}
+
+.logged-searchbar input {
+    width: -webkit-fill-available;
+    background-color: rgba(236, 230, 240, 1);
+    border: none;
+}

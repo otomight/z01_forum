@@ -3,47 +3,13 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/static/style/main.css">
+	<link rel="stylesheet" href="/static/style/layout/header.css">
+	<link rel="stylesheet" href="/static/style/pages/home.css">
 </head>
 <body>
 	{{ template "header" . }}
 	<div class="home-page">
-		{{ if .Session }}
-		<div class="logged-navbar">
-			<div class="nav">
-				<div class="navbar-button">
-					<a href="">
-						<button>Home</button>
-					</a>
-				</div>
-				<div class="navbar-button">
-					<a href="">
-						<button>Favs</button>
-					</a>
-				</div>
-				<div class="navbar-button">
-					<a href="">
-						<button>Category</button>
-					</a>
-				</div>
-				<div class="navbar-button">
-					<a href="">
-						<button>Tags</button>
-					</a>
-				</div>
-				<div class="navbar-button">
-					<a href="/post/create">
-						<button>Create Post</button>
-					</a>
-				</div>
-			</div>
-			<div class="logout-button">
-				<a href="/logout">
-					<button>Log out</button>
-				</a>
-			</div>
-		</div>
-		{{ end }}
+		{{ template "navbar" . }}
 		<h2>Latest Posts</h2>
 		<div id="posts">
 			{{ range .Posts }}
@@ -61,5 +27,6 @@
 	<footer>
 		<p>&copy; 2024 Forum. All rights reserved.</p>
 	</footer>
+	<script type="module" src="/static/scripts/like.js"></script>
 </body>
 </html>

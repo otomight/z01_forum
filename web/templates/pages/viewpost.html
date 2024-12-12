@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="/static/style/layout/header.css">
+	</head>
 	<body>
 		{{ template "header" . }}
-		<h3>{{ .Post.Title }}</h3>
-		<p>{{ .Post.Content }}</p>
-		<p>By: {{ .Post.UserName }}</p>
-		<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
-		{{ template "post_buttons" . }}
-		{{ template "post_comments" . }}
+		<main>
+			<div class="post">
+				<h3>{{ .Post.Title }}</h3>
+				<p>{{ .Post.Content }}</p>
+				<p>By: {{ .Post.UserName }}</p>
+				<p><em>Posted on: {{ .Post.CreationDate }}</em></p>
+				{{ template "post_buttons" (addToStruct .Post "Session" .Session) }}
+				{{ template "post_comments" (addToStruct .Post "Session" .Session) }}
+			</div>
+		</main>
+		<script type="module" src="/static/scripts/like.js"></script>
 	</body>
 </html>
