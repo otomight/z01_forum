@@ -1,3 +1,7 @@
+.comments {
+	display:	none;
+}
+
 /* COMMENT FORM */
 .comments form {
 	display:			flex;

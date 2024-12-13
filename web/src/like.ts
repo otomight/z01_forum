@@ -24,7 +24,7 @@ async function fetchRequest(
 	action:		string,
 	request:	ReactionRequest
 ): Promise<Response | null> {
-	let		response:	Response
+	let		response:	Response;
 
 	response = await fetch(action, {
 		method: 'POST',
@@ -38,7 +38,7 @@ async function fetchRequest(
 		return null;
 	} else if (!response.ok)
 		throw new Error(response.status + ' The request failed');
-	return response
+	return response;
 }
 
 async function sendReactionRequest(
@@ -49,17 +49,17 @@ async function sendReactionRequest(
 		elem_id: parseInt(dataset.id, 10),
 		user_id: parseInt(dataset.currentUserId, 10)
 	});
-	let		response:	Response | null
+	let		response:	Response | null;
 
 	try {
 		response = await fetchRequest(action, request);
 		if (!response)
 			return null;
-		return response.json()
+		return response.json();
 	} catch (error) {
 		console.error('Error:', error);
 		alert('Something went wrong, please try again.');
-		return null
+		return null;
 	}
 }
 
@@ -72,7 +72,7 @@ function addToButtonValue(button: HTMLButtonElement, nb: number) {
 		console.error("Element with class reaction-count not found");
 		return;
 	}
-	addToElemNumber(buttonCount, nb)
+	addToElemNumber(buttonCount, nb);
 }
 
 async function sendReaction(
@@ -101,13 +101,13 @@ async function sendReaction(
 }
 
 function getAction(dataset: ReactionDataSet, liked: boolean): string {
-	let	action:	string
+	let	action:	string;
 
 	if (liked)
-		action = "/" + dataset.type + "/like"
+		action = "/" + dataset.type + "/like";
 	else
-		action = "/" + dataset.type + "/dislike"
-	return action
+		action = "/" + dataset.type + "/dislike";
+	return action;
 }
 
 function handleReactionButton(event: Event) {
@@ -120,13 +120,13 @@ function handleReactionButton(event: Event) {
 	let		action:				string;
 	let		dataset:			ReactionDataSet;
 
-	button = target?.closest('button') as HTMLButtonElement | null
+	button = target?.closest('button') as HTMLButtonElement | null;
 	if (!button)
-		return
+		return;
 	reactionSection = button.closest('.reaction-section');
 	if (!reactionSection)
 		return;
-	dataset = reactionSection.dataset as unknown as ReactionDataSet
+	dataset = reactionSection.dataset as unknown as ReactionDataSet;
 	if (button.classList.contains('like-button')) {
 		action = getAction(dataset, true);
 		oppositeButton = reactionSection.querySelector('.dislike-button');
@@ -136,14 +136,14 @@ function handleReactionButton(event: Event) {
 		oppositeButton = reactionSection.querySelector('.like-button');
 	}
 	if (!oppositeButton)
-		return
+		return;
 	sendReaction(dataset, action, button, oppositeButton);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
 	const	buttons:	NodeListOf<HTMLElement> = (
 		document.querySelectorAll('.like-button, .dislike-button')
-	)
+	);
 
 	buttons.forEach(button => {
 		button.addEventListener('click', handleReactionButton);

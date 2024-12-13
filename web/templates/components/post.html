@@ -10,7 +10,7 @@
 			<div class="post__content">{{ .Content }}</div>
 			<div class="post__buttons">
 				<div class="post__author">by <a href="/">{{ .UserName }}</a></div>
-				{{ template "reactions" (addToStruct . "Type" "post") }}
+				<button class="show-comments">Show comments</button>
 				{{ if .Session }}
 					<!-- Additional features for user/admin/moderator -->
 					{{ if or (eq .AuthorID .Session.UserID)
@@ -27,6 +27,7 @@
 						</form>
 					{{ end }}
 				{{ end }}
+				{{ template "reactions" (addToStruct . "Type" "post") }}
 			</div>
 		</div>
 		{{ template "comments" . }}
