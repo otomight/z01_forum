@@ -143,7 +143,7 @@ func GetPostsLikedByUser(curUserID int, userID int) ([]*Post, error) {
 	var	pr			config.PostsReactionsTableKeys
 
 	pr = config.TableKeys.PostsReactions
-	condition = ``+pr.UserID+` = ?`
+	condition = ``+pr.UserID+` = ? AND `+pr.Liked+` = true`
 	return getPostsWithCondition(curUserID, condition, userID)
 }
 
