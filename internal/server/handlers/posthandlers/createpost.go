@@ -13,7 +13,7 @@ import (
 )
 
 func createPost(userID int, form models.CreatePostForm) (int, error) {
-	var	err			error
+	var	err				error
 	var	categoriesIDs	[]int
 
 	post := &db.Post{

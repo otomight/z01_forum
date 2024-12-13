@@ -34,7 +34,7 @@
 							<div class="categories-options">
 								{{ range .Categories }}
 									<label>
-										<input type="checkbox" name="categories[]" value="{{.ID}}"> {{ .Name }}
+										<input type="checkbox" name="categories" value="{{.ID}}" required> {{ .Name }}
 									</label>
 								{{ end }}
 							</div>

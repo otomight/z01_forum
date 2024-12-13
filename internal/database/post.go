@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"forum/internal/config"
 	"log"
 )
@@ -10,11 +11,14 @@ import (
 func NewPost(post *Post, categoriesIDs []int) (int, error) {
 	var	p		config.PostsTableKeys
 
+	if len(categoriesIDs) == 0 {
+		return 0, fmt.Errorf("No categories provided.")
+	}
 	p = config.TableKeys.Posts
 	result, err := insertInto(InsertIntoQuery{
-		Table:		p.Posts,
-		Keys: []string{p.AuthorID, p.Title, p.Content},
-		Values: [][]any{{post.AuthorID, post.Title, post.Content}},
+		Table:	p.Posts,
+		Keys:	[]string{p.AuthorID, p.Title, p.Content},
+		Values:	[][]any{{post.AuthorID, post.Title, post.Content}},
 	})
 	if err != nil {
 		return 0, err
