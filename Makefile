@@ -4,6 +4,14 @@ PORT=8081
 
 all: build run
 
+audit: clean build images run
+
+containers:
+	sudo docker ps -a
+
+images:
+	sudo docker images
+
 build:
 	npx tsc
 	sudo docker build -t $(IMAGE_NAME) .
