@@ -25,6 +25,7 @@
 .navbar button, .category-button {
     width: 90px;
     height: 45px;
+    font-size: 17px;
     border-radius: 10px;
     background-color: white;
     cursor: pointer;
