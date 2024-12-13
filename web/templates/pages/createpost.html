@@ -7,43 +7,50 @@
 	<link rel="stylesheet" href="/static/style/layout/header.css">
 	<link rel="stylesheet" href="/static/style/layout/navbar.css">
 	<link rel="stylesheet" href="/static/style/pages/createpost.css">
+	<link rel="stylesheet" href="/static/style/layout/footer.css">
 	<title>Create Post</title>
 </head>
 <body>
-	{{ template "header" . }}
-	{{ template "navbar" . }}
-	<main>
-		<h1>Create a New Post</h1>
-		<section>
-			<form action="/post/create" method="POST">
-				<div class="form-group">
-					<label for="title">Title</label>
-					<input type="text" id="title" name="title" required placeholder="Enter the post title">
+	<div class="bloc-page">
+		{{ template "header" . }}
+		<div class="create-post-page">
+			{{ template "navbar" . }}
+			<main>
+				<div class="post-creation">
+					<h1>New Post</h1>
+				<section>
+					<form action="/post/create" method="POST">
+						<div class="form-group">
+							<label for="title"></label>
+							<input class="post-input" type="text" id="title" name="title" required placeholder="Enter the post title">
+						</div>
+						<div class="form-group">
+							<label for="content"></label>
+							<textarea id="content" name="content" required placeholder="Write your post here..."></textarea>
+						</div>
+						<div class="categories-form-group">
+							<label for="toggle-categories" class="toggle-label">Categories</label>
+							<input type="checkbox" id="toggle-categories" class="toggle-checkbox">
+							<div class="categories-options">
+								{{ range .Categories }}
+									<label>
+										<input type="checkbox" name="categories[]" value="{{.ID}}"> {{ .Name }}
+									</label>
+								{{ end }}
+							</div>
+						</div>
+						<div class="create-button">
+							<button type="submit">Create Post</button>
+						</div>
+						<!--
+						<div id="error-message" class="error-message"></div>
+						<div id="success-message" class="success-message"></div>-->
+					</form>
+				</section>
 				</div>
-
-				<div class="form-group">
-					<label for="content">Content</label>
-					<textarea id="content" name="content" required placeholder="Write your post here..."></textarea>
-				</div>
-
-				<div class="form-group">
-					<label for="categories">Choose categories:</label>
-					<select name="categories" id="categories" multiple>
-						{{ range .Categories }}
-							<option value="{{ .ID }}">{{ .Name }}</option>
-						{{ end }}
-					</select>
-				</div>
-
-				<div class="form-group">
-					<button type="submit">Create Post</button>
-				</div>
-
-				<div id="error-message" class="error-message"></div>
-				<div id="success-message" class="success-message"></div>
-			</form>
-		</section>
-	</main>
-	{{ template "footer" . }}
+			</main>
+		</div>
+		{{ template "footer" . }}
+	</div>
 </body>
 </html>
