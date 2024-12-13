@@ -7,10 +7,12 @@
 .home-page {
 	display: flex;
 	flex-grow: 1;
+	overflow: hidden;
 }
 
 main {
 	background-color:rgba(244, 242, 238, 1);
 	padding: 60px;
 	flex-grow: 1;
+	overflow: auto;
 }

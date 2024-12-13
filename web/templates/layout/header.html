@@ -11,10 +11,15 @@
 			</div>
 			{{ if .Session }}
 				<div class="header-options">
-					<div class="user-picture">
-						<a href="">
-							<img src="/static/image/darkvador-1.png" alt="Profile picture">
-						</a>
+					<div class="profile-menu">
+						<img src="/static/image/darkvador-1.png" alt="Profile picture" class="profile-pic">
+						<div class="history-dropdown">
+							<span>History</span>
+							<div class="sub-dropdown">
+								<a href="/history/created">Posts</a>
+								<a href="/history/liked">Likes</a>
+							</div>
+						</div>
 					</div>
 					<div class="user-chat">
 						<a href="">

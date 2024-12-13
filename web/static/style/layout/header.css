@@ -60,6 +60,57 @@ header {
     justify-content: space-around;
 }
 
+.profile-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.history-dropdown {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    background-color: rgb(244, 242, 238);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 5px 10px;
+    z-index: 10;
+}
+
+.sub-dropdown {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%; 
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 11;
+}
+
+.profile-menu:hover .history-dropdown {
+    display: block;
+}
+
+.history-dropdown:hover .sub-dropdown {
+    display: block;
+}
+
+.history-dropdown span, .sub-dropdown a {
+    display: block;
+    text-decoration: none;
+    color: black;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.history-dropdown span:hover, .sub-dropdown a:hover {
+    background-color: rgba(0, 123, 255, 0.1); 
+    color: #007BFF; 
+}
+
 .user-chat, .user-notifications {
     width: 76px;
     height: 61px;
