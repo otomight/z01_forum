@@ -1,10 +1,6 @@
-{{ define "post_comments" }}
-	<label for="toggle-comments">Comments</label>
-	<input type="checkbox" id="toggle-comments" class="toggle-checkbox">
+{{ define "comments" }}
 	<div class="comments">
 		{{ if .Session }}
-			<label for="toggle-form">Comment</label>
-			<input type="checkbox" id="toggle-form" class="toggle-checkbox">
 			<form action="/post/comment/{{ .ID }}"
 				method="POST" class="comment-form">
 				<textarea name="content" placeholder="Write your comment here..." required></textarea>
@@ -17,9 +13,7 @@
 				<div class="comment__head">
 					<div class="comment__infos">
 						<div class="comment__author">{{ .UserName }}</div>
-						<div class="comment__creation-date">
-							<time datetime="{{ .CreationDate }}">{{ .CreationDate }}</time>
-						</div>
+						<time class="comment__creation-date" datetime="{{ .CreationDate }}">{{ .CreationDate }}</time>
 					</div>
 					{{ template "reactions" (addToStruct . "Type" "comment" "Session" $.Session) }}
 				</div>

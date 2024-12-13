@@ -1,7 +1,7 @@
 {{ define "reactions" }}
 	{{ if .UserConfig }}
 		<div class="reaction-section" data-type="{{ .Type }}" data-id="{{ .ID }}"
-		data-current-user-id="{{ if .Session }}{{ .Session.UserID }}{{ else }}0{{ end }}">
+				data-current-user-id="{{ if .Session }}{{ .Session.UserID }}{{ else }}0{{ end }}">
 			<button class="like-button {{ if .UserConfig.IsLiked }}active{{ end }}">
 				<span class="reaction-icon">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
