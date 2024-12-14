@@ -15,17 +15,20 @@ function	handleShowCommentButton(event: Event) {
 		return;
 	if (comments.style.display === 'none' || comments.style.display === '') {
 		comments.style.display = 'block';
-		button.textContent = "Hide comments"
-	} else {
+		button.classList.add('down');
+	}
+	else {
 		comments.style.display = 'none';
-		button.textContent = "Show comments"
+		button.classList.remove('down');
 	}
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	const	target:	HTMLElement | null = (
-		document.querySelector('.show-comments')
+	const	targets:	NodeListOf<HTMLElement> | null = (
+		document.querySelectorAll('.show-comments')
 	)
 
-	target?.addEventListener('click', handleShowCommentButton);
+	targets.forEach((target: HTMLElement | null) => {
+		target?.addEventListener('click', handleShowCommentButton);
+	})
 });

@@ -16,3 +16,40 @@ main {
 	flex-grow: 1;
 	overflow: auto;
 }
+
+/* SHOW COMMENTS BUTTON */
+.home-comments-container {
+	margin-left:	1.5rem;
+}
+
+/* Hide the comments of posts by default */
+.comments {
+	display:	none;
+	margin-top:	0.4rem !important;
+}
+
+.show-comments {
+	max-width:			fit-content;
+	padding:			0.4rem;
+	display:			flex;
+	gap:				0.2rem;
+	align-items:		center;
+	border:				none;
+	border-radius:		0.5rem;
+	margin-top:			0.2rem;
+	background-color:	rgb(233, 233, 237);
+}
+
+.show-comments:hover {
+	background-color:	rgb(212, 212, 212);
+}
+
+.chevron-icon {
+	width:		1em;
+	height:		1em;
+	transition:	transform 0.1s ease;
+}
+
+.show-comments.down .chevron-icon {
+	transform:	rotate(90deg);
+}

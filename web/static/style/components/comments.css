@@ -1,5 +1,5 @@
 .comments {
-	display:	none;
+	margin-top:	1.5rem;
 }
 
 /* COMMENT FORM */
@@ -11,7 +11,6 @@
 	border-radius:		0.5rem;
 	padding:			0.7rem;
 	background-color:	rgb(255, 255, 255);
-	margin-top:			1.5rem;
 }
 
 .comments form textarea {

@@ -17,12 +17,14 @@
 			<div class="viewpost-page">
 				{{ template "navbar" . }}
 				<main>
-					{{ template "post" (addToStruct .Post "Session" .Session) }}
+					<div class="post">
+						{{ template "postcore" (addToStruct .Post "Session" $.Session) }}
+						{{ template "comments" (addToStruct .Post "Session" $.Session) }}
+					</div>
 				</main>
 			</div>
 			{{ template "footer" . }}
 		</div>
 		<script type="module" src="/static/scripts/like.js"></script>
-		<script type="module" src="/static/scripts/show_comments.js"></script>
 	</body>
 </html>

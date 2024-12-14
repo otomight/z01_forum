@@ -21,7 +21,16 @@
 				<h2>Latest Posts</h2>
 				<div id="posts">
 					{{ range .Posts }}
-						{{ template "post" (addToStruct . "Session" $.Session) }}
+						<div class="post">
+							{{ template "postcore" (addToStruct . "Session" $.Session) }}
+							<div class="home-comments-container">
+								<button class="show-comments">
+									Comments
+									<img src="/static/image/chevron-right-solid.svg" alt="Chevron icon" class="chevron-icon">
+								</button>
+								{{ template "comments" (addToStruct . "Session" $.Session) }}
+							</div>
+						</div>
 					{{end}}
 				</div>
 			</main>
