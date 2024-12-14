@@ -44,7 +44,7 @@
 	margin-top:			0.5rem;
 }
 
-.post .post__buttons {
+.post .post__footer {
 	display:			flex;
 	justify-content:	space-between;
 	align-items:		center;
@@ -64,4 +64,24 @@
 
 .post .post__author a:hover {
 	text-decoration:	underline;
+}
+
+.post .post__buttons {
+	display:		flex;
+	gap:			0.5rem;
+	align-items:	center;
+	margin-top:		0.5rem;
+}
+
+/* Remove margin top from like and dislike button
+to put it in the buttons container */
+.post .post__buttons * {
+	margin-top:	0;
+}
+
+.post .post__delete button {
+	cursor:			pointer;
+	padding:		0.5rem;
+	border:			none;
+	border-radius:	0.5rem;
 }
