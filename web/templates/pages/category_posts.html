@@ -7,13 +7,20 @@
 		<link rel="stylesheet" href="/static/style/layout/header.css">
 		<link rel="stylesheet" href="/static/style/layout/navbar.css">
 		<link rel="stylesheet" href="/static/style/layout/footer.css">
+		<link rel="stylesheet" href="/static/style/pages/default.css">
 	</head>
 	<body>
-		{{ template "header" . }}
-		{{ template "navbar" . }}
-		<main>
-			{{ template "listpost" . }}
-		</main>
+		<div class="page">
+			{{ template "header" . }}
+			<main>
+				{{ template "navbar" . }}
+				<section class="content-fixed">
+					<div class="content-container">
+						{{ template "listpost" . }}
+					</div>
+				</section>
+			</main>
+			{{ template "footer" . }}
+		</div>
 	</body>
-	{{ template "footer" . }}
 </html>

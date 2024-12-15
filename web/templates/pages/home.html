@@ -6,20 +6,21 @@
 	<link rel="stylesheet" href="/static/style/main.css">
 	<link rel="stylesheet" href="/static/style/layout/header.css">
 	<link rel="stylesheet" href="/static/style/layout/navbar.css">
-	<link rel="stylesheet" href="/static/style/pages/home.css">
 	<link rel="stylesheet" href="/static/style/layout/footer.css">
+	<link rel="stylesheet" href="/static/style/pages/default.css">
+	<link rel="stylesheet" href="/static/style/pages/home.css">
 	<link rel="stylesheet" href="/static/style/components/post.css">
 	<link rel="stylesheet" href="/static/style/components/comments.css">
 	<link rel="stylesheet" href="/static/style/components/reactions.css">
 </head>
 <body>
-	<div class="bloc-page">
+	<div class="page">
 		{{ template "header" . }}
-		<div class="home-page">
+		<main>
 			{{ template "navbar" . }}
-			<main>
-				<h2>Latest Posts</h2>
-				<div id="posts">
+			<section class="content-fixed">
+				<div class="content-container">
+					<h2>Latest Posts</h2>
 					{{ range .Posts }}
 						<div class="post">
 							{{ template "postcore" (addToStruct . "Session" $.Session) }}
@@ -31,8 +32,8 @@
 						</div>
 					{{end}}
 				</div>
-			</main>
-		</div>
+			</section>
+		</main>
 		{{ template "footer" . }}
 	</div>
 	<script type="module" src="/static/scripts/like.js"></script>
