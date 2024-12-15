@@ -44,9 +44,9 @@ func SetupRoutes() http.Handler {
 	mux.Handle("/auth/google/login", sessionMiddleWare(http.HandlerFunc(handlers.GoogleLoginHandler)))
 	mux.Handle("/auth/callback", sessionMiddleWare(http.HandlerFunc(handlers.GoogleCallBackHandler)))
 
-	// Github log
-	mux.Handle("/auth/github/login", sessionMiddleWare(http.HandlerFunc(handlers.GithubLoginHandler)))
-	mux.Handle("/auth/github/callback", sessionMiddleWare(http.HandlerFunc(handlers.GithubCallBackHandler)))
+	// Discord log
+	mux.Handle("/auth/discord/login", sessionMiddleWare(http.HandlerFunc(handlers.DiscordLoginHandler)))
+	mux.Handle("/auth/discord/callback", sessionMiddleWare(http.HandlerFunc(handlers.DiscordCallBackHandler)))
 
 	// Facebook log
 	mux.Handle("/auth/facebook/login", sessionMiddleWare(http.HandlerFunc(handlers.FacebookLoginHandler)))

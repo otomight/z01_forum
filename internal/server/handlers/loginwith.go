@@ -30,25 +30,25 @@ func GoogleCallBackHandler(w http.ResponseWriter, r *http.Request) {
 	services.OAuthCallbackHandler(w, r, googleConfig)
 }
 
-// Github
-func GithubLoginHandler(w http.ResponseWriter, r *http.Request) {
+// Discord
+func DiscordLoginHandler(w http.ResponseWriter, r *http.Request) {
 	authURL := fmt.Sprintf(
-		"%s?client_id=%s&redirect_uri=%s&scope=user",
-		config.GithubAuthURL,
-		config.GithubClientID,
-		config.GithubRedirectURI,
+		"%s?client_id=%s&redirect_uri=%s&response_type=code&scope=identify email",
+		config.DiscordAuthURL,
+		config.DiscordClientID,
+		config.DiscordRedirectURI,
 	)
 	http.Redirect(w, r, authURL, http.StatusFound)
 }
 
-func GithubCallBackHandler(w http.ResponseWriter, r *http.Request) {
+func DiscordCallBackHandler(w http.ResponseWriter, r *http.Request) {
 	githubConfig := config.ProviderConfig{
-		Name:         "github",
-		TokenURL:     config.GithubTokenURL,
-		UserInfoURL:  config.GithubUserInfoURL,
-		ClientID:     config.GithubClientID,
-		ClientSecret: config.GithubClientSecret,
-		RedirectURI:  config.GithubRedirectURI,
+		Name:         "discord",
+		TokenURL:     config.DiscordTokenURL,
+		UserInfoURL:  config.DiscordUserInfoURL,
+		ClientID:     config.DiscordClientID,
+		ClientSecret: config.DiscordClientSecret,
+		RedirectURI:  config.DiscordRedirectURI,
 	}
 	services.OAuthCallbackHandler(w, r, githubConfig)
 }

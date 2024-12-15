@@ -17,14 +17,6 @@ const (
 	GoogleTokenURL     = "https://oauth2.googleapis.com/token"
 	GoogleUserInfoURL  = "https://www.googleapis.com/oauth2/v3/userinfo"
 
-	//Github
-	GithubClientID     = "Iv23lixCMoiAieKSPEuk"
-	GithubClientSecret = "1095fbed2fe4f4790a45bf79986b4543940de3bb"
-	GithubRedirectURI  = "http://localhost:8081/auth/github/callback"
-	GithubAuthURL      = "https://github.com/login/oauth/authorize"
-	GithubTokenURL     = "https://github.com/login/oauth/access_token"
-	GithubUserInfoURL  = "https://api.github.com/user"
-
 	//Facebook
 	FacebookClientID     = "3907245556220479"
 	FacebookClientSecret = "9f945eb300532f82baa8d62d5a613d3e"
@@ -32,6 +24,14 @@ const (
 	FacebookAuthURL      = "https://www.facebook.com/v21.0/dialog/oauth"
 	FacebookTokenURL     = "https://graph.facebook.com/v21.0/oauth/access_token"
 	FacebookUserInfoURL  = "https://graph.facebook.com/me"
+
+	//Discord
+	DiscordClientID     = "1317915050664792075"
+	DiscordClientSecret = "YA9LCBQwU9yacIhwEMs1SnODc31wlxPe"
+	DiscordRedirectURI  = "http://localhost:8081/auth/discord/callback"
+	DiscordAuthURL      = "https://discord.com/oauth2/authorize"
+	DiscordTokenURL     = "https://discord.com/api/oauth2/token"
+	DiscordUserInfoURL  = "https://discord.com/api/v10/users/@me"
 )
 
 type ProviderConfig struct {

@@ -20,49 +20,35 @@ func ExtractCode(r *http.Request) (string, error) {
 	return code, nil
 }
 
-func ExchangeCodeForToken(tokenURL, clientID, clientSecret, redirectURI, code, method string) (string, error) {
-	// Default to "POST" if no method is provided
-	if method == "" {
-		method = "POST"
-	}
+func ExchangeCodeForToken(tokenURL, clientID, clientSecret, redirectURI, code string) (string, error) {
+	// Prepare the request body for POST
+	tokenReqBody := fmt.Sprintf(
+		"code=%s&client_id=%s&client_secret=%s&redirect_uri=%s&grant_type=authorization_code",
+		code, clientID, clientSecret, redirectURI,
+	)
 
-	var resp *http.Response
-	var err error
-
-	// Check method and perform the correct HTTP request
-	if method == "POST" {
-		// Prepare the request body for POST
-		tokenReqBody := fmt.Sprintf(
-			"code=%s&client_id=%s&client_secret=%s&redirect_uri=%s&grant_type=authorization_code",
-			code, clientID, clientSecret, redirectURI,
-		)
-		resp, err = http.Post(tokenURL, "application/x-www-form-urlencoded", strings.NewReader(tokenReqBody))
-	} else if method == "GET" {
-		// Prepare GET parameters
-		reqURL := fmt.Sprintf("%s?code=%s&client_id=%s&client_secret=%s&redirect_uri=%s&grant_type=authorization_code",
-			tokenURL, code, clientID, clientSecret, redirectURI)
-		resp, err = http.Get(reqURL)
-	} else {
-		return "", fmt.Errorf("unsupported method: %s", method)
-	}
-
+	// Use POST method to exchange the code for a token
+	resp, err := http.Post(tokenURL, "application/x-www-form-urlencoded", strings.NewReader(tokenReqBody))
 	if err != nil {
 		return "", fmt.Errorf("failed to exchange code for token: %v", err)
 	}
 	defer resp.Body.Close()
 
+	// Decode the response body to extract the token
 	var tokenResp map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil {
-		return "", fmt.Errorf("error decoding body : %w", err)
+		return "", fmt.Errorf("error decoding body: %w", err)
 	}
 
 	response, _ := json.MarshalIndent(tokenResp, "", " ")
 	log.Printf("data recu : %s", response)
 
+	// Extract the access token
 	accessToken, ok := tokenResp["access_token"].(string)
 	if !ok {
 		return "", fmt.Errorf("access token not found in response")
 	}
+
 	return accessToken, nil
 }
 
@@ -75,11 +61,22 @@ func FetchUserInfo(userInfoURL, accessToken, method string) (map[string]interfac
 		method = "GET"
 	}
 
-	// Prepare the request based on method
 	if method == "GET" {
-		// Use GET method to fetch user info (facebook)
-		url := fmt.Sprintf("%s?access_token=%s", userInfoURL, accessToken)
-		userResp, err = http.Get(url)
+		// Use GET method to fetch user info (Facebook/Discord)
+		req, err := http.NewRequest("GET", userInfoURL, nil)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create request: %v", err)
+		}
+		// Set Authorization header with Bearer token
+		req.Header.Set("Authorization", "Bearer "+accessToken)
+		req.Header.Del("Content-Type")
+
+		// Execute the request
+		client := &http.Client{}
+		userResp, err = client.Do(req)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch user info: %v", err)
+		}
 	} else if method == "POST" {
 		// Use POST method to fetch user info (google)
 		userResp, err = http.Post(
@@ -95,29 +92,39 @@ func FetchUserInfo(userInfoURL, accessToken, method string) (map[string]interfac
 	}
 
 	if err != nil {
-		// If there was an error during the request, return it
 		return nil, fmt.Errorf("failed to fetch user info: %v", err)
 	}
 	defer userResp.Body.Close()
 
+	log.Printf("Response status code: %d", userResp.StatusCode)
+
+	// // If the status code isn't 200 (OK), log and return an error
+	// if userResp.StatusCode != 200 {
+	// 	body, _ := io.ReadAll(userResp.Body)
+	// 	log.Printf("Response body on error: %s", string(body))
+	// 	return nil, fmt.Errorf("unexpected status code: %d", userResp.StatusCode)
+	// }
+
+	// Parse the JSON response body into a map
 	var userInfo map[string]interface{}
 	if err := json.NewDecoder(userResp.Body).Decode(&userInfo); err != nil {
-		return nil, fmt.Errorf("error decoding body: %v", err) // Handle the error if decoding fails
+		return nil, fmt.Errorf("error decoding body: %v", err)
 	}
 
+	// Log the received user information for debugging
 	response, _ := json.MarshalIndent(userInfo, "", " ")
-	log.Printf("info user recu : %s", response)
+	log.Printf("Received user info: %s", response)
 
 	// Extract user ID
 	var userID string
 	if userInfo["id"] != nil {
-		userID = userInfo["id"].(string) // Facebook
+		userID = userInfo["id"].(string) // Facebook/Discord
 	} else if userInfo["sub"] != nil {
 		userID = userInfo["sub"].(string) // Google
 	} else {
 		return nil, fmt.Errorf("missing required user ID field")
 	}
-	log.Printf("extracted user ID: %s", userID)
+	log.Printf("Extracted user ID: %s", userID)
 
 	return userInfo, nil
 }
@@ -130,16 +137,7 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 		return
 	}
 
-	// Determine method based on OAuth provider
-	var method string
-	switch config.Name {
-	case "facebook":
-		method = "GET" // Facebook
-	case "google":
-		method = "POST" // Google
-	default:
-		method = "POST" // Default to POST if the provider is not recognized
-	}
+	// log.Printf("Received authorization code: %s", code)
 
 	accesToken, err := ExchangeCodeForToken(
 		config.TokenURL,
@@ -147,7 +145,6 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 		config.ClientSecret,
 		config.RedirectURI,
 		code,
-		method,
 	)
 	if err != nil {
 		log.Printf("Failed to exchange code for token: %v", err)
@@ -155,14 +152,24 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 		return
 	}
 
-	userInfo, err := FetchUserInfo(config.UserInfoURL, accesToken, method)
+	// Method for fetching user info
+	var userInfoMethod string
+	switch config.Name {
+	case "google":
+		userInfoMethod = "POST" // Google t
+	case "facebook", "discord":
+		userInfoMethod = "GET" // Facebook/Discord
+	default:
+		userInfoMethod = "GET"
+	}
+
+	userInfo, err := FetchUserInfo(config.UserInfoURL, accesToken, userInfoMethod)
 	if err != nil {
 		log.Printf("Failed to fetch user info: %v", err)
 		http.Error(w, "Failed to fetch user info: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Extract user id and email, falling back to empty strings if not available
 	id, idExists := userInfo["id"].(string)
 	if !idExists || id == "" {
 		log.Printf("Id not provided by user, continuing without it")
@@ -175,12 +182,18 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 		email = ""
 	}
 
+	username, usernameExists := userInfo["username"].(string)
+	if !usernameExists || username == "" {
+		log.Printf("Username not found in response, defaulting to empty string")
+		username = "" // Or handle as appropriate
+	}
+
 	// Map required fields to the Client struct
 	client := &database.Client{
 		OauthProvider: config.Name,
 		OauthID:       id,
 		Email:         email,
-		UserName:      userInfo["name"].(string),
+		UserName:      username,
 	}
 
 	// Retrieve or create the client in the database
