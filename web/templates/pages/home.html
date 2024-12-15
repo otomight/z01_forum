@@ -23,13 +23,11 @@
 					{{ range .Posts }}
 						<div class="post">
 							{{ template "postcore" (addToStruct . "Session" $.Session) }}
-							<div class="home-comments-container">
-								<button class="show-comments">
-									Comments
-									<img src="/static/image/chevron-right-solid.svg" alt="Chevron icon" class="chevron-icon">
-								</button>
-								{{ template "comments" (addToStruct . "Session" $.Session) }}
-							</div>
+							<button class="show-comments">
+								Comments
+								<img src="/static/image/chevron-right-solid.svg" alt="Chevron icon" class="chevron-icon">
+							</button>
+							{{ template "comments" (addToStruct . "Session" $.Session) }}
 						</div>
 					{{end}}
 				</div>

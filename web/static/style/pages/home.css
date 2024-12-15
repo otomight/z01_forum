@@ -18,14 +18,12 @@ main {
 }
 
 /* SHOW COMMENTS BUTTON */
-.home-comments-container {
-	margin-left:	1.5rem;
-}
 
 /* Hide the comments of posts by default */
 .comments {
-	display:	none;
-	margin-top:	0.4rem !important;
+	display:		none;
+	margin-top:		0.4rem !important;
+	margin-left:	2rem;
 }
 
 .show-comments {
