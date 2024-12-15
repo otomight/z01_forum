@@ -8,32 +8,32 @@ import (
 )
 
 func AddPostCategories(postID int, categoriesID ...int) error {
-	var	query	string
-	var	pc		config.PostsCategoriesTableKeys
-	var	c		config.CategoriesTableKeys
-	var	args	[]any
-	var	i		int
-	var	err		error
+	var query string
+	var pc config.PostsCategoriesTableKeys
+	var c config.CategoriesTableKeys
+	var args []any
+	var i int
+	var err error
 
 	if len(categoriesID) == 0 {
-		return fmt.Errorf("No categories id provided")
+		return fmt.Errorf("no categories id provided")
 	}
 	c = config.TableKeys.Categories
 	pc = config.TableKeys.PostsCategories
 	query = `
-		INSERT INTO `+pc.PostsCategories+` (
-			`+pc.PostID+`, `+pc.CategoryID+`
+		INSERT INTO ` + pc.PostsCategories + ` (
+			` + pc.PostID + `, ` + pc.CategoryID + `
 		)
-		SELECT ?, c.`+c.ID+`
-		FROM `+c.Categories+` c
-		WHERE c.`+c.ID+` IN (
+		SELECT ?, c.` + c.ID + `
+		FROM ` + c.Categories + ` c
+		WHERE c.` + c.ID + ` IN (
 	`
-	args = make([]any, len(categoriesID) + 1)
+	args = make([]any, len(categoriesID)+1)
 	args[0] = postID
 	for i = 0; i < len(categoriesID); i++ {
-		args[i + 1] = categoriesID[i]
+		args[i+1] = categoriesID[i]
 		query += "?"
-		if i + 1 != len(categoriesID) {
+		if i+1 != len(categoriesID) {
 			query += ","
 		} else {
 			query += ");"
@@ -47,21 +47,21 @@ func AddPostCategories(postID int, categoriesID ...int) error {
 }
 
 func GetPostCategories(postID int) ([]*Category, error) {
-	var	query			string
-	var	pc				config.PostsCategoriesTableKeys
-	var	c				config.CategoriesTableKeys
-	var	rows			*sql.Rows
-	var	postCategories	[]*Category
-	var	postCategory	*Category
-	var	err				error
+	var query string
+	var pc config.PostsCategoriesTableKeys
+	var c config.CategoriesTableKeys
+	var rows *sql.Rows
+	var postCategories []*Category
+	var postCategory *Category
+	var err error
 
 	c = config.TableKeys.Categories
 	pc = config.TableKeys.PostsCategories
 	query = `
-		SELECT c.`+c.ID+`, c.`+c.Name+`
-		FROM `+c.Categories+` c
-		JOIN `+pc.PostsCategories+` pc ON pc.`+pc.CategoryID+` = c.`+c.ID+`
-		WHERE pc.`+pc.PostID+` = ?;
+		SELECT c.` + c.ID + `, c.` + c.Name + `
+		FROM ` + c.Categories + ` c
+		JOIN ` + pc.PostsCategories + ` pc ON pc.` + pc.CategoryID + ` = c.` + c.ID + `
+		WHERE pc.` + pc.PostID + ` = ?;
 	`
 	rows, err = DB.Query(query, postID)
 	if err != nil {
@@ -80,33 +80,33 @@ func GetPostCategories(postID int) ([]*Category, error) {
 }
 
 func GetGlobalCategoryByID(id int) (*Category, error) {
-	var	query	string
-	var	c		config.CategoriesTableKeys
-	var	result	Category
-	var	err		error
+	var query string
+	var c config.CategoriesTableKeys
+	var result Category
+	var err error
 
 	c = config.TableKeys.Categories
 	query = `
-		SELECT `+c.ID+`, `+c.Name+`
-		FROM `+c.Categories+`
-		WHERE `+c.ID+` = ?
+		SELECT ` + c.ID + `, ` + c.Name + `
+		FROM ` + c.Categories + `
+		WHERE ` + c.ID + ` = ?
 	`
 	err = DB.QueryRow(query, id).Scan(&result.ID, &result.Name)
 	return &result, err
 }
 
 func GetGlobalCategories() ([]*Category, error) {
-	var	query		string
-	var	c			config.CategoriesTableKeys
-	var	categories	[]*Category
-	var	category	*Category
-	var	rows		*sql.Rows
-	var	err			error
+	var query string
+	var c config.CategoriesTableKeys
+	var categories []*Category
+	var category *Category
+	var rows *sql.Rows
+	var err error
 
 	c = config.TableKeys.Categories
 	query = `
-		SELECT `+c.ID+`, `+c.Name+`
-		FROM `+c.Categories+`
+		SELECT ` + c.ID + `, ` + c.Name + `
+		FROM ` + c.Categories + `
 	`
 	rows, err = DB.Query(query)
 	if err != nil {

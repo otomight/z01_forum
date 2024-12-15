@@ -13,8 +13,8 @@ import (
 var DB *sql.DB
 
 func getSqlTables() string {
-	var	content	[]byte
-	var	err		error
+	var content []byte
+	var err error
 
 	content, err = os.ReadFile(config.SqlTablesFilePath)
 	if err != nil {
@@ -24,7 +24,7 @@ func getSqlTables() string {
 }
 
 func isThereAnyCategories() bool {
-	var	c		config.CategoriesTableKeys
+	var c config.CategoriesTableKeys
 
 	c = config.TableKeys.Categories
 	if countRows(c.Categories) > 0 {
@@ -35,16 +35,16 @@ func isThereAnyCategories() bool {
 
 // called on db init
 func insertCategories() {
-	var	err			error
-	var	c			config.CategoriesTableKeys
+	var err error
+	var c config.CategoriesTableKeys
 
 	if isThereAnyCategories() {
 		return
 	}
 	c = config.TableKeys.Categories
 	_, err = insertInto(InsertIntoQuery{
-		Table: c.Categories,
-		Keys: []string{c.Name},
+		Table:  c.Categories,
+		Keys:   []string{c.Name},
 		Values: utils.ToMatrix(config.CategoriesNames),
 	})
 	if err != nil {
@@ -54,8 +54,8 @@ func insertCategories() {
 
 func InitDB() error {
 	//Open DB connection
-	var	schema	string
-	var	err		error
+	var schema string
+	var err error
 
 	DB, err = sql.Open("sqlite3", config.DbFilePath)
 	if err != nil {

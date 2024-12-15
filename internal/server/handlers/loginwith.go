@@ -10,7 +10,7 @@ import (
 // Google
 func GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	authURL := fmt.Sprintf(
-		"%s?client_id=%s&redirect_uri=%s&response_type=code&scope=openid profile email",
+		"%s?client_id=%s&redirect_uri=%s&response_type=code&scope=email profile",
 		config.GoogleAuthURL,
 		config.GoogleClientID,
 		config.GoogleRedirectURI,
@@ -56,7 +56,7 @@ func GithubCallBackHandler(w http.ResponseWriter, r *http.Request) {
 // Fb
 func FacebookLoginHandler(w http.ResponseWriter, r *http.Request) {
 	authURL := fmt.Sprintf(
-		"%s?client_id=%s&redirect_uri=%s&scope=email",
+		"%s?client_id=%s&redirect_uri=%s&scope=email, public_profile",
 		config.FacebookAuthURL,
 		config.FacebookClientID,
 		config.FacebookRedirectURI,

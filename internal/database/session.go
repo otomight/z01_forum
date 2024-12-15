@@ -13,7 +13,7 @@ import (
 
 // Session CRUD operations
 func CreateSession(session *UserSession) error {
-	var	s	config.SessionsTableKeys
+	var s config.SessionsTableKeys
 
 	s = config.TableKeys.Sessions
 	if session.ID == "" || session.UserID == 0 {
@@ -23,7 +23,7 @@ func CreateSession(session *UserSession) error {
 		session.ID, session.UserID, session.Expiration, session.UserRole)
 	_, err := insertInto(InsertIntoQuery{
 		Table: s.Sessions,
-		Keys: []string{s.ID, s.UserID, s.Expiration, s.UserRole, s.UserName},
+		Keys:  []string{s.ID, s.UserID, s.Expiration, s.UserRole, s.UserName},
 		Values: [][]any{{
 			session.ID, session.UserID, session.Expiration,
 			session.UserRole, session.UserName,
@@ -37,18 +37,18 @@ func CreateSession(session *UserSession) error {
 }
 
 func GetSessionWithKey(key string, value any) (*UserSession, error) {
-	var	query	string
-	var	s		config.SessionsTableKeys
-	var	row		*sql.Row
-	var	session	UserSession
-	var	err		error
+	var query string
+	var s config.SessionsTableKeys
+	var row *sql.Row
+	var session UserSession
+	var err error
 
 	s = config.TableKeys.Sessions
 	query = `
-		SELECT `+s.ID+`, `+s.UserID+`, `+s.Expiration+`, `+s.CreationDate+`,
-			`+s.UpdateDate+`, `+s.UserRole+`, `+s.UserName+`
-		FROM `+s.Sessions+`
-		WHERE `+key+` = ?
+		SELECT ` + s.ID + `, ` + s.UserID + `, ` + s.Expiration + `, ` + s.CreationDate + `,
+			` + s.UpdateDate + `, ` + s.UserRole + `, ` + s.UserName + `
+		FROM ` + s.Sessions + `
+		WHERE ` + key + ` = ?
 	`
 	row = DB.QueryRow(query, value)
 	err = row.Scan(
@@ -76,18 +76,17 @@ func GetSessionByUserID(userId int) (*UserSession, error) {
 	return GetSessionWithKey(config.TableKeys.Sessions.UserID, userId)
 }
 
-
 // Create user session and return session ID
 func CreateUserSession(userID int, userRole, userName string) (string, error) {
 	sessionID := GenerateSessionID()
 	expiration := time.Now().Add(24 * time.Hour)
 
 	session := &UserSession{
-		ID:			sessionID,
-		UserID:		userID,
-		UserRole:	userRole,
-		UserName:	userName,
-		Expiration:	expiration,
+		ID:         sessionID,
+		UserID:     userID,
+		UserRole:   userRole,
+		UserName:   userName,
+		Expiration: expiration,
 	}
 
 	//Store session to database
@@ -104,12 +103,12 @@ func GenerateSessionID() string {
 }
 
 func DeleteSession(sessionID string) error {
-	var	s	config.SessionsTableKeys
+	var s config.SessionsTableKeys
 
 	s = config.TableKeys.Sessions
 	query := `
-		DELETE FROM `+s.Sessions+`
-		WHERE `+s.ID+` = ?
+		DELETE FROM ` + s.Sessions + `
+		WHERE ` + s.ID + ` = ?
 	`
 	_, err := DB.Exec(query, sessionID)
 

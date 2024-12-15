@@ -6,10 +6,10 @@ import (
 	db "forum/internal/database"
 	"forum/internal/server/models"
 	"forum/internal/server/templates"
+	sessioncreate "forum/internal/sessioncreate"
 	"forum/internal/utils"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
@@ -19,10 +19,10 @@ func displayRegisterPage(
 	w http.ResponseWriter, r *http.Request,
 	userInput *models.RegisterPageUserInput, errorMsg *models.RegisterErrorMsg,
 ) {
-	var	session		*db.UserSession
-	var	categories	[]*db.Category
-	var	data		models.RegisterPageData
-	var	err			error
+	var session *db.UserSession
+	var categories []*db.Category
+	var data models.RegisterPageData
+	var err error
 
 	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
 	if session != nil {
@@ -37,10 +37,10 @@ func displayRegisterPage(
 		return
 	}
 	data = models.RegisterPageData{
-		Session:	nil,
-		Categories:	categories,
-		UserInput:	userInput,
-		ErrorMsg:	errorMsg,
+		Session:    nil,
+		Categories: categories,
+		UserInput:  userInput,
+		ErrorMsg:   errorMsg,
 	}
 	templates.RenderTemplate(w, config.RegisterTmpl, data)
 }
@@ -49,19 +49,19 @@ func handlerRegisterError(
 	w http.ResponseWriter, r *http.Request,
 	err error, form models.RegisterForm,
 ) {
-	var	sqliteErr		sqlite3.Error
-	var	tableName		string
-	var	columnName		string
-	var	cl				config.ClientsTableKeys
-	var	userInput		*models.RegisterPageUserInput
-	var	ok				bool
+	var sqliteErr sqlite3.Error
+	var tableName string
+	var columnName string
+	var cl config.ClientsTableKeys
+	var userInput *models.RegisterPageUserInput
+	var ok bool
 
 	cl = config.TableKeys.Clients
 	if sqliteErr, ok = err.(sqlite3.Error); ok {
 		tableName, columnName = utils.GetSqlite3UniqueErrorInfos(sqliteErr)
 		userInput = &models.RegisterPageUserInput{
-			Username:	form.UserName,
-			Email:		form.Email,
+			Username: form.UserName,
+			Email:    form.Email,
 		}
 		if tableName == cl.Clients && columnName == cl.UserName {
 			displayRegisterPage(w, r, userInput, &models.RegisterErrorMsg{
@@ -83,9 +83,9 @@ func createUser(
 	w http.ResponseWriter, r *http.Request,
 	form models.RegisterForm, userRole string,
 ) (int, error) {
-	var	hashedPassword	[]byte
-	var	userID			int
-	var	err				error
+	var hashedPassword []byte
+	var userID int
+	var err error
 
 	hashedPassword, err = bcrypt.GenerateFromPassword(
 		[]byte(form.Password), bcrypt.DefaultCost,
@@ -105,31 +105,10 @@ func createUser(
 	return 0, err
 }
 
-func createSession(
-	w http.ResponseWriter, userID int, userRole string, userName string,
-) error {
-	sessionID, err := database.CreateUserSession(userID, userRole, userName)
-	if err != nil {
-		log.Printf("Error creating session: %v", err)
-		http.Error(w, "Failed to create sesion", http.StatusInternalServerError)
-		return err
-	}
-	http.SetCookie(w, &http.Cookie{
-		Name:		"session_id",
-		Value:		sessionID,
-		Path:		"/",
-		Expires:	time.Now().Add(24 * time.Hour),
-		HttpOnly:	true,
-		Secure:		true,
-		SameSite:	http.SameSiteLaxMode,
-	})
-	return nil
-}
-
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var	form		models.RegisterForm
-	var	userID		int
-	var	err			error
+	var form models.RegisterForm
+	var userID int
+	var err error
 
 	if r.Method == http.MethodGet {
 		displayRegisterPage(w, r, nil, nil)
@@ -151,7 +130,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if userID, err = createUser(w, r, form, config.UserRole.User); err != nil {
 		return
 	}
-	err = createSession(w, userID, config.UserRole.User, form.UserName)
+	err = sessioncreate.SessionCreate(w, userID, config.UserRole.User, form.UserName)
 	if err != nil {
 		return
 	}

@@ -15,7 +15,7 @@ const (
 	GoogleRedirectURI  = "http://localhost:8081/auth/callback"
 	GoogleAuthURL      = "https://accounts.google.com/o/oauth2/v2/auth"
 	GoogleTokenURL     = "https://oauth2.googleapis.com/token"
-	GoogleUserInfoURL  = "https://www.googleapis.com/oauth2/v2/userinfo"
+	GoogleUserInfoURL  = "https://www.googleapis.com/oauth2/v3/userinfo"
 
 	//Github
 	GithubClientID     = "Iv23lixCMoiAieKSPEuk"
@@ -28,10 +28,10 @@ const (
 	//Facebook
 	FacebookClientID     = "3907245556220479"
 	FacebookClientSecret = "9f945eb300532f82baa8d62d5a613d3e"
-	FacebookRedirectURI  = "http://localhost:8081"
-	FacebookAuthURL      = "https://www.facebook.com/v12.0/dialog/oauth"
-	FacebookTokenURL     = "https://graph.facebook.com/v12.0/oauth/access_token"
-	FacebookUserInfoURL  = "https://graph.facebook.com/me?fields=id,name,email"
+	FacebookRedirectURI  = "http://localhost:8081/auth/facebook/callback"
+	FacebookAuthURL      = "https://www.facebook.com/v21.0/dialog/oauth"
+	FacebookTokenURL     = "https://graph.facebook.com/v21.0/oauth/access_token"
+	FacebookUserInfoURL  = "https://graph.facebook.com/me"
 )
 
 type ProviderConfig struct {

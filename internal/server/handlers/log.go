@@ -5,6 +5,7 @@ import (
 	db "forum/internal/database"
 	"forum/internal/server/models"
 	"forum/internal/server/templates"
+	sessioncreate "forum/internal/sessioncreate"
 	"forum/internal/utils"
 	"log"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 )
 
 func removeExistingUserSession(user db.Client) {
-	var	session	*db.UserSession
+	var session *db.UserSession
 
 	session, _ = db.GetSessionByUserID(user.ID)
 	if session == nil {
@@ -25,10 +26,10 @@ func displayLoginPage(
 	w http.ResponseWriter, r *http.Request,
 	userInput *models.LoginPageUserInput, errorMsg *models.LoginErrorMsg,
 ) {
-	var	session		*db.UserSession
-	var	categories	[]*db.Category
-	var	data		models.LoginPageData
-	var	err			error
+	var session *db.UserSession
+	var categories []*db.Category
+	var data models.LoginPageData
+	var err error
 
 	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
 	if session != nil {
@@ -43,22 +44,19 @@ func displayLoginPage(
 		return
 	}
 	data = models.LoginPageData{
-		Session:	nil,
-		Categories:	categories,
-		UserInput:	userInput,
-		ErrorMsg:	errorMsg,
+		Session:    nil,
+		Categories: categories,
+		UserInput:  userInput,
+		ErrorMsg:   errorMsg,
 	}
 	templates.RenderTemplate(w, config.LoginTmpl, data)
 }
 
-func handleLogError(
-	w http.ResponseWriter, r *http.Request,
-	err error, username string,
-) {
-	var	userInput	*models.LoginPageUserInput
+func handleLogError(w http.ResponseWriter, r *http.Request, err error, username string) {
+	var userInput *models.LoginPageUserInput
 
 	userInput = &models.LoginPageUserInput{
-		Username:	username,
+		Username: username,
 	}
 	if err.Error() == "user not found" {
 		displayLoginPage(w, r, userInput, &models.LoginErrorMsg{
@@ -77,8 +75,8 @@ func logUser(
 	w http.ResponseWriter, r *http.Request,
 	username string, password string,
 ) error {
-	var	user		db.Client
-	var	err			error
+	var user db.Client
+	var err error
 
 	user, err = db.ValidateUserCredentials(username, password)
 	if err != nil {
@@ -86,7 +84,7 @@ func logUser(
 		return err
 	}
 	removeExistingUserSession(user)
-	err = createSession(w, user.ID, user.UserRole, user.UserName)
+	err = sessioncreate.SessionCreate(w, user.ID, user.UserRole, user.UserName)
 	if err != nil {
 		return err
 	}
@@ -95,8 +93,8 @@ func logUser(
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var	form		models.LoginForm
-	var	err			error
+	var form models.LoginForm
+	var err error
 
 	if r.Method == http.MethodGet {
 		displayLoginPage(w, r, nil, nil)
@@ -120,8 +118,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogOutHandler(w http.ResponseWriter, r *http.Request) {
-	var	cookie	*http.Cookie
-	var	err		error
+	var cookie *http.Cookie
+	var err error
 
 	if cookie, err = r.Cookie("session_id"); err != nil {
 		if err == http.ErrNoCookie {
@@ -137,14 +135,14 @@ func LogOutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// delete the cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:		"session_id",
-		Value:		"",
-		Path:		"/",
-		Expires:	time.Now().Add(-1 * time.Hour),
+		Name:    "session_id",
+		Value:   "",
+		Path:    "/",
+		Expires: time.Now().Add(-1 * time.Hour),
 		// Set an expiration in the past to delete the cookie
-		HttpOnly:	true,
-		Secure:		true,
-		SameSite:	http.SameSiteLaxMode,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
 	})
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
