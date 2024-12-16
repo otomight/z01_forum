@@ -71,15 +71,20 @@
 }
 
 .comments .comment .comment__infos {
-	width:				40%;
+	width:				80%;
 	display:			flex;
 	justify-content:	space-between;
 	align-items:		center;
+	min-width:			0;
 }
 .comments .comment .comment__author {
 	margin-right:	1rem;
 	font-weight:	bold;
 	font-style:		oblique;
+	max-width:		25rem;
+	width:			100%;
+	min-width:		0;
+	overflow-wrap:	break-word;
 }
 
 .comments .comment .comment__creation-date {
