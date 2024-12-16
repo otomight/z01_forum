@@ -6,6 +6,10 @@
 	margin-top:			2.5rem;
 }
 
+.post .post-core__author {
+	padding-left:	0.7rem;
+}
+
 /* SHOW COMMENTS BUTTON */
 
 /* Hide the comments of posts by default */
