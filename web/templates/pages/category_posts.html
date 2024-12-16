@@ -8,6 +8,8 @@
 		<link rel="stylesheet" href="/static/style/layout/navbar.css">
 		<link rel="stylesheet" href="/static/style/layout/footer.css">
 		<link rel="stylesheet" href="/static/style/pages/default.css">
+		<link rel="stylesheet" href="/static/style/pages/listpost.css">
+		<link rel="stylesheet" href="/static/style/components/postcore.css">
 	</head>
 	<body>
 		<div class="page">
@@ -16,6 +18,7 @@
 				{{ template "navbar" . }}
 				<section class="content-fixed">
 					<div class="content-container">
+						<h2>{{ .Category.Name }}</h2>
 						{{ template "listpost" . }}
 					</div>
 				</section>

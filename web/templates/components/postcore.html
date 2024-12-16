@@ -1,20 +1,20 @@
 {{ define "postcore" }}
-	<div class="post__core">
-		<div class="post__head">
-			<a class="post__title" href="/post/view/{{ .ID }}">{{ .Title }}</a>
-			<div class="post__creation-date">
+	<div class="post-core">
+		<div class="post-core__head">
+			<a class="post-core__title" href="/post/view/{{ .ID }}">{{ .Title }}</a>
+			<div class="post-core__creation-date">
 				<time datetime="{{ .CreationDate }}">{{ .CreationDate }}</time>
 			</div>
 		</div>
-		<div class="post__content">{{ .Content }}</div>
-		<div class="post__footer">
-			<div class="post__author">by <a href="/">{{ .UserName }}</a></div>
-			<div class="post__buttons">
+		<div class="post-core__content">{{ .Content }}</div>
+		<div class="post-core__footer">
+			<div class="post-core__author">by <a href="">{{ .UserName }}</a></div>
+			<div class="post-core__buttons">
 				{{ if .Session }}
 					<!-- Additional features for user/admin/moderator -->
 					{{ if or (eq .AuthorID .Session.UserID)
 							(doesStrMatchAny .Session.UserRole "moderator" "administrator") }}
-						<form action="/post/delete" method="POST" class="post__delete"
+						<form action="/post/delete" method="POST" class="post-core__delete"
 							onsubmit="return confirm('Are you sure you want to delete this post ?');">
 							<input type="hidden" name="post_id" value="{{ .ID }}">
 							<button type="submit">

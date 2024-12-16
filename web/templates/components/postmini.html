@@ -1,0 +1,12 @@
+{{ define "postmini" }}
+	<div class="post-core">
+		<div class="post-core__head">
+			<a class="post-core__title" href="/post/view/{{ .ID }}">{{ .Title }}</a>
+			<div class="post-core__author">by <a href="">{{ .UserName }}</a></div>
+			<div class="post-core__creation-date">
+				<time datetime="{{ .CreationDate }}">{{ .CreationDate }}</time>
+			</div>
+		</div>
+		<div class="post-core__content">{{ .Content }}</div>
+	</div>
+{{ end }}

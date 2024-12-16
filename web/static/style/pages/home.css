@@ -1,3 +1,11 @@
+.post {
+	display:			flex;
+	flex-direction:		column;
+	max-width:			50rem;
+	width:				100%;
+	margin-top:			2.5rem;
+}
+
 /* SHOW COMMENTS BUTTON */
 
 /* Hide the comments of posts by default */

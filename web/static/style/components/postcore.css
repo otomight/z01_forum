@@ -1,0 +1,55 @@
+.post-core {
+	border-radius:		0.5rem;
+	padding:			0.7rem;
+	background-color:	rgba(236, 236, 236, 0.5);
+}
+
+.post-core .post-core__head {
+	display:			flex;
+	justify-content:	space-between;
+	align-items:		center;
+}
+
+.post-core .post-core__title {
+	color:				black;
+	text-decoration:	none;
+	margin-right:		1rem;
+	font-weight:		bold;
+	border-radius:		0.5rem;
+	padding:			0.7rem;
+	background-color:	white;
+}
+
+.post-core .post-core__title:hover {
+	text-decoration:	underline;
+}
+
+.post-core .post-core__creation-date {
+	color:		rgb(150, 150, 150);
+	font-size:	0.7rem;
+	font-style:	italic;
+}
+
+.post-core .post-core__content {
+	overflow-wrap:		break-word;
+	border-radius:		0.5rem;
+	padding:			0.7rem;
+	background-color:	white;
+	margin-top:			0.5rem;
+}
+
+.post-core .post-core__author {
+	color:		black;
+	font-style:	italic;
+	margin-top:	0.5rem;
+	padding:	0.5rem;
+}
+
+.post-core .post-core__author a {
+	color:				inherit;
+	text-decoration:	none;
+}
+
+.post-core .post-core__author a:hover {
+	text-decoration:	underline;
+}
