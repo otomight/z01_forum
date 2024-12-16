@@ -5,3 +5,13 @@
 	width:				100%;
 	margin-top:			2.5rem;
 }
+
+
+/* Make the post minimal */
+.post-core .post-core__content {
+	display:			-webkit-box;
+	-webkit-line-clamp:	3;
+	line-clamp:			3;
+	-webkit-box-orient:	vertical;
+	overflow:			hidden;
+}

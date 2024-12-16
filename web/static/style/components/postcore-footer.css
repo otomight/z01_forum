@@ -2,13 +2,13 @@
 	display:			flex;
 	justify-content:	space-between;
 	align-items:		center;
+	margin-top:			0.5rem;
 }
 
 .post-core .post-core__buttons {
 	display:		flex;
 	gap:			0.5rem;
 	align-items:	center;
-	margin-top:		0.5rem;
 }
 
 /* Remove margin top from like and dislike button

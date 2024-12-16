@@ -1,9 +1,7 @@
 {{ define "listpost" }}
-	<div id="posts">
-		{{ range .Posts }}
-			<div class="post">
-				{{ template "postmini" . }}
-			</div>
-		{{end}}
-	</div>
+	{{ range .Posts }}
+		<div class="post">
+			{{ template "postmini" . }}
+		</div>
+	{{end}}
 {{ end }}
