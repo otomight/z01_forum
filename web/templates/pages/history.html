@@ -8,6 +8,7 @@
 		<link rel="stylesheet" href="/static/style/layout/navbar.css">
 		<link rel="stylesheet" href="/static/style/layout/footer.css">
 		<link rel="stylesheet" href="/static/style/pages/default.css">
+		<link rel="stylesheet" href="/static/style/pages/history.css">
 		<link rel="stylesheet" href="/static/style/partials/listpost.css">
 		<link rel="stylesheet" href="/static/style/components/postcore.css">
 	</head>
@@ -18,8 +19,10 @@
 				{{ template "navbar" . }}
 				<section class="content-fixed">
 					<div class="content-container">
-						<a href="/history/created">Posts Created</a>
-						<a href="/history/liked">Posts Liked</a>
+						<div class="history-categories">
+							<a href="/history/created">Posts Created</a>
+							<a href="/history/liked">Posts Liked</a>
+						</div>
 						{{ template "listpost" . }}
 					</div>
 				</section>
