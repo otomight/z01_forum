@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"forum/internal/config"
 	"forum/internal/database"
-	"forum/internal/sessioncreate"
 
 	"log"
 	"net/http"
@@ -214,7 +213,7 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 	client.ID = dbClient.ID
 
 	// Create session
-	if err = sessioncreate.SessionCreate(w, client.ID, client.UserRole, client.UserName); err != nil {
+	if err = SessionCreate(w, client.ID, client.UserRole, client.UserName); err != nil {
 		log.Printf("Error creating session: %v", err)
 		http.Error(w, "Failed to create session.", http.StatusInternalServerError)
 		return

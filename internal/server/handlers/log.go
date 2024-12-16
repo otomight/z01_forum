@@ -4,8 +4,8 @@ import (
 	"forum/internal/config"
 	db "forum/internal/database"
 	"forum/internal/server/models"
+	"forum/internal/server/services"
 	"forum/internal/server/templates"
-	sessioncreate "forum/internal/sessioncreate"
 	"forum/internal/utils"
 	"log"
 	"net/http"
@@ -84,7 +84,7 @@ func logUser(
 		return err
 	}
 	removeExistingUserSession(user)
-	err = sessioncreate.SessionCreate(w, user.ID, user.UserRole, user.UserName)
+	err = services.SessionCreate(w, user.ID, user.UserRole, user.UserName)
 	if err != nil {
 		return err
 	}

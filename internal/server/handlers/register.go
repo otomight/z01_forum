@@ -5,8 +5,8 @@ import (
 	"forum/internal/database"
 	db "forum/internal/database"
 	"forum/internal/server/models"
+	"forum/internal/server/services"
 	"forum/internal/server/templates"
-	sessioncreate "forum/internal/sessioncreate"
 	"forum/internal/utils"
 	"log"
 	"net/http"
@@ -130,7 +130,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if userID, err = createUser(w, r, form, config.UserRole.User); err != nil {
 		return
 	}
-	err = sessioncreate.SessionCreate(w, userID, config.UserRole.User, form.UserName)
+	err = services.SessionCreate(w, userID, config.UserRole.User, form.UserName)
 	if err != nil {
 		return
 	}

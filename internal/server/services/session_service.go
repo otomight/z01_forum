@@ -1,4 +1,4 @@
-package sessioncreate
+package services
 
 import (
 	"forum/internal/database"
