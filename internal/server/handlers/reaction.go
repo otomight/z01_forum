@@ -14,18 +14,17 @@ func updateReactionInDb(
 	elemType	config.ReactionElemType,
 	liked		bool,
 ) (*models.ReactionResponseAjax, error) {
-	var	ldl			*db.Reaction
-	var	response	models.ReactionResponseAjax
-	var	err			error
+	var	ldl				*db.Reaction
+	var	response		models.ReactionResponseAjax
+	var	newReactCount	*db.ReactionsCount
+	var	err				error
 
 	ldl, err = db.GetReactionByUser(elemType, received.ElemID, received.UserID)
 	if err != nil {
 		return nil, err
 	}
 	if ldl != nil && ldl.Liked == liked {
-		err = db.DeleteUserReaction(
-			elemType, received.ElemID, received.UserID,
-		)
+		err = db.DeleteUserReaction(elemType, received.ElemID, received.UserID)
 		if err != nil {
 			return nil, err
 		}
@@ -40,9 +39,12 @@ func updateReactionInDb(
 			response.Replaced = true
 		}
 	}
-	if err = db.UpdateReactionsCount(elemType, received.ElemID); err != nil {
+	newReactCount, err = db.UpdateReactionsCount(elemType, received.ElemID)
+	if err != nil {
 		return nil, err
 	}
+	response.LikesCount = newReactCount.Likes
+	response.DislikesCount = newReactCount.Dislikes
 	return &response, nil
 }
 

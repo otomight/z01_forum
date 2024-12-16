@@ -1,5 +1,3 @@
-import { addToElemNumber } from "./tools/math.js";
-
 // match with LikeDislikePostRequestAjax struct in server
 interface ReactionRequest {
 	elem_id:	number;
@@ -8,9 +6,12 @@ interface ReactionRequest {
 
 // match with LikeDislikePostResponseAjax struct in server
 interface ReactionResponse {
-	added:		boolean;
-	deleted:	boolean;
-	replaced:	boolean;
+	likes_count:	number;
+	dislikes_count:	number;
+	added:			boolean;
+	deleted:		boolean;
+	replaced:		boolean;
+
 };
 
 // match with LikeRequest and HTML
@@ -41,14 +42,25 @@ async function fetchRequest(
 	return response;
 }
 
+function getAction(dataset: ReactionDataSet, liked: boolean): string {
+	let	action:	string;
+
+	if (liked)
+		action = "/" + dataset.type + "/like";
+	else
+		action = "/" + dataset.type + "/dislike";
+	return action;
+}
+
 async function sendReactionRequest(
 	dataset:	ReactionDataSet,
-	action:		string
+	liked:		boolean
 ): Promise<ReactionResponse | null> {
 	const	request:	ReactionRequest = ({
 		elem_id: parseInt(dataset.id, 10),
 		user_id: parseInt(dataset.currentUserId, 10)
 	});
+	const	action:		string = getAction(dataset, liked);
 	let		response:	Response | null;
 
 	try {
@@ -63,7 +75,7 @@ async function sendReactionRequest(
 	}
 }
 
-function addToButtonValue(button: HTMLButtonElement, nb: number) {
+function setButtonValue(button: HTMLButtonElement, nb: number) {
 	const	buttonCount:	HTMLElement | null = (
 		button.querySelector('.reaction-count') as HTMLElement | null
 	);
@@ -72,42 +84,36 @@ function addToButtonValue(button: HTMLButtonElement, nb: number) {
 		console.error("Element with class reaction-count not found");
 		return;
 	}
-	addToElemNumber(buttonCount, nb);
+	if (isNaN(nb))
+		return
+	buttonCount.textContent = String(nb);
 }
 
 async function sendReaction(
 	dataset:		ReactionDataSet,
-	action:			string,
 	button:			HTMLButtonElement,
-	oppositeButton:	HTMLButtonElement
+	oppositeButton:	HTMLButtonElement,
+	liked:			boolean
 ) {
 	const		response:	ReactionResponse | null = (
-		await sendReactionRequest(dataset, action)
+		await sendReactionRequest(dataset, liked)
 	);
 
 	if (response == null)
 		return;
-	if (response.added) {
-		addToButtonValue(button, 1);
+	if (liked) {
+		setButtonValue(button, response.likes_count);
+		setButtonValue(oppositeButton, response.dislikes_count);
+	} else {
+		setButtonValue(button, response.dislikes_count);
+		setButtonValue(oppositeButton, response.likes_count);
+	}
+	if (response.added)
 		button.classList.add('active');
-	} else if (response.deleted) {
-		addToButtonValue(button, -1);
+	else if (response.deleted)
 		button.classList.remove('active');
-	}
-	if (response.added && response.replaced) {
-		addToButtonValue(oppositeButton, -1);
+	if (response.added && response.replaced)
 		oppositeButton.classList.remove('active');
-	}
-}
-
-function getAction(dataset: ReactionDataSet, liked: boolean): string {
-	let	action:	string;
-
-	if (liked)
-		action = "/" + dataset.type + "/like";
-	else
-		action = "/" + dataset.type + "/dislike";
-	return action;
 }
 
 function handleReactionButton(event: Event) {
@@ -117,8 +123,8 @@ function handleReactionButton(event: Event) {
 	let		button:				HTMLButtonElement | null;
 	let		oppositeButton:		HTMLButtonElement | null;
 	let		reactionSection:	HTMLElement | null;
-	let		action:				string;
 	let		dataset:			ReactionDataSet;
+	let		liked:				boolean;
 
 	button = target?.closest('button') as HTMLButtonElement | null;
 	if (!button)
@@ -128,16 +134,16 @@ function handleReactionButton(event: Event) {
 		return;
 	dataset = reactionSection.dataset as unknown as ReactionDataSet;
 	if (button.classList.contains('like-button')) {
-		action = getAction(dataset, true);
+		liked = true;
 		oppositeButton = reactionSection.querySelector('.dislike-button');
 	}
 	else {
-		action = getAction(dataset, false);
+		liked = false;
 		oppositeButton = reactionSection.querySelector('.like-button');
 	}
 	if (!oppositeButton)
 		return;
-	sendReaction(dataset, action, button, oppositeButton);
+	sendReaction(dataset, button, oppositeButton, liked);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

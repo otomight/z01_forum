@@ -83,3 +83,8 @@ type InsertIntoQuery struct {
 	Values [][]any
 	Ending string
 }
+
+type ReactionsCount struct {
+	Likes		int
+	Dislikes	int
+}

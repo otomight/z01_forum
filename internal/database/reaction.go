@@ -159,13 +159,12 @@ func updateReactionsCountQuery(
 
 func UpdateReactionsCount(
 	elemType config.ReactionElemType, elemID int,
-) error {
+) (*ReactionsCount, error) {
 	var	p					config.PostsTableKeys
 	var	c					config.CommentsTableKeys
 	var	query				string
 	var	result				sql.Result
-	var	newLikesCount		int
-	var	newDislikesCount	int
+	var	newReactCount		*ReactionsCount
 	var	err					error
 
 	if elemType == config.ReactElemType.Post {
@@ -175,24 +174,30 @@ func UpdateReactionsCount(
 		c = config.TableKeys.Comments
 		query = updateReactionsCountQuery(c.Comments, c.Likes, c.Dislikes, c.ID)
 	}
-	newLikesCount, newDislikesCount, err = getReactionsCounts(elemType, elemID)
+	newReactCount = &ReactionsCount{}
+	newReactCount.Likes, newReactCount.Dislikes,
+		err = getReactionsCounts(elemType, elemID)
 	if err != nil {
-		return fmt.Errorf("failed to fetch likes and dislikes counts: %v", err)
+		return nil, fmt.Errorf(
+			"failed to fetch likes and dislikes counts: %v", err,
+		)
 	}
-	result, err = DB.Exec(query, newLikesCount, newDislikesCount, elemID)
+	result, err = DB.Exec(
+		query, newReactCount.Likes, newReactCount.Dislikes, elemID,
+	)
 	if err != nil {
-		return fmt.Errorf(
+		return nil, fmt.Errorf(
 			"failed to update reactions on %s: %w", elemType.String(), err,
 		)
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("no row edited: %w", err)
+		return nil, fmt.Errorf("no row edited: %w", err)
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("%s %d not found", elemType.String(), elemID)
+		return nil, fmt.Errorf("%s %d not found", elemType.String(), elemID)
 	}
-	return nil
+	return newReactCount, nil
 }
 
 func deleteReactionsWithCondition(

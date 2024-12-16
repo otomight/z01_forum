@@ -1,7 +1,10 @@
 package models
 
 type ReactionResponseAjax struct {
-	Added		bool	`json:"added"`
-	Deleted		bool	`json:"deleted"`
-	Replaced	bool	`json:"replaced"`
+	LikesCount		int		`json:"likes_count"`
+	DislikesCount	int		`json:"dislikes_count"`
+	Added			bool	`json:"added"`
+	Deleted			bool	`json:"deleted"`
+	Replaced		bool	`json:"replaced"`
+
 }
