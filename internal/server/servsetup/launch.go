@@ -42,7 +42,6 @@ func setupRoutes() *http.Handler {
 	mux.Handle("/comment/dislike", sessionMiddleWare(http.HandlerFunc(handlers.CommentDislikeHandler)))
 
 	// Google log
-
 	mux.Handle("/auth/google/login", sessionMiddleWare(http.HandlerFunc(handlers.GoogleLoginHandler)))
 	mux.Handle("/auth/callback", sessionMiddleWare(http.HandlerFunc(handlers.GoogleCallBackHandler)))
 
@@ -58,6 +57,19 @@ func setupRoutes() *http.Handler {
 	wrappedMux := loggingMiddleware(mux)
 
 	return &wrappedMux
+}
+
+func RedirectHTTP() {
+	var	err	error
+
+	err = http.ListenAndServe(
+		":80", http.RedirectHandler(
+			"https://localhost", http.StatusMovedPermanently,
+		),
+	)
+	if err != nil {
+		log.Fatalf("Could not start HTTP server for redirection: %v", err)
+	}
 }
 
 func LaunchServer() {
@@ -77,4 +89,5 @@ func LaunchServer() {
 	if err != nil {
 		log.Fatalf("Could not start server: %v", err)
 	}
+	go RedirectHTTP()
 }

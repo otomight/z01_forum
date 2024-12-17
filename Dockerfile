@@ -22,15 +22,13 @@ RUN go build -ldflags="-s -w" -o main .
 # Set the final image
 FROM alpine:latest
 
-# Certificate HTTPS
-# RUN apk --no-cache add ca-certificates
-
 WORKDIR /app
 
 COPY --from=builder /app/main /app/forum.sql /app/server.crt /app/server.key ./
 COPY --from=builder /app/web/static ./web/static
 COPY --from=builder /app/web/templates ./web/templates
 
+EXPOSE 80
 EXPOSE 443
 
 LABEL Name=Forum Version=0.1
