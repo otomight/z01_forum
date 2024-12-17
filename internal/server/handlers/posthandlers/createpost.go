@@ -46,10 +46,14 @@ func createPostFromForm(
 							http.StatusBadRequest)
 		return 0, err
 	}
-	if !utils.IsOnlyPrintable(form.Title) ||
-	!utils.IsOnlyPrintable(form.Content) {
+	if utils.IsStrEmpty(form.Title) ||
+	utils.IsStrEmpty(form.Content) {
 		http.Error(w, "Title and Content are required", http.StatusBadRequest)
-		return 0, err
+		return 0, fmt.Errorf("Title and Content are required")
+	}
+	if len(form.Title) > config.PostTitleMaxLength {
+		http.Error(w, "The title is too long", http.StatusBadRequest)
+		return 0, fmt.Errorf("The title is too long")
 	}
 	if postID, err = createPost(session.UserID, form); err != nil {
 		log.Printf(err.Error())

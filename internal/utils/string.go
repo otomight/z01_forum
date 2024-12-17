@@ -2,14 +2,14 @@ package utils
 
 import "unicode"
 
-func IsOnlyPrintable(s string) bool {
+func IsStrEmpty(s string) bool {
 	var	r	rune
 
 	if len(s) == 0 {
-		return false
+		return true
 	}
 	for _, r = range s {
-		if !unicode.IsPrint(r) {
+		if !unicode.IsPrint(r) || !unicode.IsSpace(r) {
 			return false
 		}
 	}
