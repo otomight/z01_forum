@@ -46,9 +46,9 @@ func createPostFromForm(
 							http.StatusBadRequest)
 		return 0, err
 	}
-	if form.Title == "" || form.Content == "" {
-	http.Error(w, "Title and Content are required",
-							http.StatusBadRequest)
+	if !utils.IsOnlyPrintable(form.Title) ||
+	!utils.IsOnlyPrintable(form.Content) {
+		http.Error(w, "Title and Content are required", http.StatusBadRequest)
 		return 0, err
 	}
 	if postID, err = createPost(session.UserID, form); err != nil {
