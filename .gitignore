@@ -2,3 +2,6 @@ node_modules
 lib
 web/static/scripts
 forum.db
+main
+*.crt
+*.key

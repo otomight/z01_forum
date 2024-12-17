@@ -7,8 +7,10 @@ type UserRoleStruct struct {
 }
 
 const (
-	DbFilePath			= "forum.db"
-	SqlTablesFilePath	= "forum.sql"
+	DbFilePath				= "forum.db"
+	SqlTablesFilePath		= "forum.sql"
+	ServerCertifFilePath	= "server.crt"
+	ServerKeyFilePath		= "server.key"
 )
 
 var	UserRole = UserRoleStruct{

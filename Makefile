@@ -1,6 +1,6 @@
 IMAGE_NAME=forum_i
 CONTAINER_NAME=forum_c
-PORT=8081
+PORT=443
 
 all: build run
 
@@ -13,7 +13,6 @@ images:
 	sudo docker images
 
 build:
-	npx tsc
 	sudo docker build -t $(IMAGE_NAME) .
 
 run:

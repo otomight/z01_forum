@@ -1,12 +1,14 @@
-package server
+package servsetup
 
 import (
+	"forum/internal/config"
 	"forum/internal/server/handlers"
 	"forum/internal/server/handlers/posthandlers"
+	"log"
 	"net/http"
 )
 
-func SetupRoutes() http.Handler {
+func setupRoutes() *http.Handler {
 	mux := http.NewServeMux()
 
 	// serve static files
@@ -55,5 +57,24 @@ func SetupRoutes() http.Handler {
 	//Wrap mux with logging middleware
 	wrappedMux := loggingMiddleware(mux)
 
-	return wrappedMux
+	return &wrappedMux
+}
+
+func LaunchServer() {
+	var	mux		*http.Handler
+	var	server	*http.Server
+	var	err		error
+
+	mux = setupRoutes()
+	server = &http.Server{
+		Addr:		":https",
+		Handler:	*mux,
+	}
+	log.Println("Starting server at https://localhost")
+	err = server.ListenAndServeTLS(
+		config.ServerCertifFilePath, config.ServerKeyFilePath,
+	)
+	if err != nil {
+		log.Fatalf("Could not start server: %v", err)
+	}
 }
