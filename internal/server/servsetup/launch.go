@@ -1,11 +1,13 @@
 package servsetup
 
 import (
+	"crypto/tls"
 	"forum/internal/config"
 	"forum/internal/server/handlers"
 	"forum/internal/server/handlers/posthandlers"
 	"log"
 	"net/http"
+	"time"
 )
 
 func setupRoutes() *http.Handler {
@@ -72,16 +74,55 @@ func RedirectHTTP() {
 	}
 }
 
+func getTLSConfig(cert tls.Certificate) *tls.Config {
+	return &tls.Config{
+		Certificates:	[]tls.Certificate{cert},
+		MinVersion:		tls.VersionTLS13,
+		MaxVersion:		tls.VersionTLS13,
+		CipherSuites:	[]uint16{
+			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
+			tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,
+		},
+		PreferServerCipherSuites:	true,
+		CurvePreferences:	[]tls.CurveID{
+			tls.X25519,
+		},
+	}
+}
+
+func getServer(mux *http.Handler) *http.Server {
+	var	server	*http.Server
+	var	tlsConf	*tls.Config
+	var	cert	tls.Certificate
+	var	err		error
+
+	cert, err = tls.LoadX509KeyPair(
+		config.ServerCertifFilePath, config.ServerKeyFilePath,
+	)
+	if err != nil {
+		log.Fatalf("Error loading x509 key pair: %v", err)
+	}
+	tlsConf = getTLSConfig(cert)
+	server = &http.Server{
+		Addr:			":443",
+		Handler:		*mux,
+		TLSConfig:		tlsConf,
+		ReadTimeout:	10 * time.Second,
+		WriteTimeout:	10 * time.Second,
+		IdleTimeout:	10 * time.Second,
+	}
+	return server
+}
+
 func LaunchServer() {
 	var	mux		*http.Handler
 	var	server	*http.Server
 	var	err		error
 
 	mux = setupRoutes()
-	server = &http.Server{
-		Addr:		":https",
-		Handler:	*mux,
-	}
+	server = getServer(mux)
 	log.Println("Starting server at https://localhost")
 	err = server.ListenAndServeTLS(
 		config.ServerCertifFilePath, config.ServerKeyFilePath,
