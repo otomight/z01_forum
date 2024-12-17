@@ -118,6 +118,22 @@ input:focus, textarea:focus {
 	display: none;
 }
 
+.upload-btn {
+	display: inline-block;
+	padding: 10px 10px;
+	font-size: 16px;
+	color: white;
+	background-color: #007BFF;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+/* Hides part of the button name so it's easier to read */
+.upload-input {
+	display: none;
+}
+
 /* Loading indicator */
 .loading {
 	display: none;
