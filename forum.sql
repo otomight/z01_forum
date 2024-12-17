@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE TABLE IF NOT EXISTS categories (
 	id		INTEGER PRIMARY KEY AUTOINCREMENT,
 	name	TEXT
+	UNIQUE (name)
 );
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -41,6 +42,7 @@ CREATE TABLE IF NOT EXISTS posts (
 	likes			INTEGER DEFAULT 0,
 	dislikes		INTEGER DEFAULT 0,
 	FOREIGN KEY(author_id) REFERENCES clients(id) ON DELETE CASCADE
+	UNIQUE (title, content)
 );
 
 CREATE TABLE IF NOT EXISTS posts_categories (
@@ -49,7 +51,7 @@ CREATE TABLE IF NOT EXISTS posts_categories (
 	post_id			INTEGER,
 	FOREIGN KEY (category_id) REFERENCES categories(id),
 	FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-	UNIQUE(category_id, post_id)
+	UNIQUE (category_id, post_id)
 );
 
 CREATE TABLE IF NOT EXISTS comments (
