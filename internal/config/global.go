@@ -11,6 +11,9 @@ const (
 	SqlTablesFilePath		= "forum.sql"
 	ServerCertifFilePath	= "server.crt"
 	ServerKeyFilePath		= "server.key"
+
+	ImagesDirPath		= "data/images/"
+	PostsImagesDirPath	= ImagesDirPath + "posts/"
 )
 
 var	UserRole = UserRoleStruct{

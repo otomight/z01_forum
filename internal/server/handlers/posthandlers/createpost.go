@@ -10,19 +10,21 @@ import (
 	"forum/internal/utils"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 )
 
 func createPost(userID int, form models.CreatePostForm) (int, error) {
-	var err error
-	var categoriesIDs []int
+	var err				error
+	var categoriesIDs	[]int
 
 	post := &db.Post{
-		AuthorID:     userID,
-		Title:        form.Title,
-		Content:      form.Content,
-		CreationDate: time.Now(),
-		UpdateDate:   time.Now(),
+		AuthorID:		userID,
+		Title:			form.Title,
+		Content:		form.Content,
+		CreationDate:	time.Now(),
+		UpdateDate:		time.Now(),
 	}
 	categoriesIDs, err = utils.StrSliceToIntSlice(form.Categories)
 	if err != nil {
@@ -38,9 +40,10 @@ func createPost(userID int, form models.CreatePostForm) (int, error) {
 func createPostFromForm(
 	w http.ResponseWriter, r *http.Request, session *db.UserSession,
 ) (int, error) {
-	var form models.CreatePostForm
-	var postID int
-	var err error
+	var	form	models.CreatePostForm
+	var	postID	int
+	var	path	string
+	var	err		error
 
 	if err = utils.ParseForm(r, &form); err != nil {
 		http.Error(w, "Unable to parse form:"+err.Error(),
@@ -63,19 +66,20 @@ func createPostFromForm(
 		return 0, err
 	}
 	if form.Image != nil {
-		services.DownloadImage(w, &form, "posts", postID)
+		path = config.PostsImagesDirPath + strconv.Itoa(postID)
+		os.MkdirAll(path, 0755)
+		services.DownloadImage(w, &form, path)
 	}
-
 	return postID, nil
 }
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	var postID int
-	var redirectLink string
-	var session *db.UserSession
-	var categories []*db.Category
-	var data models.CreatePostPageData
-	var err error
+	var	postID			int
+	var	redirectLink	string
+	var	session			*db.UserSession
+	var	categories		[]*db.Category
+	var	data			models.CreatePostPageData
+	var	err				error
 
 	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
 	if session == nil {

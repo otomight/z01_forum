@@ -5,16 +5,11 @@ import (
 	"forum/internal/server/models"
 	"net/http"
 	"os"
-	"strconv"
 )
 
-func DownloadImage(w http.ResponseWriter, form *models.CreatePostForm, path string, id int) {
-	// Create the directory, we will probably have to make this it's own function later on if we want to add images to comments
-	dirpath := "./data/images/" + path + "/" + strconv.Itoa(id)
-	os.MkdirAll(dirpath, 0755)
-
+func DownloadImage(w http.ResponseWriter, form *models.CreatePostForm, path string) {
 	// Save the file
-	dst, err := os.Create(dirpath + "/" + form.Image.FileHeader.Filename)
+	dst, err := os.Create(path + "/" + form.Image.FileHeader.Filename)
 	if err != nil {
 		http.Error(w, "Unable to save file", http.StatusInternalServerError)
 		return
