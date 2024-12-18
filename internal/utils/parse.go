@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"strings"
 )
 
 func isPointerToStruct(i interface{}) bool {
@@ -53,7 +54,6 @@ func fillFieldFile(
 	formFile = FormFile{}
 	formFile.File, formFile.FileHeader, err = r.FormFile(fieldTag)
 	if err != nil {
-		log.Printf("Error fetching file from form: %v", err)
 		return
 	}
 	field.Set(reflect.ValueOf(&formFile))
@@ -79,7 +79,7 @@ func parseField(
 		)
 	case fieldType.Kind() == reflect.String: // string
 		fieldValue = r.FormValue(fieldTag)
-		form.FieldByName(structField.Name).SetString(fieldValue)
+		form.Field(index).SetString(fieldValue)
 	case fieldType.Kind() == reflect.Pointer &&
 	fieldType.Elem().Kind() == reflect.Struct &&
 	fieldType.Elem() == reflect.TypeOf(FormFile{}): // FormFile
@@ -91,17 +91,39 @@ func parseField(
 	}
 }
 
+func requestParseForm(r *http.Request) error {
+	var	contentType	string
+	var	err			error
+
+	contentType = r.Header.Get("Content-Type")
+	fmt.Println(contentType)
+	if contentType == "" {
+		log.Println("No content provided with the request.")
+		return nil
+	}
+	if strings.Contains(contentType, "multipart/form-data") {
+		if err = r.ParseMultipartForm(20 << 20); err != nil {
+			return err
+		}
+	} else if err = r.ParseForm(); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Fill values of struct pointed by `PtToformStruct`
 // with the form received on request `r`.
 // Only values with the tag `form` and a key that match with
 // any value of the form from the request will be written.
 func ParseForm(r *http.Request, PtToformStruct interface{}) error {
+
 	var	form			reflect.Value
 	var	i				int
 	var	structField		reflect.StructField
 	var	err				error
 
-	if err = r.ParseForm(); err != nil {
+	if err = requestParseForm(r); err != nil {
+		log.Printf("Error at request form parsing: %v\n", err)
 		return err
 	}
 	if (!isPointerToStruct(PtToformStruct)) {
