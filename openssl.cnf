@@ -1,0 +1,15 @@
+[ req ]
+default_bits		= 4096
+default_md			= sha256
+default_days		= 365
+prompt				= no
+encrypt_key			= no
+distinguished_name	= dn
+
+[ dn ]
+C	= FR
+ST	= Normandie
+L	= Rouen
+O	= Zone01
+OU	= P12024
+CN	= localhost

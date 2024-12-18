@@ -30,9 +30,28 @@ source /etc/environment
 npm install typescript
 ```
 
-## Additionnal Windows dependecies
-1. [tdm-gcc](https://jmeubank.github.io/tdm-gcc/download/)
-Include the bin folder into your path.
+
+### openssl
+- linux
+```sh
+sudo apt install openssl
+```
+- windows
+1. [Download openssl](https://slproweb.com/products/Win32OpenSSL.html)
+2. Include the bin folder into your path.
+
+
+### gcc for Windows
+1. [Download tdm-gcc](https://jmeubank.github.io/tdm-gcc/download/)
+2. Include the bin folder into your path.
+
+### make for Windows
+
+
+## Run the application
+```sh
+make
+```
 
 
 ## Project Structure

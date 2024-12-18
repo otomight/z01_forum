@@ -2,33 +2,72 @@ IMAGE_NAME=forum_i
 CONTAINER_NAME=forum_c
 PORT=443
 
-all: build run
+CERTOUT_FILE=server.crt
+KEYOUT_FILE=server.key
+DB_FILE=forum.db
 
-audit: clean build images run
+ifeq ($(OS),Windows_NT)
+	BIN_FILE=main.exe
+	RM_CMD=del
+else
+	BIN_FILE=main
+	RM_CMD=rm -f
+endif
 
-containers:
-	sudo docker ps -a
+all: gencertif build run
 
-images:
-	sudo docker images
+re:	clean all
+
+gencertif:
+ifeq ($(wildcard $(CERTOUT_FILE) $(KEYOUT_FILE)),)
+	openssl req -x509 -config openssl.cnf \
+			-out $(CERTOUT_FILE) -keyout $(KEYOUT_FILE)
+endif
 
 build:
-	sudo docker build -t $(IMAGE_NAME) .
+	npx tsc
+	go build -o $(BIN_FILE)
 
 run:
+ifeq ($(OS),Windows_NT)
+	powershell -Command "Start-Process '.\\$(BIN_FILE)' -Verb RunAs"
+else
+	sudo ./$(BIN_FILE)
+endif
+
+clean:
+	$(RM_CMD) $(BIN_FILE)
+
+fclean: clean
+	$(RM_CMD) $(CERTOUT_FILE) $(KEYOUT_FILE) $(DB_FILE)
+
+# DOCKER
+dall: dbuild drun
+
+dcontainers:
+	sudo docker ps -a
+
+dimages:
+	sudo docker images
+
+dbuild:
+	sudo docker build -t $(IMAGE_NAME) .
+
+drun:
 	sudo docker run -p $(PORT):$(PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME)
 
-stop:
+dstop:
 	sudo docker stop $(CONTAINER_NAME)
 
-rm:
+drm:
 	sudo docker rm $(CONTAINER_NAME)
 
-rmi:
+drmi:
 	sudo docker rmi $(IMAGE_NAME)
 
-clean: stop rm rmi
+dclean: dstop drm drmi
 
-re: clean all
+dre: dclean dall
 
-.PHONY: all build run stop rm rmi clean re
+.PHONY: all gencertif build run clean re \
+		dall dbuild drun dstop drm drmi dclean dre

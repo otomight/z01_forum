@@ -1,6 +1,9 @@
 # Set the builder image
 FROM golang:1.23.1-alpine AS builder
 
+ENV CERTOUT_FILE=server.crt
+ENV KEYOUT_FILE=server.key
+
 # Install compilation tools from Alpine (required by golang)
 RUN apk add --no-cache gcc musl-dev sqlite-dev git openssl nodejs npm
 
@@ -13,9 +16,8 @@ RUN go mod download
 # Build with the rest of the files (use flags to remove debug symbols)
 COPY . .
 RUN npx tsc
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
-		-keyout server.key -out server.crt \
-		-subj "/C=FR/ST=Normandie/L=Rouen/O=Zone01/OU=P12024/CN=localhost"
+RUN openssl req -x509 -config openssl.cnf \
+		-out ${CERTOUT_FILE} -keyout ${KEYOUT_FILE}
 RUN go build -ldflags="-s -w" -o main .
 
 
@@ -24,7 +26,8 @@ FROM alpine:latest
 
 WORKDIR /app
 
-COPY --from=builder /app/main /app/forum.sql /app/server.crt /app/server.key ./
+COPY --from=builder /app/main /app/forum.sql \
+		/app/${CERTOUT_FILE} /app/${KEYOUT_FILE} ./
 COPY --from=builder /app/web/static ./web/static
 COPY --from=builder /app/web/templates ./web/templates
 

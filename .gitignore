@@ -5,3 +5,4 @@ forum.db
 main
 *.crt
 *.key
+*.exe
