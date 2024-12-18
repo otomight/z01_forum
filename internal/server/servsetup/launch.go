@@ -10,8 +10,10 @@ import (
 	"time"
 )
 
-func setupRoutes() *http.Handler {
-	mux := http.NewServeMux()
+func setupRoutes() *http.ServeMux {
+	var	mux		*http.ServeMux
+
+	mux = http.NewServeMux()
 
 	// serve static files
 	fs := http.FileServer(http.Dir("./web/static"))
@@ -56,9 +58,8 @@ func setupRoutes() *http.Handler {
 	mux.Handle("/auth/facebook/callback", sessionMiddleWare(http.HandlerFunc(handlers.FacebookCallBackHandler)))
 
 	//Wrap mux with logging middleware
-	wrappedMux := loggingMiddleware(mux)
 
-	return &wrappedMux
+	return mux
 }
 
 func RedirectHTTP() {
@@ -92,7 +93,7 @@ func getTLSConfig(cert tls.Certificate) *tls.Config {
 	}
 }
 
-func getServer(mux *http.Handler) *http.Server {
+func getServer(handler http.Handler) *http.Server {
 	var	server	*http.Server
 	var	tlsConf	*tls.Config
 	var	cert	tls.Certificate
@@ -107,7 +108,7 @@ func getServer(mux *http.Handler) *http.Server {
 	tlsConf = getTLSConfig(cert)
 	server = &http.Server{
 		Addr:			":443",
-		Handler:		*mux,
+		Handler:		handler,
 		TLSConfig:		tlsConf,
 		ReadTimeout:	10 * time.Second,
 		WriteTimeout:	10 * time.Second,
@@ -117,12 +118,17 @@ func getServer(mux *http.Handler) *http.Server {
 }
 
 func LaunchServer() {
-	var	mux		*http.Handler
-	var	server	*http.Server
-	var	err		error
+	var	mux			*http.ServeMux
+	var	handler		http.Handler
+	var	server		*http.Server
+	var	rateLimiter	*RateLimiter
+	var	err			error
 
+	rateLimiter = newRateLimiter(500, time.Minute)
 	mux = setupRoutes()
-	server = getServer(mux)
+	handler = loggingMiddleware(mux)
+	handler = rateLimiterMiddleware(rateLimiter, handler)
+	server = getServer(handler)
 	log.Println("Starting server at https://localhost")
 	err = server.ListenAndServeTLS(
 		config.ServerCertifFilePath, config.ServerKeyFilePath,

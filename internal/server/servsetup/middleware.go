@@ -39,3 +39,15 @@ func sessionMiddleWare(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+func rateLimiterMiddleware(rl *RateLimiter, next http.Handler) http.Handler {
+	var	ip	string
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ip = r.RemoteAddr
+		if !rl.Allow(ip) {
+			http.Error(w, "429 too many requests", http.StatusTooManyRequests)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
