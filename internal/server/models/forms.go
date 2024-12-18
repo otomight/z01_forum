@@ -6,7 +6,7 @@ type CreatePostForm struct {
 	Title		string			`form:"title"`
 	Content		string			`form:"content"`
 	Categories	[]string		`form:"categories"`
-	Image		utils.FormFile	`form:"image"`
+	Image		*utils.FormFile	`form:"image"`
 }
 
 type RegisterForm struct {

@@ -56,7 +56,7 @@ func fillFieldFile(
 		log.Printf("Error fetching file from form: %v", err)
 		return
 	}
-	field.Set(reflect.ValueOf(formFile))
+	field.Set(reflect.ValueOf(&formFile))
 }
 
 func parseField(
@@ -80,8 +80,9 @@ func parseField(
 	case fieldType.Kind() == reflect.String: // string
 		fieldValue = r.FormValue(fieldTag)
 		form.FieldByName(structField.Name).SetString(fieldValue)
-	case fieldType.Kind() == reflect.Struct &&
-	fieldType == reflect.TypeOf(FormFile{}): // FormFile
+	case fieldType.Kind() == reflect.Pointer &&
+	fieldType.Elem().Kind() == reflect.Struct &&
+	fieldType.Elem() == reflect.TypeOf(FormFile{}): // FormFile
 		fillFieldFile(r, form.Field(index), fieldTag)
 	default:
 		log.Printf(
