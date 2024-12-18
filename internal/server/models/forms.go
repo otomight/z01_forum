@@ -1,9 +1,12 @@
 package models
 
+import "forum/internal/utils"
+
 type CreatePostForm struct {
-	Title		string		`form:"title"`
-	Content		string		`form:"content"`
-	Categories	[]string	`form:"categories"`
+	Title		string			`form:"title"`
+	Content		string			`form:"content"`
+	Categories	[]string		`form:"categories"`
+	Image		utils.FormFile	`form:"image"`
 }
 
 type RegisterForm struct {

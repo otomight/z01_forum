@@ -1,23 +1,37 @@
 package utils
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"reflect"
 )
 
-func fillFormValueWithSliceStr(
+func isPointerToStruct(i interface{}) bool {
+	var	value	reflect.Value
+
+	value = reflect.ValueOf(i)
+	if value.Kind() == reflect.Ptr {
+		if value.Elem().Kind() == reflect.Struct {
+			return true
+		}
+	}
+	return false
+}
+
+func fillFieldValueWithSlice(
 	r *http.Request, field reflect.Value,
-	formFieldName string, structField reflect.StructField,
+	fieldTag string, fieldType reflect.Type,
 ) {
 	var	fieldValues	[]string
 	var	slice		reflect.Value
 	var	i			int
 
-	fieldValues = r.Form[formFieldName]
+	fieldValues = r.Form[fieldTag]
 	if len(fieldValues) > 0 {
 		// Create a slice to store the values
 		slice = reflect.MakeSlice(
-			structField.Type, len(fieldValues), len(fieldValues),
+			fieldType, len(fieldValues), len(fieldValues),
 		)
 		for i = 0; i < len(fieldValues); i++ {
 			slice.Index(i).SetString(fieldValues[i])
@@ -26,36 +40,76 @@ func fillFormValueWithSliceStr(
 	}
 }
 
-func ParseForm(r *http.Request, form interface{}) error {
-	var	formValue		reflect.Value
-	var	formType		reflect.Type
-	var	structField		reflect.StructField
-	var	formFieldName	string
-	var	fieldValue		string
+func fillFieldFile(
+	r *http.Request, field reflect.Value, fieldTag string,
+) {
+	var	formFile	FormFile
+	var	err			error
+
+	if !field.CanSet() {
+		log.Printf("Cannot set field %s\n", fieldTag)
+		return
+	}
+	formFile = FormFile{}
+	formFile.File, formFile.FileHeader, err = r.FormFile(fieldTag)
+	if err != nil {
+		log.Printf("Error fetching file from form: %v", err)
+		return
+	}
+	field.Set(reflect.ValueOf(formFile))
+}
+
+func parseField(
+	r *http.Request, form reflect.Value, index int,
+	structField reflect.StructField,
+) {
+	var	fieldValue	string
+	var	fieldTag	string
+	var	fieldType	reflect.Type
+
+	fieldTag = structField.Tag.Get("form") // empty if no tag form
+	fieldType = structField.Type
+	switch {
+	case fieldTag == "":
+		return
+	case fieldType.Kind() == reflect.Slice &&
+	fieldType.Elem().Kind() == reflect.String: // slice of string
+		fillFieldValueWithSlice(
+			r, form.Field(index), fieldTag, fieldType,
+		)
+	case fieldType.Kind() == reflect.String: // string
+		fieldValue = r.FormValue(fieldTag)
+		form.FieldByName(structField.Name).SetString(fieldValue)
+	case fieldType.Kind() == reflect.Struct &&
+	fieldType == reflect.TypeOf(FormFile{}): // FormFile
+		fillFieldFile(r, form.Field(index), fieldTag)
+	default:
+		log.Printf(
+			"Type of %s not supported, skip.\n", fieldType.Name(),
+		)
+	}
+}
+
+// Fill values of struct pointed by `PtToformStruct`
+// with the form received on request `r`.
+// Only values with the tag `form` and a key that match with
+// any value of the form from the request will be written.
+func ParseForm(r *http.Request, PtToformStruct interface{}) error {
+	var	form			reflect.Value
 	var	i				int
+	var	structField		reflect.StructField
 	var	err				error
 
 	if err = r.ParseForm(); err != nil {
 		return err
 	}
-	formValue = reflect.ValueOf(form).Elem()
-	formType = formValue.Type()
-	for i = 0; i < formType.NumField(); i++ {
-		structField = formType.Field(i)
-		formFieldName = structField.Tag.Get("form")
-		if formFieldName == "" {
-			formFieldName = structField.Name
-		}
-		// case field value is type []string
-		if structField.Type.Kind() == reflect.Slice &&
-				structField.Type.Elem().Kind() == reflect.String {
-			fillFormValueWithSliceStr(
-				r, formValue.Field(i), formFieldName, structField,
-			)
-		} else {
-			fieldValue = r.FormValue(formFieldName)
-			formValue.FieldByName(structField.Name).SetString(fieldValue)
-		}
+	if (!isPointerToStruct(PtToformStruct)) {
+		return fmt.Errorf("not a pointer to struct")
+	}
+	form = reflect.ValueOf(PtToformStruct).Elem()
+	for i = 0; i < form.NumField(); i++ {
+		structField = form.Type().Field(i) // metadata of the field
+		parseField(r, form, i, structField)
 	}
 	return nil
 }
