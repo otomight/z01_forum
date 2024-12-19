@@ -148,7 +148,7 @@ input:focus, textarea:focus {
 
 /* Responsive design */
 @media (max-width: 600px) {
-	header {
+	.main-header {
 		padding: 0.5rem;
 	}
 

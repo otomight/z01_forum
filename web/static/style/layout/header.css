@@ -1,4 +1,4 @@
-header {
+.main-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -82,7 +82,7 @@ header {
     display: none;
     position: absolute;
     top: 0;
-    left: 100%; 
+    left: 100%;
     background-color: white;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -107,8 +107,8 @@ header {
 }
 
 .history-dropdown span:hover, .sub-dropdown a:hover {
-    background-color: rgba(0, 123, 255, 0.1); 
-    color: #007BFF; 
+    background-color: rgba(0, 123, 255, 0.1);
+    color: #007BFF;
 }
 
 .user-chat, .user-notifications {

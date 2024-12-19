@@ -30,6 +30,10 @@ source /etc/environment
 npm install typescript
 ```
 
+### sass
+```sh
+npm install sass
+```
 
 ### openssl
 - linux

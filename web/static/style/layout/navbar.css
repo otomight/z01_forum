@@ -1,4 +1,4 @@
-.navbar {
+.main-navbar {
     width: 200px;
     display: flex;
     flex-direction: column;
@@ -22,7 +22,7 @@
     align-items: center;
 }
 
-.navbar button, .category-button {
+.main-navbar button, .category-button {
     width: 90px;
     height: 45px;
     font-size: 17px;

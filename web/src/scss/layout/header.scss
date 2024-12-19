@@ -1,0 +1,159 @@
+.main-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid #00000021;
+}
+
+.forum-logo {
+	width: 200px;
+	height: 125px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.forum-logo img {
+	width: 113px;
+	height: 86px;
+}
+
+.whole-header {
+	display: flex;
+	flex-grow: 1;
+	justify-content: space-between;
+	align-items: center;
+	padding-left: 50px;
+}
+
+.searchbar {
+	display: flex;
+	flex-grow: 0.8;
+	text-align: center;
+	height: 35px;
+	border: solid;
+	border-width: 3px;
+	border-radius: 12px;
+	border-color: rgba(236, 230, 240, 1);
+	background-color: rgba(236, 230, 240, 1);
+}
+
+.searchbar input {
+	width: -webkit-fill-available;
+	background-color: rgba(236, 230, 240, 1);
+	border: none;
+}
+
+.burgermenu {
+	background-color: rgba(236, 230, 240, 1);
+}
+
+.spyglass {
+	background-color: rgba(236, 230, 240, 1);
+}
+
+/* Logged user */
+.header-options {
+	display: flex;
+	flex-grow: 0.5;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.profile-menu {
+	position: relative;
+	display: inline-block;
+}
+
+.history-dropdown {
+	display: none;
+	position: absolute;
+	top: 60px;
+	left: 0;
+	background-color: rgb(244, 242, 238);
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	padding: 5px 10px;
+	z-index: 10;
+}
+
+.sub-dropdown {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 100%;
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	z-index: 11;
+}
+
+.profile-menu:hover .history-dropdown {
+	display: block;
+}
+
+.history-dropdown:hover .sub-dropdown {
+	display: block;
+}
+
+.history-dropdown span, .sub-dropdown a {
+	display: block;
+	text-decoration: none;
+	color: black;
+	padding: 5px 10px;
+	font-size: 14px;
+}
+
+.history-dropdown span:hover, .sub-dropdown a:hover {
+	background-color: rgba(0, 123, 255, 0.1);
+	color: #007BFF;
+}
+
+.user-chat, .user-notifications {
+	width: 76px;
+	height: 61px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 10px;
+}
+
+.user-chat:hover, .user-notifications:hover {
+	background-color: rgba(235, 221, 221, 0.959);
+}
+
+/* Unlogged user */
+.unlogged-header {
+	display: flex;
+	justify-content: space-evenly;
+	flex-grow: 0.2;
+}
+
+.unlogged-header button {
+	width: 90px;
+	height: 30px;
+	border-radius: 25px;
+	border-width: 1px;
+}
+
+.login-button {
+	border-color: blueviolet;
+	background-color: white;
+	color: blueviolet;
+}
+
+.login-button:hover {
+	background-color: blueviolet;
+	color: white;
+}
+
+.register-button {
+	background-color: rgba(44, 44, 44, 1);
+	color: white;
+}
+
+.register-button:hover {
+	background-color: black;
+}

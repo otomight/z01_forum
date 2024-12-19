@@ -1,0 +1,14 @@
+.category_posts-page, .createpost-page,
+.history-page, .home-page, .viewpost-page {
+	.main-footer {
+		display:			flex;
+		justify-content:	center;
+		border-top:			0.1rem solid rgba(0, 0, 0, 0.129);
+	}
+}
+
+.login-page, .register-page {
+	.main-footer {
+		align-self: center;
+	}
+}
