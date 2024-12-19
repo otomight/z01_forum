@@ -1,8 +1,15 @@
+@use 'components/comments.scss';
+@use 'components/post.scss';
+@use 'components/reactions.scss';
 @use 'layout/footer.scss';
 @use 'layout/header.scss';
 @use 'layout/navbar.scss';
 @use 'pages/createpost.scss';
-@use 'pages/default.scss';
+@use 'pages/history.scss';
+@use 'pages/home.scss';
+@use 'pages/login.scss';
+@use 'pages/register.scss';
+@use 'partials/listpost.scss';
 
 * {
 	box-sizing:		border-box;
@@ -11,27 +18,27 @@
 	font-family:	Arial, sans-serif;
 }
 
-.page {
+.full-page {
 	height:			100vh;
 	display:		flex;
 	flex-direction:	column;
-}
 
-main {
-	display:	flex;
-	flex-grow:	1;
-	overflow:	hidden;
-}
+	main {
+		display:	flex;
+		flex-grow:	1;
+		overflow:	hidden;
 
-.content-fixed {
-	background-color:	rgba(244, 242, 238, 1);
-	flex-grow:			1;
-	overflow:			auto;
-}
+		.content-fixed {
+			background-color:	rgba(244, 242, 238, 1);
+			flex-grow:			1;
+			overflow:			auto;
 
-.content-container {
-	display:			flex;
-	flex-direction:		column;
-	align-items:		center;
-	padding:			3rem;
+			.content-container {
+				display:		flex;
+				flex-direction:	column;
+				align-items:	center;
+				padding:		3rem;
+			}
+		}
+	}
 }

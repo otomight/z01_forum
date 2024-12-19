@@ -1,6 +1,7 @@
 node_modules
 lib
 web/static/scripts
+web/static/style
 forum.db
 main
 *.crt

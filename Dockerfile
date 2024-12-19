@@ -1,8 +1,10 @@
 # Set the builder image
 FROM golang:1.23.1-alpine AS builder
 
-ENV CERTOUT_FILE=server.crt
-ENV KEYOUT_FILE=server.key
+ARG CERTOUT_FILE
+ARG KEYOUT_FILE
+ARG MAIN_SCSS_FILE
+ARG MAIN_CSS_OUT_FILE
 
 # Install compilation tools from Alpine (required by golang)
 RUN apk add --no-cache gcc musl-dev sqlite-dev git openssl nodejs npm
@@ -16,6 +18,7 @@ RUN go mod download
 # Build with the rest of the files (use flags to remove debug symbols)
 COPY . .
 RUN npx tsc
+RUN npx sass ${MAIN_SCSS_FILE}:${MAIN_CSS_OUT_FILE} --style=compressed
 RUN openssl req -x509 -config openssl.cnf \
 		-out ${CERTOUT_FILE} -keyout ${KEYOUT_FILE}
 RUN go build -ldflags="-s -w" -o main .
@@ -23,6 +26,9 @@ RUN go build -ldflags="-s -w" -o main .
 
 # Set the final image
 FROM alpine:latest
+
+ARG CERTOUT_FILE
+ARG KEYOUT_FILE
 
 WORKDIR /app
 

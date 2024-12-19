@@ -4,6 +4,8 @@ PORT=443
 
 CERTOUT_FILE=server.crt
 KEYOUT_FILE=server.key
+MAIN_SCSS_FILE=web/src/scss/main.scss
+MAIN_CSS_OUT_FILE=web/static/style/main.css
 DB_FILE=forum.db
 
 ifeq ($(OS),Windows_NT)
@@ -26,6 +28,7 @@ endif
 
 build:
 	npx tsc
+	npx sass $(MAIN_SCSS_FILE):$(MAIN_CSS_OUT_FILE) --style=compressed
 	go build -o $(BIN_FILE)
 
 run:
@@ -51,7 +54,12 @@ dimages:
 	sudo docker images
 
 dbuild:
-	sudo docker build -t $(IMAGE_NAME) .
+	sudo docker build \
+	--build-arg CERTOUT_FILE=$(CERTOUT_FILE) \
+	--build-arg KEYOUT_FILE=$(KEYOUT_FILE) \
+	--build-arg MAIN_SCSS_FILE=$(MAIN_SCSS_FILE) \
+	--build-arg MAIN_CSS_OUT_FILE=$(MAIN_CSS_OUT_FILE) \
+	-t $(IMAGE_NAME) .
 
 drun:
 	sudo docker run -p $(PORT):$(PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME)
