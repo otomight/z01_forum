@@ -9,6 +9,9 @@
 			</div>
 		</div>
 		<div class="post-core__content">{{ .Content }}</div>
+		{{ if .ImagePath }}
+			<img class="post-core__image" src="{{ .ImagePath }}" alt="Trash icon">
+		{{ end }}
 		<div class="post-core__footer">
 			<div class="post-core__author">by <a href="">{{ .UserName }}</a></div>
 			<div class="post-core__buttons">

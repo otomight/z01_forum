@@ -11,18 +11,27 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 )
 
-func createPost(userID int, form models.CreatePostForm) (int, error) {
-	var err				error
+func createPost(
+	w http.ResponseWriter, userID int, form *models.CreatePostForm,
+) (int, error) {
 	var categoriesIDs	[]int
+	var	imageServerPath	string
+	var err				error
 
+	if form.Image != nil {
+		os.MkdirAll(config.PostsImagesDirPath, 0755)
+		imageServerPath = services.DownloadImage(
+			w, form, config.PostsImagesDirPath,
+		)
+	}
 	post := &db.Post{
 		AuthorID:		userID,
 		Title:			form.Title,
 		Content:		form.Content,
+		ImagePath:		imageServerPath,
 		CreationDate:	time.Now(),
 		UpdateDate:		time.Now(),
 	}
@@ -42,7 +51,6 @@ func createPostFromForm(
 ) (int, error) {
 	var	form	models.CreatePostForm
 	var	postID	int
-	var	path	string
 	var	err		error
 
 	if err = utils.ParseForm(r, &form); err != nil {
@@ -59,16 +67,11 @@ func createPostFromForm(
 		http.Error(w, "The title is too long", http.StatusBadRequest)
 		return 0, fmt.Errorf("The title is too long")
 	}
-	if postID, err = createPost(session.UserID, form); err != nil {
+	if postID, err = createPost(w, session.UserID, &form); err != nil {
 		log.Printf(err.Error())
 		http.Error(w, "Failed to create post",
 			http.StatusInternalServerError)
 		return 0, err
-	}
-	if form.Image != nil {
-		path = config.PostsImagesDirPath + strconv.Itoa(postID)
-		os.MkdirAll(path, 0755)
-		services.DownloadImage(w, &form, path)
 	}
 	return postID, nil
 }

@@ -1,6 +1,10 @@
 package utils
 
-import "unicode"
+import (
+	"fmt"
+	"strings"
+	"unicode"
+)
 
 func IsStrEmpty(s string) bool {
 	var	r	rune
@@ -14,4 +18,16 @@ func IsStrEmpty(s string) bool {
 		}
 	}
 	return true
+}
+
+func CutStrAtPattern(str string, pattern string) (string, error) {
+	var	index	int
+
+	index = strings.Index(str, pattern)
+	if index == -1 {
+		return "", fmt.Errorf(
+			"pattern '%s' not found in path '%s'", pattern, str,
+		)
+	}
+	return str[index:], nil
 }

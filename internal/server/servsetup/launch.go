@@ -11,13 +11,17 @@ import (
 )
 
 func setupRoutes() *http.ServeMux {
-	var	mux		*http.ServeMux
+	var	mux	*http.ServeMux
+	var	fs	http.Handler
 
 	mux = http.NewServeMux()
 
 	// serve static files
-	fs := http.FileServer(http.Dir("./web/static"))
+	fs = http.FileServer(http.Dir("./web/static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	fs = http.FileServer(http.Dir(config.ImagesDirPath))
+	mux.Handle(config.ImagesRoute, http.StripPrefix(config.ImagesRoute, fs))
 
 	//Routes
 	mux.Handle("/", sessionMiddleWare(http.HandlerFunc(handlers.HomePageHandler)))

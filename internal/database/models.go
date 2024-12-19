@@ -47,6 +47,7 @@ type Post struct {
 	UserName     string    `json:"user_name"`
 	Title        string    `json:"title"`
 	Content      string    `json:"content"`
+	ImagePath		string
 	CreationDate time.Time `json:"creation_date"`
 	UpdateDate   time.Time `json:"update_date"`
 	Likes        int

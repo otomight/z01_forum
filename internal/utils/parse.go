@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"forum/internal/config"
 	"log"
 	"net/http"
 	"reflect"
@@ -96,13 +97,12 @@ func requestParseForm(r *http.Request) error {
 	var	err			error
 
 	contentType = r.Header.Get("Content-Type")
-	fmt.Println(contentType)
 	if contentType == "" {
 		log.Println("No content provided with the request.")
 		return nil
 	}
 	if strings.Contains(contentType, "multipart/form-data") {
-		if err = r.ParseMultipartForm(20 << 20); err != nil {
+		if err = r.ParseMultipartForm(config.MaxImageSizeMB << 20); err != nil {
 			return err
 		}
 	} else if err = r.ParseForm(); err != nil {

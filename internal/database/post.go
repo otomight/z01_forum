@@ -17,8 +17,8 @@ func NewPost(post *Post, categoriesIDs []int) (int, error) {
 	p = config.TableKeys.Posts
 	result, err := insertInto(InsertIntoQuery{
 		Table:	p.Posts,
-		Keys:	[]string{p.AuthorID, p.Title, p.Content},
-		Values:	[][]any{{post.AuthorID, post.Title, post.Content}},
+		Keys:	[]string{p.AuthorID, p.Title, p.Content, p.ImagePath},
+		Values:	[][]any{{post.AuthorID, post.Title, post.Content, post.ImagePath}},
 	})
 	if err != nil {
 		return 0, err
@@ -50,8 +50,9 @@ func getPostsWithConditionQueryResult(
 	pr = config.TableKeys.PostsReactions
 	query = `
 		SELECT DISTINCT p.`+p.ID+`, p.`+p.AuthorID+`, cl.`+cl.UserName+`,
-			p.`+p.Title+`, p.`+p.Content+`, p.`+p.CreationDate+`,
-			p.`+p.UpdateDate+`, p.`+p.Likes+`, p.`+p.Dislikes+`, pr.`+pr.Liked+`
+			p.`+p.Title+`, p.`+p.Content+`, p.`+p.ImagePath+`,
+			p.`+p.CreationDate+`, p.`+p.UpdateDate+`,
+			p.`+p.Likes+`, p.`+p.Dislikes+`, pr.`+pr.Liked+`
 		FROM `+p.Posts+` p
 		JOIN `+cl.Clients+` cl ON p.`+p.AuthorID+` = cl.`+cl.ID+`
 		LEFT JOIN `+pc.PostsCategories+` pc ON pc.`+pc.PostID+` = p.`+p.ID+`
@@ -97,11 +98,11 @@ func getPostsWithCondition(curUserID int, condition string, args ...any) ([]*Pos
 		post = &Post{}
 		err = rows.Scan(
 			&post.ID, &post.AuthorID, &post.UserName, &post.Title,
-			&post.Content, &post.CreationDate, &post.UpdateDate,
-			&post.Likes, &post.Dislikes, &userLiked,
+			&post.Content, &post.ImagePath, &post.CreationDate,
+			&post.UpdateDate, &post.Likes, &post.Dislikes, &userLiked,
 		)
 		if err != nil {
-			log.Println("Error scanning post")
+			log.Printf("Error scanning post: %v\n", err)
 			continue
 		}
 		fillPostExternalData(curUserID, post, userLiked)

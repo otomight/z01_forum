@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS posts (
 	author_id		INTEGER NOT NULL,
 	title			TEXT,
 	content			TEXT,
+	image_path		TEXT DEFAULT '',
 	creation_date	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	update_date		TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	likes			INTEGER DEFAULT 0,

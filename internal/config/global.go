@@ -12,7 +12,8 @@ const (
 	ServerCertifFilePath	= "server.crt"
 	ServerKeyFilePath		= "server.key"
 
-	ImagesDirPath		= "data/images/"
+	DataDirPath			= "data/"
+	ImagesDirPath		= DataDirPath + "images/"
 	PostsImagesDirPath	= ImagesDirPath + "posts/"
 )
 
