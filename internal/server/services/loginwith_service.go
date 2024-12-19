@@ -19,7 +19,7 @@ func ExtractCode(r *http.Request) (string, error) {
 	return code, nil
 }
 
-func ExchangeCodeForToken(tokenURL, clientID, clientSecret, redirectURI, code string) (string, error) {
+func exchangeCodeForToken(tokenURL, clientID, clientSecret, redirectURI, code string) (string, error) {
 	// Prepare the request body for POST
 	tokenReqBody := fmt.Sprintf(
 		"code=%s&client_id=%s&client_secret=%s&redirect_uri=%s&grant_type=authorization_code",
@@ -51,7 +51,7 @@ func ExchangeCodeForToken(tokenURL, clientID, clientSecret, redirectURI, code st
 	return accessToken, nil
 }
 
-func FetchUserInfo(userInfoURL, accessToken, method string) (map[string]interface{}, error) {
+func fetchUserInfo(userInfoURL, accessToken, method string) (map[string]interface{}, error) {
 	var userResp *http.Response
 	var err error
 
@@ -138,7 +138,7 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 
 	// log.Printf("Received authorization code: %s", code)
 
-	accesToken, err := ExchangeCodeForToken(
+	accesToken, err := exchangeCodeForToken(
 		config.TokenURL,
 		config.ClientID,
 		config.ClientSecret,
@@ -162,7 +162,7 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 		userInfoMethod = "GET"
 	}
 
-	userInfo, err := FetchUserInfo(config.UserInfoURL, accesToken, userInfoMethod)
+	userInfo, err := fetchUserInfo(config.UserInfoURL, accesToken, userInfoMethod)
 	if err != nil {
 		log.Printf("Failed to fetch user info: %v", err)
 		http.Error(w, "Failed to fetch user info: "+err.Error(), http.StatusInternalServerError)

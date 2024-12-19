@@ -42,7 +42,7 @@ func DiscordLoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DiscordCallBackHandler(w http.ResponseWriter, r *http.Request) {
-	githubConfig := config.ProviderConfig{
+	discordConfig := config.ProviderConfig{
 		Name:         "discord",
 		TokenURL:     config.DiscordTokenURL,
 		UserInfoURL:  config.DiscordUserInfoURL,
@@ -50,7 +50,7 @@ func DiscordCallBackHandler(w http.ResponseWriter, r *http.Request) {
 		ClientSecret: config.DiscordClientSecret,
 		RedirectURI:  config.DiscordRedirectURI,
 	}
-	services.OAuthCallbackHandler(w, r, githubConfig)
+	services.OAuthCallbackHandler(w, r, discordConfig)
 }
 
 // Fb
