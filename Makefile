@@ -38,6 +38,9 @@ else
 	sudo ./$(BIN_FILE)
 endif
 
+watch:
+	npx sass --watch $(MAIN_SCSS_FILE):$(MAIN_CSS_OUT_FILE) --style=compressed
+
 clean:
 	$(RM_CMD) $(BIN_FILE)
 
@@ -77,5 +80,5 @@ dclean: dstop drm drmi
 
 dre: dclean dall
 
-.PHONY: all gencertif build run clean re \
+.PHONY: all gencertif build run watch clean re \
 		dall dbuild drun dstop drm drmi dclean dre
