@@ -27,6 +27,7 @@
 							<div class="upload-image">
 									<label for="file-upload" class="upload-btn">Upload Image</label>
 									<input type="file" id="file-upload" name="image" class="upload-input" accept="image/*">
+									<p id="upload-image-error">Image too large! Max size is 2MB.</p>
 							</div>
 							<div class="categories-form-group">
 								<label for="toggle-categories" class="toggle-label">Categories</label>
@@ -52,5 +53,6 @@
 		</main>
 		{{ template "footer" . }}
 	</div>
+	<script type="module" src="/static/scripts/create_post_error.js"></script>
 </body>
 </html>

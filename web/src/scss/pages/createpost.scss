@@ -41,7 +41,30 @@
 		box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 	}
 
+	.upload-image {
+		.upload-input {
+			display: none;
+		}
+
+		.upload-btn {
+			display: inline-block;
+			padding: 10px 10px;
+			font-size: 16px;
+			color: white;
+			background-color: #007BFF;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		#upload-image-error {
+			display:	none;
+			color:		red;
+		}
+	}
+
 	.categories-form-group {
+		margin-top:		1rem;
 		margin-bottom: 1em;
 		display: flex;
 		align-items: center;
@@ -117,21 +140,6 @@
 		border-radius: var(--border-radius);
 		background-color: rgba(46, 204, 113, 0.1);
 		display: none;
-	}
-
-	.upload-input {
-		display: none;
-	}
-
-	.upload-btn {
-		display: inline-block;
-		padding: 10px 10px;
-		font-size: 16px;
-		color: white;
-		background-color: #007BFF;
-		border: none;
-		border-radius: 5px;
-		cursor: pointer;
 	}
 
 	/* Loading indicator */

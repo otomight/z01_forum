@@ -22,8 +22,11 @@ func createPost(
 	var err				error
 
 	if form.Image != nil {
-		if form.Image.FileHeader.Size > config.ImageMaxMemory {
-			err = fmt.Errorf("The image size is too large")
+		if form.Image.FileHeader.Size >= config.ImageMaxMemory {
+			err = fmt.Errorf(
+				"The image size is too large. It should be under %d bytes.",
+				config.ImageMaxMemory,
+			)
 			http.Error(w, err.Error(), http.StatusRequestEntityTooLarge)
 			return 0, err
 		}

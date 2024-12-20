@@ -2,6 +2,7 @@ IMAGE_NAME=forum_i
 CONTAINER_NAME=forum_c
 PORT=443
 
+POSTS_IMAGES_FILES=data/images/posts/*
 CERTOUT_FILE=server.crt
 KEYOUT_FILE=server.key
 MAIN_SCSS_FILE=web/src/scss/main.scss
@@ -63,7 +64,7 @@ clean:
 	$(RM_CMD) $(BIN_FILE)
 
 fclean: clean
-	$(RM_CMD) $(CERTOUT_FILE) $(KEYOUT_FILE) $(DB_FILE)
+	$(RM_CMD) $(CERTOUT_FILE) $(KEYOUT_FILE) $(DB_FILE) $(POSTS_IMAGES_FILES)
 
 # DOCKER
 dall: dbuild drun
