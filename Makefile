@@ -64,7 +64,8 @@ clean:
 	$(RM_CMD) $(BIN_FILE)
 
 fclean: clean
-	$(RM_CMD) $(CERTOUT_FILE) $(KEYOUT_FILE) $(DB_FILE) $(POSTS_IMAGES_FILES)
+	$(RM_CMD) $(CERTOUT_FILE) $(KEYOUT_FILE) $(DB_FILE)
+	sudo $(RM_CMD) $(POSTS_IMAGES_FILES)
 
 # DOCKER
 dall: dbuild drun
