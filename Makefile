@@ -6,7 +6,10 @@ CERTOUT_FILE=server.crt
 KEYOUT_FILE=server.key
 MAIN_SCSS_FILE=web/src/scss/main.scss
 MAIN_CSS_OUT_FILE=web/static/style/main.css
+SASS_WATCHER_FILE=sass/watcher.ps1
 DB_FILE=forum.db
+
+SASS_CMD=npx sass --watch $(MAIN_SCSS_FILE):$(MAIN_CSS_OUT_FILE) --style=compressed
 
 ifeq ($(OS),Windows_NT)
 	BIN_FILE=main.exe
@@ -27,19 +30,34 @@ ifeq ($(wildcard $(CERTOUT_FILE) $(KEYOUT_FILE)),)
 endif
 
 build:
-	npx tsc
-	npx sass $(MAIN_SCSS_FILE):$(MAIN_CSS_OUT_FILE) --style=compressed
-	go build -o $(BIN_FILE)
+	@echo Compiling typescript to javascript...
+	@npx tsc
+	@echo Compiling scss to css and start edit watcher...
+ifeq ($(OS),Windows_NT)
+	@powershell -ExecutionPolicy Bypass -File "$(SASS_WATCHER_FILE)" \
+	-Action "start" -SassCommand "$(SASS_CMD)"
+else
+	@npx sass $(MAIN_SCSS_FILE):$(MAIN_CSS_OUT_FILE) --style=compressed
+endif
+	@echo Build programm binary...
+	@go build -o $(BIN_FILE)
 
 run:
+	@echo Run application...
 ifeq ($(OS),Windows_NT)
-	powershell -Command "Start-Process '.\\$(BIN_FILE)' -Verb RunAs"
+	@powershell -Command "Start-Process '.\\$(BIN_FILE)' -Verb RunAs"
 else
-	sudo ./$(BIN_FILE)
+	@sudo ./$(BIN_FILE)
 endif
 
-watch:
-	npx sass --watch $(MAIN_SCSS_FILE):$(MAIN_CSS_OUT_FILE) --style=compressed
+sass-watch-stop:
+ifeq ($(OS),Windows_NT)
+	@powershell -ExecutionPolicy Bypass -File "$(SASS_WATCHER_FILE)" \
+	-Action "stop"
+endif
+
+sass-watch:
+	$(SASS_CMD)
 
 clean:
 	$(RM_CMD) $(BIN_FILE)
