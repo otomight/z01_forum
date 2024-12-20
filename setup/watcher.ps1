@@ -3,7 +3,7 @@ param(
 	[string]$SassCommand
 )
 
-$pidFile = "sass/.pid"
+$pidFile = "setup/.pid"
 
 function Get-SassWatcher {
 	if (Test-Path $pidFile) {

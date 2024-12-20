@@ -8,8 +8,9 @@ POSTS_IMAGES_FILES=data/images/posts/*
 
 ENV_FILE=.env
 ENV_EXAMPLE_FILE=$(SETUP_DIR).env.example
-SETUP_SH_FILE=$(SETUP_DIR)setup.sh
-SASS_WATCHER_FILE=$(SETUP_DIR)watcher.ps1
+ENV_SH_FILE=$(SETUP_DIR)env.sh
+SASS_WATCHER_PS1_FILE=$(SETUP_DIR)watcher.ps1
+SASS_WATCHER_SH_FILE=$(SETUP_DIR)watcher.sh
 
 CERTOUT_FILE=server.crt
 KEYOUT_FILE=server.key
@@ -43,11 +44,11 @@ build:
 	@npx tsc
 	@echo Compiling scss to css and start edit watcher...
 ifeq ($(OS),Windows_NT)
-	@powershell -ExecutionPolicy Bypass -File "$(SASS_WATCHER_FILE)" \
+	@powershell -ExecutionPolicy Bypass -File "$(SASS_WATCHER_PS1_FILE)" \
 	-Action "start" -SassCommand "$(SASS_CMD)"
 else
-	@./$(SETUP_SH_FILE) $(ENV_EXAMPLE_FILE) $(ENV_FILE)
-	@npx sass $(MAIN_SCSS_FILE):$(MAIN_CSS_OUT_FILE) --style=compressed
+	@./$(ENV_SH_FILE) $(ENV_EXAMPLE_FILE) $(ENV_FILE)
+	@./$(SASS_WATCHER_SH_FILE) "start" "$(SASS_CMD)"
 endif
 	@echo Build programm binary...
 	@go build -o $(BIN_FILE)
@@ -64,6 +65,8 @@ sass-watch-stop:
 ifeq ($(OS),Windows_NT)
 	@powershell -ExecutionPolicy Bypass -File "$(SASS_WATCHER_FILE)" \
 	-Action "stop"
+else
+	@./$(SASS_WATCHER_SH_FILE) "stop" $(SASS_CMD)
 endif
 
 sass-watch:
