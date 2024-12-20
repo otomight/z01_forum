@@ -2,12 +2,20 @@ IMAGE_NAME=forum_i
 CONTAINER_NAME=forum_c
 PORT=443
 
+SETUP_DIR=setup/
+
 POSTS_IMAGES_FILES=data/images/posts/*
+
+ENV_FILE=.env
+ENV_EXAMPLE_FILE=$(SETUP_DIR).env.example
+SETUP_SH_FILE=$(SETUP_DIR)setup.sh
+SASS_WATCHER_FILE=$(SETUP_DIR)watcher.ps1
+
 CERTOUT_FILE=server.crt
 KEYOUT_FILE=server.key
 MAIN_SCSS_FILE=web/src/scss/main.scss
 MAIN_CSS_OUT_FILE=web/static/style/main.css
-SASS_WATCHER_FILE=sass/watcher.ps1
+
 DB_FILE=forum.db
 
 SASS_CMD=npx sass --watch $(MAIN_SCSS_FILE):$(MAIN_CSS_OUT_FILE) --style=compressed
@@ -38,6 +46,7 @@ ifeq ($(OS),Windows_NT)
 	@powershell -ExecutionPolicy Bypass -File "$(SASS_WATCHER_FILE)" \
 	-Action "start" -SassCommand "$(SASS_CMD)"
 else
+	@./$(SETUP_SH_FILE) $(ENV_EXAMPLE_FILE) $(ENV_FILE)
 	@npx sass $(MAIN_SCSS_FILE):$(MAIN_CSS_OUT_FILE) --style=compressed
 endif
 	@echo Build programm binary...

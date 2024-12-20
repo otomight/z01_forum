@@ -7,6 +7,7 @@ type UserRoleStruct struct {
 }
 
 const (
+	EnvFilePath				= ".env"
 	DbFilePath				= "forum.db"
 	SqlTablesFilePath		= "forum.sql"
 	ServerCertifFilePath	= "server.crt"

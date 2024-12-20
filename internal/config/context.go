@@ -11,7 +11,6 @@ const (
 const (
 	//Google
 	GoogleClientID     = "336521994095-0f7tu06nm9juo9v0rfi08g6c6cdciu67.apps.googleusercontent.com"
-	GoogleClientSecret = "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"
 	GoogleRedirectURI  = "https://localhost/auth/google/callback"
 	GoogleAuthURL      = "https://accounts.google.com/o/oauth2/v2/auth"
 	GoogleTokenURL     = "https://oauth2.googleapis.com/token"

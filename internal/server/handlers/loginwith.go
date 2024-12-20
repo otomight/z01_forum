@@ -24,7 +24,7 @@ func GoogleCallBackHandler(w http.ResponseWriter, r *http.Request) {
 		TokenURL:     config.GoogleTokenURL,
 		UserInfoURL:  config.GoogleUserInfoURL,
 		ClientID:     config.GoogleClientID,
-		ClientSecret: config.GoogleClientSecret,
+		ClientSecret: config.EnvVar.GoogleClientSecret,
 		RedirectURI:  config.GoogleRedirectURI,
 	}
 	services.OAuthCallbackHandler(w, r, googleConfig)
