@@ -18,7 +18,6 @@ const (
 
 	//Facebook
 	FacebookClientID     = "3907245556220479"
-	FacebookClientSecret = "9f945eb300532f82baa8d62d5a613d3e"
 	FacebookRedirectURI  = "https://localhost/auth/facebook/callback"
 	FacebookAuthURL      = "https://www.facebook.com/v21.0/dialog/oauth"
 	FacebookTokenURL     = "https://graph.facebook.com/v21.0/oauth/access_token"
@@ -26,7 +25,6 @@ const (
 
 	//Discord
 	DiscordClientID     = "1317915050664792075"
-	DiscordClientSecret = "YA9LCBQwU9yacIhwEMs1SnODc31wlxPe"
 	DiscordRedirectURI  = "https://localhost/auth/discord/callback"
 	DiscordAuthURL      = "https://discord.com/oauth2/authorize"
 	DiscordTokenURL     = "https://discord.com/api/oauth2/token"

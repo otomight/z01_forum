@@ -47,7 +47,7 @@ func DiscordCallBackHandler(w http.ResponseWriter, r *http.Request) {
 		TokenURL:     config.DiscordTokenURL,
 		UserInfoURL:  config.DiscordUserInfoURL,
 		ClientID:     config.DiscordClientID,
-		ClientSecret: config.DiscordClientSecret,
+		ClientSecret: config.EnvVar.DiscordClientSecret,
 		RedirectURI:  config.DiscordRedirectURI,
 	}
 	services.OAuthCallbackHandler(w, r, discordConfig)
@@ -70,7 +70,7 @@ func FacebookCallBackHandler(w http.ResponseWriter, r *http.Request) {
 		TokenURL:     config.FacebookTokenURL,
 		UserInfoURL:  config.FacebookUserInfoURL,
 		ClientID:     config.FacebookClientID,
-		ClientSecret: config.FacebookClientSecret,
+		ClientSecret: config.EnvVar.FacebookClientSecret,
 		RedirectURI:  config.FacebookRedirectURI,
 	}
 	services.OAuthCallbackHandler(w, r, facebookConfig)
