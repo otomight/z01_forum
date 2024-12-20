@@ -6,7 +6,7 @@ function create_env() {
 
 	if [ ! -f "$ENV_FILE" ]; then
 		cat $ENV_EXAMPLE_FILE > $ENV_FILE
-		echo "$ENV_FILE file created. Pls fill it with the right values"
+		echo -e "\e[33mWARNING: $ENV_FILE file created. Pls fill it with the right values!\e[0m"
 	fi
 }
 
