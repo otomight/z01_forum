@@ -44,13 +44,18 @@
 		border-radius: 15px;
 	}
 
-	.login-with-facebook, .login-with-google, .login-with-instagram, .login-with-github{
+	.login-with-facebook, .login-with-google, .login-with-discord{
 		background: var(--navbar-color, #ffffff);
 		border-radius: 15px;
 		border-style: solid;
 		border-color: var(--navbar-color, #ffffff);
 		border-width: 2px;
 		display: flex;
+
+		a {
+			display: flex;
+			text-decoration: none;
+		}
 	}
 
 	.facebook-login-logo {
