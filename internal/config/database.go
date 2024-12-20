@@ -42,7 +42,7 @@ type PostsTableKeys struct {
 	AuthorID		string
 	Title			string
 	Content			string
-	ImagePath			string
+	ImagePath		string
 	CreationDate	string
 	UpdateDate		string
 	Likes			string

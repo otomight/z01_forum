@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"forum/internal/config"
 	"log"
 	"net/http"
 	"reflect"
@@ -92,7 +91,7 @@ func parseField(
 	}
 }
 
-func requestParseForm(r *http.Request) error {
+func requestParseForm(r *http.Request, multipartMaxMemory int64) error {
 	var	contentType	string
 	var	err			error
 
@@ -102,7 +101,7 @@ func requestParseForm(r *http.Request) error {
 		return nil
 	}
 	if strings.Contains(contentType, "multipart/form-data") {
-		if err = r.ParseMultipartForm(config.MaxImageSizeMB << 20); err != nil {
+		if err = r.ParseMultipartForm(multipartMaxMemory); err != nil {
 			return err
 		}
 	} else if err = r.ParseForm(); err != nil {
@@ -115,14 +114,18 @@ func requestParseForm(r *http.Request) error {
 // with the form received on request `r`.
 // Only values with the tag `form` and a key that match with
 // any value of the form from the request will be written.
-func ParseForm(r *http.Request, PtToformStruct interface{}) error {
+// Set `multipartMaxMemory` in byte to know at what point a multipart
+// form should be stored on storage instead of the memory.
+func ParseForm(
+	r *http.Request, PtToformStruct interface{}, multipartMaxMemory int64,
+) error {
 
 	var	form			reflect.Value
 	var	i				int
 	var	structField		reflect.StructField
 	var	err				error
 
-	if err = requestParseForm(r); err != nil {
+	if err = requestParseForm(r, multipartMaxMemory); err != nil {
 		log.Printf("Error at request form parsing: %v\n", err)
 		return err
 	}

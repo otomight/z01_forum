@@ -22,6 +22,11 @@ func createPost(
 	var err				error
 
 	if form.Image != nil {
+		if form.Image.FileHeader.Size > config.ImageMaxMemory {
+			err = fmt.Errorf("The image size is too large")
+			http.Error(w, err.Error(), http.StatusRequestEntityTooLarge)
+			return 0, err
+		}
 		os.MkdirAll(config.PostsImagesDirPath, 0755)
 		imageServerPath = services.DownloadImage(
 			w, form, config.PostsImagesDirPath,
@@ -53,7 +58,7 @@ func createPostFromForm(
 	var	postID	int
 	var	err		error
 
-	if err = utils.ParseForm(r, &form); err != nil {
+	if err = utils.ParseForm(r, &form, config.MultipartMaxMemory); err != nil {
 		http.Error(w, "Unable to parse form:"+err.Error(),
 			http.StatusBadRequest)
 		return 0, err

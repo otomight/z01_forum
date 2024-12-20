@@ -1,6 +1,7 @@
 package posthandlers
 
 import (
+	"forum/internal/config"
 	"forum/internal/database"
 	"forum/internal/server/models"
 	"forum/internal/utils"
@@ -17,7 +18,7 @@ func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusMethodNotAllowed)
 		return
 	}
-	if err = utils.ParseForm(r, &form); err != nil {
+	if err = utils.ParseForm(r, &form, config.MultipartMaxMemory); err != nil {
 		http.Error(w, "Unable to parse form:"+err.Error(),
 			http.StatusBadRequest)
 		return

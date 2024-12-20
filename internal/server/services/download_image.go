@@ -18,6 +18,7 @@ func DownloadImage(
 	var	dst				*os.File
 	var	err				error
 
+	defer form.Image.File.Close()
 	imagePath = dirPath + form.Image.FileHeader.Filename
 	imageServerPath, err = utils.CutStrAtPattern(imagePath, config.ImagesRoute)
 	if err != nil {
