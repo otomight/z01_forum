@@ -2,7 +2,7 @@ function handleImageTooLarge(event: Event) {
 	const	target:		HTMLInputElement | null = (
 		event.target as HTMLInputElement
 	);
-	const	maxSize:	number = 2 * 1024 * 1024;
+	const	maxSize:	number = 20 * 1024 * 1024;
 	const	errorMsg:	HTMLElement | null = (
 		document.getElementById('upload-image-error')
 	);

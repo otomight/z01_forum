@@ -76,7 +76,7 @@ func createPostFromForm(
 		return 0, fmt.Errorf("The title is too long")
 	}
 	if postID, err = createPost(w, session.UserID, &form); err != nil {
-		log.Printf(err.Error())
+		log.Println(err.Error())
 		http.Error(w, "Failed to create post",
 			http.StatusInternalServerError)
 		return 0, err
