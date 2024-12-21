@@ -20,6 +20,7 @@ func DownloadImage(
 
 	defer form.Image.File.Close()
 	imagePath = dirPath + form.Image.FileHeader.Filename
+	imagePath = utils.GenUniqueFilePath(imagePath)
 	imageServerPath, err = utils.CutStrAtPattern(imagePath, config.ImagesRoute)
 	if err != nil {
 		log.Println("Error at fetching the server version of the image path.")
