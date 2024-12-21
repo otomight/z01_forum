@@ -34,36 +34,40 @@ func NewPost(post *Post, categoriesIDs []int) (int, error) {
 }
 
 func getPostsWithConditionQueryResult(
-	userID int, condition string, args ...any,
+	curUserID int, condition string, args ...any,
 ) (*sql.Rows, error) {
-	var	p			config.PostsTableKeys
-	var	cl			config.ClientsTableKeys
-	var	pc			config.PostsCategoriesTableKeys
-	var	pr			config.PostsReactionsTableKeys
-	var	query		string
-	var	rows		*sql.Rows
-	var err			error
+	var	p		config.PostsTableKeys
+	var	cl		config.ClientsTableKeys
+	var	pc		config.PostsCategoriesTableKeys
+	var	pr		config.PostsReactionsTableKeys
+	var	c		config.CommentsTableKeys
+	var	query	string
+	var	rows	*sql.Rows
+	var err		error
 
 	p = config.TableKeys.Posts
 	cl = config.TableKeys.Clients
 	pc = config.TableKeys.PostsCategories
 	pr = config.TableKeys.PostsReactions
+	c = config.TableKeys.Comments
 	query = `
 		SELECT DISTINCT p.`+p.ID+`, p.`+p.AuthorID+`, cl.`+cl.UserName+`,
 			p.`+p.Title+`, p.`+p.Content+`, p.`+p.ImagePath+`,
 			p.`+p.CreationDate+`, p.`+p.UpdateDate+`,
-			p.`+p.Likes+`, p.`+p.Dislikes+`, pr.`+pr.Liked+`
+			p.`+p.Likes+`, p.`+p.Dislikes+`, upr.`+pr.Liked+`
 		FROM `+p.Posts+` p
 		JOIN `+cl.Clients+` cl ON p.`+p.AuthorID+` = cl.`+cl.ID+`
+		LEFT JOIN `+pr.PostsReactions+` upr
+			ON upr.`+pr.PostID+` = p.`+p.ID+` AND upr.`+pr.UserID+` = ?
+		LEFT JOIN `+pr.PostsReactions+` pr ON pr.`+pr.PostID+` = p.`+p.ID+`
 		LEFT JOIN `+pc.PostsCategories+` pc ON pc.`+pc.PostID+` = p.`+p.ID+`
-		LEFT JOIN `+pr.PostsReactions+` pr
-		ON pr.`+pr.PostID+` = p.`+p.ID+` AND pr.`+pr.UserID+` = ?
-	`
+		LEFT JOIN `+c.Comments+` c ON c.`+c.PostID+` = p.`+p.ID+`
+	` // upr is for user post reaction, it fetch the curUserID reaction
 	if condition != "" {
 		query += ` WHERE `+condition+``
 	}
 	query += ";"
-	rows, err = DB.Query(query, append([]any{userID}, args...)...)
+	rows, err = DB.Query(query, append([]any{curUserID}, args...)...)
 	return rows, err
 }
 
@@ -115,7 +119,7 @@ func getPostsWithCondition(curUserID int, condition string, args ...any) ([]*Pos
 	return posts, nil
 }
 
-func GetPostByID(curUserID int, userID int) (*Post, error) {
+func GetPostByID(curUserID int, postID int) (*Post, error) {
 	var	condition	string
 	var	p			config.PostsTableKeys
 	var	posts		[]*Post
@@ -123,7 +127,7 @@ func GetPostByID(curUserID int, userID int) (*Post, error) {
 
 	p = config.TableKeys.Posts
 	condition = `p.`+p.ID+` = ?`
-	posts, err = getPostsWithCondition(curUserID, condition, userID)
+	posts, err = getPostsWithCondition(curUserID, condition, postID)
 	if len(posts) == 0 {
 		return nil, err
 	}
@@ -144,7 +148,25 @@ func GetPostsLikedByUser(curUserID int, userID int) ([]*Post, error) {
 	var	pr			config.PostsReactionsTableKeys
 
 	pr = config.TableKeys.PostsReactions
-	condition = ``+pr.UserID+` = ? AND `+pr.Liked+` = true`
+	condition = `pr.`+pr.UserID+` = ? AND pr.`+pr.Liked+` = true`
+	return getPostsWithCondition(curUserID, condition, userID)
+}
+
+func GetPostsDislikedByUser(curUserID int, userID int) ([]*Post, error) {
+	var	condition	string
+	var	pr			config.PostsReactionsTableKeys
+
+	pr = config.TableKeys.PostsReactions
+	condition = `pr.`+pr.UserID+` = ? AND pr.`+pr.Liked+` = false`
+	return getPostsWithCondition(curUserID, condition, userID)
+}
+
+func GetPostsCommentedByUser(curUserID int, userID int) ([]*Post, error) {
+	var	condition	string
+	var	c			config.CommentsTableKeys
+
+	c = config.TableKeys.Comments
+	condition = `c.`+c.UserID+` = ?`
 	return getPostsWithCondition(curUserID, condition, userID)
 }
 

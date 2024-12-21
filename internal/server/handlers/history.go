@@ -50,3 +50,11 @@ func HistoryCreatedPageHandler(w http.ResponseWriter, r *http.Request) {
 func HistoryLikedPageHandler(w http.ResponseWriter, r *http.Request) {
 	historyPageHandler(w, r, db.GetPostsLikedByUser)
 }
+
+func HistoryDislikedPageHandler(w http.ResponseWriter, r *http.Request) {
+	historyPageHandler(w, r, db.GetPostsDislikedByUser)
+}
+
+func HistoryCommentedPageHandler(w http.ResponseWriter, r *http.Request) {
+	historyPageHandler(w, r, db.GetPostsCommentedByUser)
+}
