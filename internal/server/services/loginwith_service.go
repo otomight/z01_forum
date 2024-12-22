@@ -183,8 +183,13 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request, config config.
 
 	username, usernameExists := userInfo["username"].(string)
 	if !usernameExists || username == "" {
-		log.Printf("Username not found in response, defaulting to empty string")
-		username = "" // Or handle as appropriate
+		log.Printf("Username not found in response, defaulting to Anonymous")
+		username, err = database.GenerateAnonymousUsername()
+		if err != nil {
+			log.Printf("error generating unique anonymous username:%v", err)
+			http.Error(w, "failed to generate unique username", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	// Map required fields to the Client struct

@@ -227,3 +227,55 @@ func GetOrCreateUserByOAuth(oauthProvider, oauthID, email, name, avatar string) 
 	}
 	return &user, nil
 }
+
+func GetHighestAnonymousUsername() (string, error) {
+	var highestAnonymous string
+
+	query := `
+		SELECT user_name
+		FROM clients
+		WHERE user_name LIKE 'Anonymous%'
+		ORDER BY CAST(SUBSTRING(user_name, 10) AS UNSIGNED) DESC
+		LIMIT 1;
+	`
+	err := DB.QueryRow(query).Scan(&highestAnonymous)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", nil
+		}
+		return "", fmt.Errorf("error querying highest anonymous username:%w", err)
+	}
+	return highestAnonymous, err
+}
+
+func GenerateAnonymousUsername() (string, error) {
+	var highestAnonymous string
+
+	query := `
+        SELECT user_name 
+        FROM clients 
+        WHERE user_name LIKE 'Anonymous%' 
+        ORDER BY CAST(SUBSTRING(user_name, 10) AS UNSIGNED) DESC 
+        LIMIT 1;
+    `
+
+	err := DB.QueryRow(query).Scan(&highestAnonymous)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// No existing anonymous usernames, start with "Anonymous1"
+			return "Anonymous1", nil
+		}
+		return "", fmt.Errorf("error querying highest anonymous username: %w", err)
+	}
+
+	// Extract the number and increment it
+	newNumber := 1
+	if highestAnonymous != "" {
+		// Parse the number from "AnonymousX"
+		var currentNumber int
+		fmt.Sscanf(highestAnonymous, "Anonymous%d", &currentNumber)
+		newNumber = currentNumber + 1
+	}
+
+	return fmt.Sprintf("Anonymous%d", newNumber), nil
+}
