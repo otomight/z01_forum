@@ -76,27 +76,15 @@
 		z-index: 10;
 	}
 
-	.sub-dropdown {
-		display: none;
-		position: absolute;
-		top: 0;
-		left: 100%;
-		background-color: white;
-		border: 1px solid #ccc;
-		border-radius: 5px;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-		z-index: 11;
-	}
-
 	.profile-menu:hover .history-dropdown {
 		display: block;
 	}
 
-	.history-dropdown:hover .sub-dropdown {
+	.history-dropdown:hover {
 		display: block;
 	}
 
-	.history-dropdown span, .sub-dropdown a {
+	.history-dropdown a {
 		display: block;
 		text-decoration: none;
 		color: black;
@@ -104,7 +92,7 @@
 		font-size: 14px;
 	}
 
-	.history-dropdown span:hover, .sub-dropdown a:hover {
+	.history-dropdown a:hover {
 		background-color: rgba(0, 123, 255, 0.1);
 		color: #007BFF;
 	}
