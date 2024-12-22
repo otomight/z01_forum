@@ -53,7 +53,7 @@ type Post struct {
 	Likes        int
 	Dislikes     int
 	Categories   []*Category
-	Comments     []Comment `json:"comments"`
+	Comments     []*Comment `json:"comments"`
 	UserConfig   *UserConfig
 }
 

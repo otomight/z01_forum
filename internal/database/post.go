@@ -85,7 +85,9 @@ func fillPostExternalData(curUserID int, post *Post, userLiked *bool) {
 	}
 }
 
-func getPostsWithCondition(curUserID int, condition string, args ...any) ([]*Post, error) {
+func getPostsWithCondition(
+	curUserID int, includeExtData bool, condition string, args ...any,
+) ([]*Post, error) {
 	var	posts		[]*Post
 	var	post		*Post
 	var	rows		*sql.Rows
@@ -109,7 +111,9 @@ func getPostsWithCondition(curUserID int, condition string, args ...any) ([]*Pos
 			log.Printf("Error scanning post: %v\n", err)
 			continue
 		}
-		fillPostExternalData(curUserID, post, userLiked)
+		if includeExtData {
+			fillPostExternalData(curUserID, post, userLiked)
+		}
 		posts = append(posts, post)
 	}
 	if err = rows.Err(); err != nil {
@@ -127,72 +131,80 @@ func GetPostByID(curUserID int, postID int) (*Post, error) {
 
 	p = config.TableKeys.Posts
 	condition = `p.`+p.ID+` = ?`
-	posts, err = getPostsWithCondition(curUserID, condition, postID)
+	posts, err = getPostsWithCondition(curUserID, true, condition, postID)
 	if len(posts) == 0 {
 		return nil, err
 	}
 	return posts[0], err
 }
 
+func GetAllPosts(curUserID int) ([]*Post, error) {
+	return getPostsWithCondition(curUserID, true, "")
+}
+
+// For minimal post
 func GetPostsCreatedByUser(curUserID int, userID int) ([]*Post, error) {
 	var	condition	string
 	var	p			config.PostsTableKeys
 
 	p = config.TableKeys.Posts
 	condition = `p.`+p.AuthorID+` = ?`
-	return getPostsWithCondition(curUserID, condition, userID)
+	return getPostsWithCondition(curUserID, false, condition, userID)
 }
 
+// For minimal post
 func GetPostsLikedByUser(curUserID int, userID int) ([]*Post, error) {
 	var	condition	string
 	var	pr			config.PostsReactionsTableKeys
 
 	pr = config.TableKeys.PostsReactions
 	condition = `pr.`+pr.UserID+` = ? AND pr.`+pr.Liked+` = true`
-	return getPostsWithCondition(curUserID, condition, userID)
+	return getPostsWithCondition(curUserID, false, condition, userID)
 }
 
+// For minimal post
 func GetPostsDislikedByUser(curUserID int, userID int) ([]*Post, error) {
 	var	condition	string
 	var	pr			config.PostsReactionsTableKeys
 
 	pr = config.TableKeys.PostsReactions
 	condition = `pr.`+pr.UserID+` = ? AND pr.`+pr.Liked+` = false`
-	return getPostsWithCondition(curUserID, condition, userID)
+	return getPostsWithCondition(curUserID, false, condition, userID)
 }
 
+// For minimal post
 func GetPostsCommentedByUser(curUserID int, userID int) ([]*Post, error) {
 	var	condition	string
+	var	posts		[]*Post
 	var	c			config.CommentsTableKeys
+	var	i			int
+	var	err			error
 
 	c = config.TableKeys.Comments
 	condition = `c.`+c.UserID+` = ?`
-	return getPostsWithCondition(curUserID, condition, userID)
+	posts, err = getPostsWithCondition(curUserID, false, condition, userID)
+	if err != nil {
+		return posts, err
+	}
+	for i = 0; i < len(posts); i++ {
+		posts[i].Comments, err = GetCommentsOfPostFromUser(
+			curUserID, posts[i].ID, curUserID,
+		)
+		if err != nil {
+			log.Printf("Error at fetching comments of post %d\n", posts[i].ID)
+		}
+	}
+	return posts, err
 }
 
-func GetPostsRelatedToCurUser(userID int) ([]*Post, error) {
-	var	condition	string
-	var	p			config.PostsTableKeys
-	var	r			config.PostsReactionsTableKeys
-
-	p = config.TableKeys.Posts
-	r = config.TableKeys.PostsReactions
-	condition = `p.`+p.AuthorID+` = ? OR `+r.UserID+` = ?`
-	return getPostsWithCondition(userID, condition, userID, userID)
-}
-
+// For minimal post
 func GetPostsByCategoryID(curUserID int, categoryID int) ([]*Post, error) {
 	var	condition	string
 	var	pc			config.PostsCategoriesTableKeys
 
 	pc = config.TableKeys.PostsCategories
 	condition = `pc.`+pc.CategoryID+` = ?`
-	return getPostsWithCondition(curUserID, condition, categoryID)
-}
-
-// Retrieve all the posts from database
-func GetAllPosts(curUserID int) ([]*Post, error) {
-	return getPostsWithCondition(curUserID, "")
+	return getPostsWithCondition(curUserID, false, condition, categoryID)
 }
 
 func deletePostWithCondition(condition string, args ...any) error {

@@ -3,5 +3,8 @@
 		<div class="post">
 			{{ template "postmini" . }}
 		</div>
+		{{ if .Comments }}
+			{{ template "comments" (addToStruct . $.Session "Session" ) }}
+		{{ end }}
 	{{end}}
 {{ end }}

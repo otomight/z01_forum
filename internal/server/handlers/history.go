@@ -12,7 +12,7 @@ import (
 func historyPageHandler(
 	w http.ResponseWriter,
 	r *http.Request,
-	GetPostsRelatedToCurUser func(int, int) ([]*db.Post, error),
+	getPostsRelatedToCurUser func(int, int) ([]*db.Post, error),
 ) {
 	var	session	*db.UserSession
 	var	categories	[]*db.Category
@@ -30,7 +30,7 @@ func historyPageHandler(
 		http.Error(w, "Error at fetching categories", http.StatusInternalServerError)
 		return
 	}
-	if posts, err = GetPostsRelatedToCurUser(userID, userID); err != nil {
+	if posts, err = getPostsRelatedToCurUser(userID, userID); err != nil {
 		log.Printf("Failed to retrieve posts: %v", err)
 		http.Error(w, "Failed to retrieve posts", http.StatusInternalServerError)
 		return

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"forum/internal/config"
 	"log"
@@ -22,15 +23,19 @@ func AddComment(postID, userID int, content string) error {
 	return nil
 }
 
-func GetCommentsByPostID(curUserID int, postID int) ([]Comment, error) {
+func getCommentsQueryResult(
+	curUserID int, condition string, args ...any,
+) (*sql.Rows, error) {
 	var	c			config.CommentsTableKeys
 	var	cl			config.ClientsTableKeys
 	var	cr			config.CommentsReactionsTableKeys
-	var	userLiked	*bool
 
 	c = config.TableKeys.Comments
 	cl = config.TableKeys.Clients
 	cr = config.TableKeys.CommentsReactions
+	if condition != "" {
+		condition = ` WHERE `+condition+``
+	}
 	query := `
 		SELECT c.`+c.ID+`, c.`+c.PostID+`, c.`+c.UserID+`,
 				cl.`+cl.UserName+`, c.`+c.Content+`, c.`+c.CreationDate+`,
@@ -39,31 +44,65 @@ func GetCommentsByPostID(curUserID int, postID int) ([]Comment, error) {
 		INNER JOIN `+cl.Clients+` cl ON c.`+c.UserID+` = cl.`+cl.ID+`
 		LEFT JOIN `+cr.CommentsReactions+` cr
 			ON cr.`+cr.CommentID+` = c.`+c.ID+` AND cr.`+cr.UserID+` = ?
-		WHERE c.`+c.PostID+` = ?
+		`+condition+`
 		ORDER BY c.`+c.CreationDate+` ASC;
 	`
+	return DB.Query(query, append([]any{curUserID}, args...)...)
+}
 
-	rows, err := DB.Query(query, curUserID, postID)
+func getCommentsWithCondition(
+	curUserID int, condition string, args ...any,
+) ([]*Comment, error) {
+	var	comments	[]*Comment
+	var	comment		*Comment
+	var	rows		*sql.Rows
+	var	userLiked	*bool
+	var	err			error
+
+	rows, err = getCommentsQueryResult(curUserID, condition, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch comment: %w", err)
 	}
 	defer rows.Close()
-
-	var comments []Comment
 	for rows.Next() {
-		var comment Comment
-		err := rows.Scan(
+		comment = &Comment{}
+		err = rows.Scan(
 			&comment.ID, &comment.PostID, &comment.UserID,
 			&comment.UserName, &comment.Content, &comment.CreationDate,
 			&comment.Likes, &comment.Dislikes, &userLiked,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("error scanning comment: %w", err)
+			log.Printf("Error scanning comment: %v\n", err)
+			continue
 		}
 		comment.UserConfig = getUserConfig(userLiked)
 		comments = append(comments, comment)
 	}
+	if err = rows.Err(); err != nil {
+		log.Println("Error during row iteration")
+		return nil, err
+	}
 	return comments, nil
+}
+
+func GetCommentsByPostID(curUserID int, postID int) ([]*Comment, error) {
+	var	condition	string
+	var	c			config.CommentsTableKeys
+
+	c = config.TableKeys.Comments
+	condition = `c.`+c.PostID+` = ?`
+	return getCommentsWithCondition(curUserID, condition, postID)
+}
+
+func GetCommentsOfPostFromUser(
+	curUserID int, postID int, userID int,
+) ([]*Comment, error) {
+	var	condition	string
+	var	c			config.CommentsTableKeys
+
+	c = config.TableKeys.Comments
+	condition = `c.`+c.PostID+` = ? AND c.`+c.UserID+` = ?`
+	return getCommentsWithCondition(curUserID, condition, postID, userID)
 }
 
 func deleteCommentWithCondition(condition string, args ...any) error {
