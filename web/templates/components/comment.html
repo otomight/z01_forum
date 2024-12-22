@@ -1,0 +1,12 @@
+{{ define "comment" }}
+	<article class="comment">
+		<div class="comment__head">
+			<div class="comment__infos">
+				<div class="comment__author">{{ .UserName }}</div>
+				<time class="comment__creation-date" datetime="{{ .CreationDate }}">{{ .CreationDate }}</time>
+			</div>
+			{{ template "reactions" (addToStruct . "Type" "comment" "Session" $.Session) }}
+		</div>
+		<div class="comment__content">{{ .Content }}</div>
+	</article>
+{{ end }}

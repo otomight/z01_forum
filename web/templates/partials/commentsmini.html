@@ -1,0 +1,7 @@
+{{ define "commentsmini" }}
+	<div class="comments">
+		{{ range .Comments }}
+			{{ template "comment" (addToStruct . "Session" $.Session) }}
+		{{ end }}
+	</div>
+{{ end }}

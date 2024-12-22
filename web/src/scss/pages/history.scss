@@ -18,4 +18,11 @@
 	.history-categories a:hover {
 		background-color:	rgb(212, 212, 212);
 	}
+
+	.post {
+		.comments {
+			margin-top:		0 !important;
+			margin-left:	2rem;
+		}
+	}
 }

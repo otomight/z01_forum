@@ -2,9 +2,9 @@
 	{{ range .Posts }}
 		<div class="post">
 			{{ template "postmini" . }}
+			{{ if .Comments }}
+				{{ template "commentsmini" (addToStruct . "Session" $.Session ) }}
+			{{ end }}
 		</div>
-		{{ if .Comments }}
-			{{ template "comments" (addToStruct . $.Session "Session" ) }}
-		{{ end }}
 	{{end}}
 {{ end }}

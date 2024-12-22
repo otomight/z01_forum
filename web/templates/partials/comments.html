@@ -1,0 +1,8 @@
+{{ define "comments" }}
+	<div class="comments">
+		{{ template "comment_form" . }}
+		{{ range .Comments }}
+			{{ template "comment" (addToStruct . "Session" $.Session) }}
+		{{ end }}
+	</div>
+{{ end }}
