@@ -60,7 +60,7 @@ type Post struct {
 type Comment struct {
 	ID           int       `json:"id"`
 	PostID       int       `json:"post_id"`
-	UserID       int       `json:"user_id"`
+	AuthorID     int       `json:"user_id"`
 	UserName     string    `json:"user_name"`
 	Content      string    `json:"content"`
 	CreationDate time.Time `json:"creation_date"`

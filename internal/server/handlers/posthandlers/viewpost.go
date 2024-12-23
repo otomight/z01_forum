@@ -32,7 +32,7 @@ func fillViewPostPageData(
 		)
 		return nil, err
 	}
-	if post, err = db.GetPostByID(userID, postID); err != nil {
+	if post, err = db.GetCompletePostByID(userID, postID); err != nil {
 		http.NotFound(w, r)
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func ViewPostHandler(w http.ResponseWriter, r *http.Request) {
 	var	err					error
 
 	if r.Method != http.MethodGet {
-		http.Error(w, "", http.StatusMethodNotAllowed)
+		http.Error(w, "Method not alowed", http.StatusMethodNotAllowed)
 		return
 	}
 	postIDStr = strings.TrimPrefix(r.URL.Path, "/post/view/")

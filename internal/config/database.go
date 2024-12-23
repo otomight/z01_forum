@@ -60,7 +60,7 @@ type CommentsTableKeys struct {
 	Comments		string
 	ID				string
 	PostID			string
-	UserID			string
+	AuthorID		string
 	Content			string
 	CreationDate	string
 	Likes			string
@@ -158,7 +158,7 @@ var comments = CommentsTableKeys{
 	Comments:		"comments",
 	ID:				"id",
 	PostID:			"post_id",
-	UserID:			"user_id",
+	AuthorID:		"author_id",
 	Content:		"content",
 	CreationDate:	"creation_date",
 	Likes:			"likes",

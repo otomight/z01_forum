@@ -1,7 +1,7 @@
 {{ define "comment_form" }}
 	{{ if .Session }}
 		<form action="/post/comment/{{ .ID }}"
-			method="POST" class="comment-form">
+			method="POST" class="comment__form">
 			<textarea name="content" placeholder="Write your comment here..." required></textarea>
 			<input type="hidden" name="postID" value="{{ .ID }}">
 			<button type="submit">Comment</button>

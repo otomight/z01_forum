@@ -2,7 +2,7 @@ package posthandlers
 
 import (
 	"forum/internal/config"
-	"forum/internal/database"
+	db "forum/internal/database"
 	"forum/internal/server/models"
 	"forum/internal/utils"
 	"net/http"
@@ -10,8 +10,10 @@ import (
 )
 
 func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
+	var	session	*db.UserSession
 	var	form	models.DeletePostForm
 	var	err		error
+	var	post	*db.Post
 	var	postID	int
 
 	if r.Method != http.MethodPost {
@@ -27,7 +29,13 @@ func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to delete post", http.StatusInternalServerError)
 		return
 	}
-	if err = database.DeletePost(postID); err != nil {
+	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
+	post, _ = db.GetSimplePostByID(0, postID)
+	if session == nil || post == nil || session.UserID != post.AuthorID {
+		http.Error(w, "You cannot delete this post!", http.StatusUnauthorized)
+		return
+	}
+	if err = db.DeletePost(postID); err != nil {
 		http.Error(w, "Failed to delete post", http.StatusInternalServerError)
 		return
 	}

@@ -3,7 +3,9 @@ package handlers
 import (
 	"fmt"
 	"forum/internal/config"
-	"forum/internal/database"
+	db "forum/internal/database"
+	"forum/internal/server/models"
+	"forum/internal/utils"
 	"log"
 	"net/http"
 	"strconv"
@@ -11,6 +13,11 @@ import (
 )
 
 func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	// Extract postID from the URL path
 	urlPath := r.URL.Path
 	parts := strings.Split(urlPath, "/")
@@ -23,7 +30,7 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, ok := r.Context().Value(config.SessionKey).(*database.UserSession)
+	session, ok := r.Context().Value(config.SessionKey).(*db.UserSession)
 	if !ok {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -44,7 +51,7 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Attempting to add comment : userID=%d, postID=%d, content=%s",
 												session.UserID, postID, content)
 
-	err = database.AddComment(postID, session.UserID, content)
+	err = db.AddComment(postID, session.UserID, content)
 	if err != nil {
 		log.Printf("Failed to add comment: %v", err)
 		http.Error(w, "Failed to add comment", http.StatusInternalServerError)
@@ -52,4 +59,48 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("Comment added successfully, redirecting to home page.")
 	http.Redirect(w, r, fmt.Sprintf("/post/view/%d", postID), http.StatusSeeOther)
+}
+
+
+func DeleteCommentHandler(w http.ResponseWriter, r *http.Request) {
+	var	session		*db.UserSession
+	var	form		models.DeleteCommentForm
+	var	comment		*db.Comment
+	var	commentID	int
+	var	err			error
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not alowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if err = utils.ParseForm(r, &form, config.MultipartMaxMemory); err != nil {
+		http.Error(
+			w, "Unable to parse form:" + err.Error(), http.StatusBadRequest,
+		)
+		return
+	}
+	if commentID, err = strconv.Atoi(form.CommentID); err != nil {
+		http.Error(
+			w, "Failed to delete comment", http.StatusInternalServerError,
+		)
+		return
+	}
+	session, _ = r.Context().Value(config.SessionKey).(*db.UserSession)
+	comment, _ = db.GetCommentByID(0, commentID)
+	if session == nil || comment == nil || session.UserID != comment.AuthorID {
+		http.Error(
+			w, "You cannot delete this comment!", http.StatusUnauthorized,
+		)
+		return
+	}
+	if err = db.DeleteComment(commentID); err != nil {
+		http.Error(
+			w, "Failed to delete comment", http.StatusInternalServerError,
+		)
+		return
+	}
+	if r.Referer() != "" {
+		http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

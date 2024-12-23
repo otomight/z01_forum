@@ -125,7 +125,17 @@ func getPostsWithCondition(
 	return posts, nil
 }
 
-func GetPostByID(curUserID int, postID int) (*Post, error) {
+func GetCompletePostByID(curUserID int, postID int) (*Post, error) {
+	return getPostByID(curUserID, postID, true)
+}
+
+func GetSimplePostByID(curUserID int, postID int) (*Post, error) {
+	return getPostByID(curUserID, postID, false)
+}
+
+func getPostByID(
+	curUserID int, postID int, includeExtData bool,
+) (*Post, error) {
 	var	condition	string
 	var	p			config.PostsTableKeys
 	var	posts		[]*Post
@@ -133,7 +143,9 @@ func GetPostByID(curUserID int, postID int) (*Post, error) {
 
 	p = config.TableKeys.Posts
 	condition = `p.`+p.ID+` = ?`
-	posts, err = getPostsWithCondition(curUserID, true, condition, postID)
+	posts, err = getPostsWithCondition(
+		curUserID, includeExtData, condition, postID,
+	)
 	if len(posts) == 0 {
 		return nil, err
 	}
@@ -183,7 +195,7 @@ func GetPostsCommentedByUser(curUserID int, userID int) ([]*Post, error) {
 	var	err			error
 
 	c = config.TableKeys.Comments
-	condition = `c.`+c.UserID+` = ?`
+	condition = `c.`+c.AuthorID+` = ?`
 	posts, err = getPostsWithCondition(curUserID, false, condition, userID)
 	if err != nil {
 		return posts, err

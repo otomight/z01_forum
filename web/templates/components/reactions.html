@@ -4,13 +4,13 @@
 				data-current-user-id="{{ if .Session }}{{ .Session.UserID }}{{ else }}0{{ end }}">
 			<button class="like-button {{ if .UserConfig.IsLiked }}active{{ end }}">
 				<span class="reaction-icon">
-					<img src="/static/image/post/like.svg" alt="Like icon">
+					<img src="/static/image/like.svg" alt="Like icon">
 				</span>
 				<span class="reaction-count">{{ .Likes }}</span>
 			</button>
 			<button class="dislike-button {{ if .UserConfig.IsDisliked }}active{{ end }}">
 				<span class="reaction-icon">
-					<img src="/static/image/post/dislike.svg" alt="Dislike icon">
+					<img src="/static/image/dislike.svg" alt="Dislike icon">
 				</span>
 				<span class="reaction-count">{{ .Dislikes }}</span>
 			</button>

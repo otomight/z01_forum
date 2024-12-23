@@ -12,7 +12,7 @@ func AddComment(postID, userID int, content string) error {
 
 	c = config.TableKeys.Comments
 	query := `
-		INSERT INTO `+c.Comments+` (`+c.PostID+`, `+c.UserID+`, `+c.Content+`)
+		INSERT INTO `+c.Comments+` (`+c.PostID+`, `+c.AuthorID+`, `+c.Content+`)
 		VALUES(?, ?, ?)
 	`
 	_, err := DB.Exec(query, postID, userID, content)
@@ -37,11 +37,11 @@ func getCommentsQueryResult(
 		condition = ` WHERE `+condition+``
 	}
 	query := `
-		SELECT c.`+c.ID+`, c.`+c.PostID+`, c.`+c.UserID+`,
+		SELECT c.`+c.ID+`, c.`+c.PostID+`, c.`+c.AuthorID+`,
 				cl.`+cl.UserName+`, c.`+c.Content+`, c.`+c.CreationDate+`,
 				c.`+c.Likes+`, c.`+c.Dislikes+`, cr.`+cr.Liked+`
 		FROM `+c.Comments+` c
-		INNER JOIN `+cl.Clients+` cl ON c.`+c.UserID+` = cl.`+cl.ID+`
+		INNER JOIN `+cl.Clients+` cl ON c.`+c.AuthorID+` = cl.`+cl.ID+`
 		LEFT JOIN `+cr.CommentsReactions+` cr
 			ON cr.`+cr.CommentID+` = c.`+c.ID+` AND cr.`+cr.UserID+` = ?
 		`+condition+`
@@ -67,7 +67,7 @@ func getCommentsWithCondition(
 	for rows.Next() {
 		comment = &Comment{}
 		err = rows.Scan(
-			&comment.ID, &comment.PostID, &comment.UserID,
+			&comment.ID, &comment.PostID, &comment.AuthorID,
 			&comment.UserName, &comment.Content, &comment.CreationDate,
 			&comment.Likes, &comment.Dislikes, &userLiked,
 		)
@@ -83,6 +83,23 @@ func getCommentsWithCondition(
 		return nil, err
 	}
 	return comments, nil
+}
+
+func GetCommentByID(curUserID int, commentID int) (*Comment, error) {
+	var	condition	string
+	var	comments	[]*Comment
+	var	c			config.CommentsTableKeys
+	var	err			error
+
+	c = config.TableKeys.Comments
+	condition = `c.`+c.ID+` = ?`
+	comments, err = getCommentsWithCondition(
+		curUserID, condition, commentID,
+	)
+	if len(comments) == 0 {
+		return nil, err
+	}
+	return comments[0], err
 }
 
 func GetCommentsByPostID(curUserID int, postID int) ([]*Comment, error) {
@@ -101,7 +118,7 @@ func GetCommentsOfPostFromUser(
 	var	c			config.CommentsTableKeys
 
 	c = config.TableKeys.Comments
-	condition = `c.`+c.PostID+` = ? AND c.`+c.UserID+` = ?`
+	condition = `c.`+c.PostID+` = ? AND c.`+c.AuthorID+` = ?`
 	return getCommentsWithCondition(curUserID, condition, postID, userID)
 }
 
@@ -126,11 +143,11 @@ func deleteCommentWithCondition(condition string, args ...any) error {
 	return nil
 }
 
-// func DeleteComment(commentID int) {
-// 	var	c			config.CommentsTableKeys
-// 	var	condition	string
+func DeleteComment(commentID int) error {
+	var	c			config.CommentsTableKeys
+	var	condition	string
 
-// 	c = config.TableKeys.Comments
-// 	condition = ``+c.ID+` = ?`
-// 	deleteCommentWithCondition(condition, commentID)
-// }
+	c = config.TableKeys.Comments
+	condition = ``+c.ID+` = ?`
+	return deleteCommentWithCondition(condition, commentID)
+}

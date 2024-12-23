@@ -1,7 +1,7 @@
 .comments {
 	margin-top:	1.5rem;
 
-	form {
+	.comment__form {
 		display:			flex;
 		width:				100%;
 		flex-direction:		column;
@@ -57,15 +57,6 @@
 			align-items:		center;
 		}
 
-		/* Make the likes smaller */
-		.reaction-section {
-			margin-top:	0 !important;
-
-			button {
-				padding:	0.25rem 0.32rem !important;
-			}
-		}
-
 		.comment__infos {
 			width:				80%;
 			display:			flex;
@@ -92,6 +83,28 @@
 
 		.comment__content {
 			padding:	0.8rem;
+		}
+
+		.comment__buttons {
+			display:		flex;
+			gap:			0.5rem;
+			align-items:	center;
+		}
+
+		.comment__delete button {
+			cursor:			pointer;
+			padding:		0.32rem;
+			border:			none;
+			border-radius:	0.5rem;
+		}
+
+		/* Make the likes smaller */
+		.reaction-section {
+			margin-top:	0 !important;
+
+			button {
+				padding:	0.25rem 0.32rem !important;
+			}
 		}
 	}
 }

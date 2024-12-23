@@ -19,6 +19,10 @@ type DeletePostForm struct {
 	PostID	string	`form:"post_id"`
 }
 
+type DeleteCommentForm struct {
+	CommentID	string	`form:"comment_id"`
+}
+
 type LoginForm struct {
 	Username	string	`form:"username"`
 	Password	string	`form:"password"`

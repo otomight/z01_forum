@@ -40,11 +40,11 @@ func setupRoutes() *http.ServeMux {
 	mux.Handle("/history/disliked", sessionMiddleWare(http.HandlerFunc(handlers.HistoryDislikedPageHandler)))
 	mux.Handle("/history/commented", sessionMiddleWare(http.HandlerFunc(handlers.HistoryCommentedPageHandler)))
 
-	//Protect route with session middelware
 	mux.Handle("/post/delete", sessionMiddleWare(http.HandlerFunc(posthandlers.DeletePostHandler)))
 
 	//Add comment
 	mux.Handle("/post/comment/", sessionMiddleWare(http.HandlerFunc(handlers.AddCommentHandler)))
+	mux.Handle("/comment/delete", sessionMiddleWare(http.HandlerFunc(handlers.DeleteCommentHandler)))
 
 	mux.Handle("/post/like", sessionMiddleWare(http.HandlerFunc(handlers.PostLikeHandler)))
 	mux.Handle("/post/dislike", sessionMiddleWare(http.HandlerFunc(handlers.PostDisLikeHandler)))
