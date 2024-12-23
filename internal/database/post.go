@@ -71,13 +71,17 @@ func getPostsWithConditionQueryResult(
 	return rows, err
 }
 
-func fillPostExternalData(curUserID int, post *Post, userLiked *bool) {
+func fillPostExternalData(
+	curUserID int, post *Post, userLiked *bool, includeComments bool,
+) {
 	var	err	error
 
 	post.UserConfig = getUserConfig(userLiked)
-	post.Comments, err = GetCommentsByPostID(curUserID, post.ID)
-	if err != nil {
-		log.Println(err.Error())
+	if includeComments {
+		post.Comments, err = GetCommentsByPostID(curUserID, post.ID)
+		if err != nil {
+			log.Println(err.Error())
+		}
 	}
 	post.Categories, err = GetPostCategories(post.ID)
 	if err != nil {
@@ -86,7 +90,7 @@ func fillPostExternalData(curUserID int, post *Post, userLiked *bool) {
 }
 
 func getPostsWithCondition(
-	curUserID int, includeExtData bool, condition string, args ...any,
+	curUserID int, includeComments bool, condition string, args ...any,
 ) ([]*Post, error) {
 	var	posts		[]*Post
 	var	post		*Post
@@ -111,9 +115,7 @@ func getPostsWithCondition(
 			log.Printf("Error scanning post: %v\n", err)
 			continue
 		}
-		if includeExtData {
-			fillPostExternalData(curUserID, post, userLiked)
-		}
+		fillPostExternalData(curUserID, post, userLiked, includeComments)
 		posts = append(posts, post)
 	}
 	if err = rows.Err(); err != nil {

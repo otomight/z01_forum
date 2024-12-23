@@ -1,0 +1,10 @@
+{{ define "postcore" }}
+	<div class="post-core">
+		{{ template "postcore_head" . }}
+		<div class="post-core__content">{{ .Content }}</div>
+		{{ if .ImagePath }}
+			<img class="post-core__image" src="{{ .ImagePath }}" alt="User image">
+		{{ end }}
+		{{ template "postcore_footer" . }}
+	</div>
+{{ end }}

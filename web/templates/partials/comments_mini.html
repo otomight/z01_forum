@@ -1,4 +1,4 @@
-{{ define "commentsmini" }}
+{{ define "comments_mini" }}
 	<div class="comments">
 		{{ range .Comments }}
 			{{ template "comment" (addToStruct . "Session" $.Session) }}

@@ -1,0 +1,21 @@
+{{ define "postcore_footer" }}
+	<div class="post-core__footer">
+		<div class="post-core__author">by <a href="">{{ .UserName }}</a></div>
+		<div class="post-core__buttons">
+			{{ if .Session }}
+				<!-- Additional features for user/admin/moderator -->
+				{{ if or (eq .AuthorID .Session.UserID)
+						(doesStrMatchAny .Session.UserRole "moderator" "administrator") }}
+					<form action="/post/delete" method="POST" class="post-core__delete"
+						onsubmit="return confirm('Are you sure you want to delete this post ?');">
+						<input type="hidden" name="post_id" value="{{ .ID }}">
+						<button type="submit">
+							<img src="/static/image/post/trash.svg" alt="Trash icon">
+						</button>
+					</form>
+				{{ end }}
+			{{ end }}
+			{{ template "reactions" (addToStruct . "Type" "post") }}
+		</div>
+	</div>
+{{ end }}
