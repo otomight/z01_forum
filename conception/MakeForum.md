@@ -192,11 +192,27 @@ They also contain validation criteria to ensure that the functionality is correc
 
 It details the database we use in our informative system. It’s used by devs & database admins, and is really helpful in its précise data description.
 
+### User
+#### First draft
 ![User/Email verification data](image-3.png)
 
+#### Final version
+![user_final_table](image-25.png)
+
+### Session
+#### First draft
 ![Session data](image-5.png)
 
+#### Final version
+![session_final_table](image-26.png)
+
+### Posts
+#### First draft
 ![Post data](image-4.png)
+
+#### Final version
+![post_final_table](image-27.png)
+
 
 ## MERISE Method
 
@@ -210,8 +226,11 @@ Blue links associate the entities to each other when needed, they sometime have 
  - One to one (1,1) : Each entity occurrence is only linked to one occurrence of another entity.
 - Zero or One to Many  (0,n) : One entity occurrence can be (or not) associated with several occurrences of another entity.
 
-
+#### First draft
 ![CMD](image-6.png)
+
+#### Final version
+![final_cmd-version](image-28.png)
 
 ### Logical Data Structure 
 
@@ -219,15 +238,23 @@ It’s used to detail entity relations. The links defined in the CDM are transla
 - Primary keys : Underlined & bold, unique attribute identifier.
 - Foreign keys : Underline & bold but blue, reference to another table primary key.
 
+#### First draft
 ![LSD](image-7.png)
+
+#### Final version
+![final_lsd_version](image-29.png)
 
 ### Physical Data Model
 
 It’s the last step of the data modelisation in which the LDS is translated to data structures specific to the used database.
 
+#### First draft
 ![PDM](image-8.png)
-
 ![PDM 2](image-9.png)
+
+#### Final version
+![final_pdm_version1](image-30.png)
+![final_pdm_version2](image-31.png)
 
 ## Wireframe  
 
@@ -288,6 +315,49 @@ We agree on the fact  the first draft isn’t definitive, it’ll evolve as we f
 ### High-Level 
 
 ![Functionnal Wireframe](image-24.png)
+
+
+## Mockup
+
+### Mobile version
+![home_page](image-32.png)
+![login_page](image-33.png)
+![register_page](image-34.png)
+![logged_homepage](image-35.png)
+![create_post](image-36.png)
+![favs](image-37.png)
+![user_settings_infos](image-38.png)
+![user_settings_requests](image-39.png)
+![moderator_settings_options](image-40.png)
+![admin_settings_options](image-41.png)
+![posts_history](image-42.png)
+![likes_history](image-43.png)
+
+
+### Desktop version 
+![unlogged_home_page](image-44.png)
+![unlogged_see_comments](image-45.png)
+![unlogged_choose_category](image-46.png)
+![signIn_page](image-47.png)
+![register_page](image-48.png)
+![logged_home_page](image-49.png)
+![logged_choose_tags](image-50.png)
+![logged_add_comment](image-51.png)
+![logged_see_user_profile](image-52.png)
+![logged_see_user_posts_history](image-53.png)
+![logged_see_user_likes_history](image-54.png)
+![favs](image-55.png)
+![create_new_post](image-56.png)
+![select_last_chats](image-57.png)
+![open_chat](image-58.png)
+![modify_user_basic_infos](image-59.png)
+![user_requests](image-60.png)
+![user_posts-history](image-61.png)
+![user_likes history](image-62.png)
+![moderator_user_options](image-63.png)
+![moderator_post-comment_options](image-64.png)
+![admin_user_options](image-65.png)
+![admin_post-comment_options](image-66.png)
 
 
 ## Technologies used 
