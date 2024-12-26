@@ -66,7 +66,7 @@ The use of cookies is essential to allow each user to have only one opened sessi
 
 The web application must be able to check if the Email address is present in the database and if all credentials are correct.
 
-Users should be able to register using at least Facebook, Github and Google.
+Users should be able to register using at least Facebook and Google.
 
 ##### Log in
 
@@ -384,13 +384,7 @@ We agree on the fact  the first draft isn’t definitive, it’ll evolve as we f
 ### Front-End : JS, HTML, CSS
 
 - JS : Interactive User Interfaces creation
-    - DOM (Document Object Model) manipulation
-    - API calls (fetch)
-    - Dynamic interactivity 
-    - Handle SSE connections :
-        - Create an EventSource : initiate EventSource Object with ther server endpoint URL that'll be provinding SSE data 
-        - Listening for Events : The client listens for events sent by the server and each event triggers a JS function.
-        - Updating Page : JS updates the webpage with new data by modifying the DOM to show the new messages, updates, notifications 
+    - Dynamic interactivity (likes/dislikes and notifications)
 - Html : Standard web taging structure
 - CSS :  Responsive Layout and interfaces design 
 
@@ -422,3 +416,46 @@ The Docker Client and Deamon can run on the same system or we can connect a Clie
 - SQLite file format is stable, cross-platform. SQLite database files are commonly used as containers to transfer rich content between systems & has a long term archival format for data 
 - SQLite is not comparable to client-server SQL database engines because it provides local data storage for individual applications and devices. It competes with the Fopen() function.
 - It works well as database engine for low to medium traffic websites (100K to 500K request/day).
+
+## Team organization 
+
+### Tasks repartition
+
+#### Back-end 
+
+- Theo started the project alone, waiting for his team mates to finish their previous assignement. So he began the back-end part all by himself, from database tables creation to users' gestion (Regiser, Login and session creation). 
+- Adrien handled everything concerning the post and comment creation as well as the reactions (likes/dislikes), he also took care of the notifications.
+- Romain implemented the function to upload an image at the post's creation.
+- Fares's mission was to create the administrator, moderator and user settings (informations, specific options and so on...).
+
+##### Difficulties 
+- Facebook social login : to get access to the user's email and personnal information you have to link your app to a business account, to do all the steps to validate this business account and then complete the app review and wait 5 days for it to ba accepted or not. 
+Google don't provide a username either.
+    - The only solution i found was to give a default username "Anonymous1" to the first user that connects via social means without a username, i increment it by one at each new user whithout username.
+
+#### Front-end : Wireframes, mockup, CSS
+
+##### Wireframes 
+- Theo did all the wireframes on Figma, a mobile and a desktop version.
+
+##### Mockup 
+- Theo did the mobile and desktop mockup versions on Figma as well, followed by a working prototype.
+
+##### CSS 
+- The CSS was done accordingly, to match the mockups :
+    - Theo did the Header and navbar parts 
+    - Adrien did the Posts display
+    - Fares the different settings pages 
+
+###### Difficulties
+- Learning to use Figma meaining learning to make wireframes, mockups and prototypes. 
+- Using JS to make the likes/dislikes/notiifcations more dynamical and user friendly.
+
+
+#### Code quality check/security
+
+- Adrien who's very meticulous took upon himself the responsability to reorganize the code : meaning how to make it easily understandlable and editable.
+- Using .Exec and .Query assure some security in terms of database : 
+    - Special characters like ' or " are automatically erased.
+    - "; DROP TABLE; -- : bloqued as well 
+    - SQLite separates the SQL request logic and the values passed in parameters : SQL injections are mostly impossible. 
