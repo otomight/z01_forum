@@ -443,9 +443,9 @@ Google don't provide a username either.
 
 ##### CSS 
 - The CSS was done accordingly, to match the mockups :
-    - Theo did the Header and navbar parts 
-    - Adrien did the Posts display
-    - Fares the different settings pages 
+    - Theo did the Header and navbar parts.
+    - Adrien did the Posts display.
+    - Fares the different settings pages. 
 
 ###### Difficulties
 - Learning to use Figma meaining learning to make wireframes, mockups and prototypes. 
@@ -459,3 +459,37 @@ Google don't provide a username either.
     - Special characters like ' or " are automatically erased.
     - "; DROP TABLE; -- : bloqued as well 
     - SQLite separates the SQL request logic and the values passed in parameters : SQL injections are mostly impossible. 
+
+## Program organization 
+
+![global_organization](image-67.png)
+- conception folder : Contains documents related to the architectural and design of the project.
+- internal folder : This is where the core logic of the application resides. It contains various packages :
+    - config : Contains every configurations functions and global constants.
+    - database : Contains every logics related to the database manipulation.
+    - server : Contains all server-related logics :
+        - handlers : Contains functions for handling HTTP requests.Each handler corresponds to an endpoint.
+        - models : Contains structures related to the server.
+        - services : Contains functionality used in several handlers.
+        - servsetup : Contains the routes, the middelware gestion and the requests number limit.
+        - templates : Contains the core logic of the template rendering and also includes specific functions that can be called inside of the templates.
+    - utils : Utility functions that are used throughout the application.
+- node_modules : Generates the JS packages.
+- setup : Contains the components necessary to launch the program.
+- web : Contains all the web-related files.
+    - src : Contains the sass files and the typescript ones.
+        - scss : Sass files to simplify the css
+            - components : single reusable components style.
+            - layout : main layout style.
+            - pages : main pages style.
+            - partials : templates style shared betweeen several pages.
+        - ts : JS files generated from src/.
+    - static : Every files directly accessible by the browser.
+        - image : contains the different pictures used in the different pages.
+        - scripts : JS files generated from src/.
+        - style : contains all the css from the sass files.
+    - templates : Contains every html templates.
+        - components : Template with single reusable elements.
+        - layout : Templates for the main layout (header, footer ...)
+        - pages : Templates of the pages. Only those templates are called.
+        - partials : Templates shared between several pages.
